@@ -80,7 +80,10 @@ class DT_Webform {
      * @return void
      */
     private function includes() {
-        require_once( 'includes/rest-api.php' );
+        // HOME
+        require_once( 'home/rest-endpoints.php' );
+
+
     }
 
     /**

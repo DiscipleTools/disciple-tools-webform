@@ -9,6 +9,12 @@
  * @package    Disciple_Tools
  */
 
+/**
+ * @todo
+ * 1. Create endpoint to deliver new contacts
+ * 2. Create endpoint to confirm successful transfer of contacts
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }

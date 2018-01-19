@@ -81,7 +81,10 @@ class DT_Webform {
      */
     private function includes() {
         // HOME
-        require_once( 'home/rest-endpoints.php' );
+        require_once( 'includes/home/rest-endpoints.php' );
+
+        // REMOTE
+        require_once( 'includes/remote/rest-endpoints.php' );
 
 
     }

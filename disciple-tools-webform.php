@@ -16,7 +16,7 @@
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-if ( ! defined( 'ABSPATH' ) ) { 
+if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
@@ -54,7 +54,7 @@ class DT_Webform {
         static $instance = null;
 
         if ( is_null( $instance ) ) {
-            $instance = new DT_Webform;
+            $instance = new DT_Webform();
             $instance->setup();
             $instance->includes();
             $instance->setup_actions();
@@ -189,6 +189,7 @@ class DT_Webform {
      * @return null
      */
     public function __call( $method = '', $args = array() ) {
+        // @codingStandardsIgnoreLine
         _doing_it_wrong( "dt_webform::{$method}", esc_html__( 'Method does not exist.', 'dt_webform' ), '0.1' );
         unset( $method, $args );
         return null;
@@ -203,10 +204,9 @@ class DT_Webform {
  * @access public
  * @return object
  */
-function DT_Webform() {
+function dt_webform() {
     return DT_Webform::get_instance();
 }
 
 // Let's roll!
-add_action( 'plugins_loaded', 'DT_Webform' );
-
+add_action( 'plugins_loaded', 'dt_webform' );

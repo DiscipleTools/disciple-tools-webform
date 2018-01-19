@@ -61,12 +61,12 @@ class DT_Webform_Home_Endpoints
         $namespace = 'dt-webform/v' . $version;
 
         register_rest_route(
-        $namespace, '/trigger_check/(?P<notification_id>\d+)', [
-        [
-        'methods'  => WP_REST_Server::CREATABLE,
-        'callback' => [ $this, 'trigger_check' ],
-        ],
-        ]
+            $namespace, '/trigger_check/(?P<notification_id>\d+)', [
+            [
+            'methods'  => WP_REST_Server::CREATABLE,
+            'callback' => [ $this, 'trigger_check' ],
+            ],
+            ]
         );
     }
 
@@ -82,12 +82,12 @@ class DT_Webform_Home_Endpoints
     public function trigger_check( WP_REST_Request $request )
     {
         $params = $request->get_params();
-        if ( isset( $params[ 'notification_id' ] ) ) {
-            $result = Disciple_Tools_Notifications::mark_viewed( $params[ 'notification_id' ] );
-            if ( $result[ "status" ] ) {
-                return $result[ 'rows_affected' ];
+        if ( isset( $params['notification_id'] ) ) {
+            $result = Disciple_Tools_Notifications::mark_viewed( $params['notification_id'] );
+            if ( $result["status"] ) {
+                return $result['rows_affected'];
             } else {
-                return new WP_Error( "mark_viewed_processing_error", $result[ "message" ], [ 'status' => 400 ] );
+                return new WP_Error( "mark_viewed_processing_error", $result["message"], [ 'status' => 400 ] );
             }
         } else {
             return new WP_Error( "notification_param_error", "Please provide a valid array", [ 'status' => 400 ] );

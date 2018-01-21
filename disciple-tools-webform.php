@@ -122,6 +122,16 @@ class DT_Webform {
      */
     private function setup_actions() {
 
+        // Check for plugin updates
+        if ( ! class_exists( 'Puc_v4_Factory' ) ) {
+            require( $this->includes_path . 'admin/libraries/plugin-update-checker/plugin-update-checker.php' );
+        }
+        Puc_v4_Factory::buildUpdateChecker(
+        'https://raw.githubusercontent.com/DiscipleTools/disciple-tools-version-control/master/disciple-tools-webform-version-control.json',
+        __FILE__,
+        'disciple-tools-webform'
+        );
+
         // Internationalize the text strings used.
         add_action( 'plugins_loaded', array( $this, 'i18n' ), 2 );
 

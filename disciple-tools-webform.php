@@ -21,6 +21,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Gets the instance of the `DT_Webform` class.  This function is useful for quickly grabbing data
+ * used throughout the plugin.
+ *
+ * @since  0.1
+ * @access public
+ * @return object
+ */
+function dt_webform() {
+    $current_theme = get_option( 'current_theme' );
+    if ( 'Disciple Tools' == $current_theme ) {
+        return DT_Webform::get_instance();
+    }
+    else {
+        add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
+        return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active.' );
+    }
+
+}
+add_action( 'plugins_loaded', 'dt_webform' );
+
+
+/**
  * Singleton class for setting up the plugin.
  *
  * @since  0.1
@@ -86,6 +108,11 @@ class DT_Webform {
         // REMOTE
         require_once( 'includes/remote/rest-endpoints.php' );
 
+        if ( is_admin() ) {
+            // Admin and tabs menu
+            require_once( 'includes/admin/admin-menu-and-tabs.php' );
+        }
+
 
     }
 
@@ -122,7 +149,7 @@ class DT_Webform {
      */
     private function setup_actions() {
 
-        // Check for plugin updates
+        // Check for plugin updates system
         if ( ! class_exists( 'Puc_v4_Factory' ) ) {
             require( $this->includes_path . 'admin/libraries/plugin-update-checker/plugin-update-checker.php' );
         }
@@ -131,6 +158,7 @@ class DT_Webform {
             __FILE__,
             'disciple-tools-webform'
         );
+        // End check for updates system
 
         // Internationalize the text strings used.
         add_action( 'plugins_loaded', array( $this, 'i18n' ), 2 );
@@ -208,18 +236,61 @@ class DT_Webform {
         return null;
     }
 }
+// End of main class
 
 /**
- * Gets the instance of the `DT_Webform` class.  This function is useful for quickly grabbing data
- * used throughout the plugin.
- *
- * @since  0.1
- * @access public
- * @return object
+ * Admin alert for when Disciple Tools Theme is not available
  */
-function dt_webform() {
-    return DT_Webform::get_instance();
+function dt_webform_no_disciple_tools_theme_found()
+{
+    ?>
+    <div class="notice notice-error">
+        <p><?php esc_html_e( "'Disciple Tools - Webform' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or deactivate 'Disciple Tools - Webform' plugin.", "dt_webform" ); ?></p>
+    </div>
+    <?php
 }
 
-// Let's roll!
-add_action( 'plugins_loaded', 'dt_webform' );
+/**
+ * A simple function to assist with development and non-disruptive debugging.
+ * -----------
+ * -----------
+ * REQUIREMENT:
+ * WP Debug logging must be set to true in the wp-config.php file.
+ * Add these definitions above the "That's all, stop editing! Happy blogging." line in wp-config.php
+ * -----------
+ * define( 'WP_DEBUG', true ); // Enable WP_DEBUG mode
+ * define( 'WP_DEBUG_LOG', true ); // Enable Debug logging to the /wp-content/debug.log file
+ * define( 'WP_DEBUG_DISPLAY', false ); // Disable display of errors and warnings
+ * @ini_set( 'display_errors', 0 );
+ * -----------
+ * -----------
+ * EXAMPLE USAGE:
+ * (string)
+ * write_log('THIS IS THE START OF MY CUSTOM DEBUG');
+ * -----------
+ * (array)
+ * $an_array_of_things = ['an', 'array', 'of', 'things'];
+ * write_log($an_array_of_things);
+ * -----------
+ * (object)
+ * $an_object = new An_Object
+ * write_log($an_object);
+ */
+if ( !function_exists( 'dt_write_log' ) ) {
+    /**
+     * A function to assist development only.
+     * This function allows you to post a string, array, or object to the WP_DEBUG log.
+     *
+     * @param $log
+     */
+    function dt_write_log( $log )
+    {
+        if ( true === WP_DEBUG ) {
+            if ( is_array( $log ) || is_object( $log ) ) {
+                error_log( print_r( $log, true ) );
+            } else {
+                error_log( $log );
+            }
+        }
+    }
+}

@@ -73,7 +73,7 @@ class DT_Webform_Api_Keys
             wp_die( 'You do not have permission to this page' );
         }
 
-        $keys = get_option( "dt_api_keys", [] );
+        $keys = get_option( "dt_webform_api_keys", [] );
 
         if ( isset( $_POST['api-key-view-field'] ) && wp_verify_nonce( sanitize_key( $_POST['api-key-view-field'] ), 'api-keys-view' ) ) {
 
@@ -85,14 +85,14 @@ class DT_Webform_Api_Keys
                     "client_id" => $client_id,
                     "client_token" => $token
                     ];
-                    update_option( "dt_api_keys", $keys );
+                    update_option( "dt_webform_api_keys", $keys );
                 } else {
                     $this->admin_notice( "Application already exists", "error" );
                 }
             } elseif ( isset( $_POST["delete"] ) ) {
                 if ( $keys[ sanitize_text_field( wp_unslash( $_POST["delete"] ) ) ] ) {
                     unset( $keys[ sanitize_text_field( wp_unslash( $_POST["delete"] ) ) ] );
-                    update_option( "dt_api_keys", $keys );
+                    update_option( "dt_webform_api_keys", $keys );
                 }
             }
         }
@@ -109,7 +109,7 @@ class DT_Webform_Api_Keys
      */
     public function check_api_key( $client_id, $client_token )
     {
-        $keys = get_option( "dt_api_keys", [] );
+        $keys = get_option( "dt_webform_api_keys", [] );
 
         return isset( $keys[ $client_id ] ) && $keys[ $client_id ]["client_token"] == $client_token;
     }

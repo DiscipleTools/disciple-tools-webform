@@ -30,13 +30,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function dt_webform() {
     $current_theme = get_option( 'current_theme' );
-    if ( 'Disciple Tools' == $current_theme ) {
-        return DT_Webform::get_instance();
-    }
-    else {
+    $state = get_option( 'dt_webform_state' );
+
+    if ( ( 'combined' == $state || 'home' == $state ) && ! 'Disciple Tools' == $current_theme ) {
         add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
         return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active.' );
     }
+
+    return DT_Webform::get_instance();
 
 }
 add_action( 'plugins_loaded', 'dt_webform' );
@@ -78,7 +79,6 @@ class DT_Webform {
         if ( is_null( $instance ) ) {
             $instance = new DT_Webform();
             $instance->setup();
-            $instance->setup_actions();
 
             /**
              * Determine state of the plugin
@@ -91,18 +91,24 @@ class DT_Webform {
             $state = get_option( 'dt_webform_state' );
             switch ( $state ) {
                 case 'combined':
-
+                    $instance->includes();
+                    $instance->home();
+                    $instance->remote();
                     break;
                 case 'home':
-
+                    $instance->includes();
+                    $instance->home();
                     break;
                 case 'remote':
-
+                    $instance->includes();
+                    $instance->remote();
                     break;
                 default: // if no option exists, then the plugin is forced to selection screen.
-                    $instance->choose_state();
+                    $instance->initialize_plugin_state();
                     break;
             }
+
+            $instance->setup_actions();
         }
         return $instance;
     }
@@ -113,7 +119,7 @@ class DT_Webform {
      * @access private
      * @return void
      */
-    private function choose_state() {
+    private function initialize_plugin_state() {
         if ( is_admin() ) {
             // Admin and tabs menu
             require_once( 'includes/admin/admin-menu-and-tabs.php' );
@@ -128,12 +134,10 @@ class DT_Webform {
      */
     private function home() {
 
-        // HOME
         require_once( 'includes/home/rest-endpoints.php' );
 
         if ( is_admin() ) {
-            // Admin and tabs menu
-            require_once( 'includes/admin/admin-menu-and-tabs.php' );
+
         }
     }
 
@@ -145,12 +149,10 @@ class DT_Webform {
      */
     private function remote() {
 
-        // REMOTE
         require_once( 'includes/remote/rest-endpoints.php' );
 
         if ( is_admin() ) {
-            // Admin and tabs menu
-            require_once( 'includes/admin/admin-menu-and-tabs.php' );
+
         }
     }
 
@@ -215,10 +217,6 @@ class DT_Webform {
 
         // Internationalize the text strings used.
         add_action( 'plugins_loaded', array( $this, 'i18n' ), 2 );
-
-        // Register activation hook.
-        register_activation_hook( __FILE__, [ $this, 'activation' ] );
-        register_deactivation_hook( __FILE__, [ $this, 'deactivation' ] );
     }
 
     /**
@@ -228,7 +226,13 @@ class DT_Webform {
      * @access public
      * @return void
      */
-    public function activation() {
+    public static function activation() {
+
+        // Confirm 'Administrator' has 'manage_dt' privilege. This is key in 'remote' configuration when Disciple Tools theme is not installed.
+        $role = get_role( 'administrator' );
+        if ( !empty( $role ) ) {
+            $role->add_cap( 'manage_dt' ); // gives access to dt plugin options
+        }
     }
 
     /**
@@ -238,7 +242,7 @@ class DT_Webform {
      * @access public
      * @return void
      */
-    public function deactivation() {
+    public static function deactivation() {
     }
 
     /**
@@ -310,6 +314,10 @@ class DT_Webform {
     }
 }
 // End of main class
+
+// Activation and De-activation Hooks
+register_activation_hook( __FILE__, [ 'DT_Webform', 'activation' ] );
+register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
 
 /**
  * Admin alert for when Disciple Tools Theme is not available

@@ -54,39 +54,43 @@ class DT_Webform_Menu {
      */
     public function register_menu() {
 
-        // Process state change
+        // Process state change form
         if ( ( isset( $_POST['initialize_plugin_state'] ) && ! empty( $_POST['initialize_plugin_state'] ) ) && ( isset( $_POST['dt_webform_select_state_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_POST['dt_webform_select_state_nonce'] ) ), 'dt_webform_select_state' ) ) ) {
             update_option( 'dt_webform_state', sanitize_key( wp_unslash( $_POST['initialize_plugin_state'] ) ), false );
         }
 
-        // Load menus
-        add_menu_page( __( 'Extensions (DT)', 'disciple_tools' ), __( 'Extensions (DT)', 'disciple_tools' ), 'manage_dt', 'dt_extensions', [ $this, 'extensions_menu' ], 'dashicons-admin-generic', 59 );
+        // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
+        $current_theme = get_option( 'current_theme' );
+        if ( ! 'Disciple Tools' == $current_theme ) {
+            update_option( 'dt_webform_state', 'remote', false );
+            add_menu_page( __( 'Webform (DT)', 'disciple_tools' ), __( 'Webform (DT)', 'disciple_tools' ), 'manage_dt', $this->token, [ $this, 'remote' ], 'dashicons-admin-generic', 59 );
+        } else {
+            // Load menus
+            add_menu_page( __( 'Extensions (DT)', 'disciple_tools' ), __( 'Extensions (DT)', 'disciple_tools' ), 'manage_dt', 'dt_extensions', [ $this, 'extensions_menu' ], 'dashicons-admin-generic', 59 );
 
-        /**
-         * Determine state of the plugin
-         */
-        $state = get_option( 'dt_webform_state' );
-        switch ( $state ) {
-            case 'combined':
-                add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'combined' ] );
-                break;
-            case 'home':
-                add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'home' ] );
-                break;
-            case 'remote':
-                add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'remote' ] );
-                break;
-            default: // if no option exists, then the plugin is forced to selection screen.
-                add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'initialize_plugin_state' ] );
-                break;
+            $state = get_option( 'dt_webform_state' );
+            switch ( $state ) {
+                case 'combined':
+                    add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'combined' ] );
+                    break;
+                case 'home':
+                    add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'home' ] );
+                    break;
+                default: // if no option exists, then the plugin is forced to selection screen.
+                    add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'initialize_plugin_state' ] );
+                    break;
+            }
         }
+
+
 
     }
 
     /**
      * Menu stub. Replaced when Disciple Tools Theme fully loads.
      */
-    public function extensions_menu() {}
+    public function extensions_menu() {
+    }
 
     /**
      * Combined state of the plugin
@@ -241,7 +245,34 @@ class DT_Webform_Menu {
         <?php
     }
 
+    /**
+     * Re-usable form to edit state of the plugin.
+     */
     public static function initialize_plugin_state_form_select() {
+        // Set selections
+        $options = [
+            [
+                'key' => 'combined',
+                'label' => __( 'Combined', 'dt_webform' ),
+            ],
+            [
+                'key' => 'home',
+                'label' => __( 'Home', 'dt_webform' ),
+            ]
+        ];
+
+        // Check if Disciple Tools Theme is present. If not, limit select to remote server.
+        $current_theme = get_option( 'current_theme' );
+        if ( ! 'Disciple Tools' == $current_theme ) {
+            $options = [
+                [
+                'key' => 'remote',
+                'label' => __( 'Remote', 'dt_webform' ),
+                ]
+            ];
+        }
+
+        // Get current selection
         $state = get_option( 'dt_webform_state' );
         ?>
         <style>
@@ -269,9 +300,15 @@ class DT_Webform_Menu {
                         <select name="initialize_plugin_state" id="initialize_plugin_state">
                             <option value="">Select</option>
                             <option value="" disabled>---</option>
-                            <option value="combined" <?php echo $state == 'combined' ? 'selected' : '' ?>>Combined</option>
-                            <option value="home" <?php echo $state == 'home' ? 'selected' : '' ?>>Home</option>
-                            <option value="remote" <?php echo $state == 'remote' ? 'selected' : '' ?>>Remote</option>
+                            <?php
+                            foreach ($options as $option) {
+                                echo '<option value="'.esc_attr( $option['key'] ).'" ';
+                                if ( $option['key'] == $state ) {
+                                    echo 'selected';
+                                }
+                                echo '>'. esc_attr( $option['label'] ).'</option>';
+                            }
+                            ?>
                         </select>
                         <span><button class="button-like-link" type="button" onclick="jQuery('#state-help').toggle();">explain settings</button></span>
                     </td>
@@ -285,7 +322,7 @@ class DT_Webform_Menu {
                         </p>
                         <p>
                             <strong>Remote</strong><br>
-                            The 'Remote' configuration sets up only the remote webform server. Choosing this option assumes that you have a Disciple Tools server running elsewhere with the Webform plugin installed and configured as 'home'.
+                            The 'Remote' configuration sets up only the remote webform server. Choosing this option assumes that you have a Disciple Tools server running elsewhere with the Webform plugin installed and configured as 'home'. If Disciple Tools Theme is not installed, Remote will be the only installation option.
                         </p>
                         <p>
                             <strong>Combined</strong><br>

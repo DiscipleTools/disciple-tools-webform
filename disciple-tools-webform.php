@@ -78,32 +78,72 @@ class DT_Webform {
         if ( is_null( $instance ) ) {
             $instance = new DT_Webform();
             $instance->setup();
-            $instance->includes();
             $instance->setup_actions();
+
+            /**
+             * Determine state of the plugin
+             *
+             * The state of the plugin can be 'combined', 'home', and 'remote'.
+             * 'Home' enables just the resources needed for the home server of the webform plugin
+             * 'Remote' enables just the resources needed for the remote webform server of the webform plugin
+             * 'Combined' enables both the 'home' and 'remote' servers within the plugin.
+             */
+            $state = get_option( 'dt_webform_state' );
+            switch ( $state ) {
+                case 'combined':
+
+                    break;
+                case 'home':
+
+                    break;
+                case 'remote':
+
+                    break;
+                default: // if no option exists, then the plugin is forced to selection screen.
+                    $instance->choose_state();
+                    break;
+            }
         }
         return $instance;
     }
 
     /**
-     * Constructor method.
+     * State initialization of the plugin
      *
-     * @since  0.1
      * @access private
      * @return void
      */
-    private function __construct() {
+    private function choose_state() {
+        if ( is_admin() ) {
+            // Admin and tabs menu
+            require_once( 'includes/admin/admin-menu-and-tabs.php' );
+        }
     }
 
     /**
-     * Loads files needed by the plugin.
+     * File dependencies exlusively for the HOME SERVER
      *
-     * @since  0.1
-     * @access public
+     * @access private
      * @return void
      */
-    private function includes() {
+    private function home() {
+
         // HOME
         require_once( 'includes/home/rest-endpoints.php' );
+
+        if ( is_admin() ) {
+            // Admin and tabs menu
+            require_once( 'includes/admin/admin-menu-and-tabs.php' );
+        }
+    }
+
+    /**
+     * File dependencies exlusively for the REMOTE SERVER
+     *
+     * @access private
+     * @return void
+     */
+    private function remote() {
 
         // REMOTE
         require_once( 'includes/remote/rest-endpoints.php' );
@@ -112,8 +152,21 @@ class DT_Webform {
             // Admin and tabs menu
             require_once( 'includes/admin/admin-menu-and-tabs.php' );
         }
+    }
 
+    /**
+     * File dependencies shared by the entire Webform system
+     *
+     * @since  0.1
+     * @access public
+     * @return void
+     */
+    private function includes() {
 
+        if ( is_admin() ) {
+            // Admin and tabs menu
+            require_once( 'includes/admin/admin-menu-and-tabs.php' );
+        }
     }
 
     /**
@@ -164,7 +217,8 @@ class DT_Webform {
         add_action( 'plugins_loaded', array( $this, 'i18n' ), 2 );
 
         // Register activation hook.
-        register_activation_hook( __FILE__, array( $this, 'activation' ) );
+        register_activation_hook( __FILE__, [ $this, 'activation' ] );
+        register_deactivation_hook( __FILE__, [ $this, 'deactivation' ] );
     }
 
     /**
@@ -175,7 +229,26 @@ class DT_Webform {
      * @return void
      */
     public function activation() {
+    }
 
+    /**
+     * Method that runs only when the plugin is deactivated.
+     *
+     * @since  0.1
+     * @access public
+     * @return void
+     */
+    public function deactivation() {
+    }
+
+    /**
+     * Constructor method.
+     *
+     * @since  0.1
+     * @access private
+     * @return void
+     */
+    private function __construct() {
     }
 
     /**

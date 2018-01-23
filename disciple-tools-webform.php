@@ -165,6 +165,8 @@ class DT_Webform {
      */
     private function includes() {
 
+        require_once( 'includes/admin/api-keys.php' );
+
         if ( is_admin() ) {
             // Admin and tabs menu
             require_once( 'includes/admin/admin-menu-and-tabs.php' );

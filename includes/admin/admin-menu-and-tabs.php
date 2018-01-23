@@ -114,6 +114,7 @@ class DT_Webform_Menu {
             <h2><?php esc_attr_e( 'DISCIPLE TOOLS - WEBFORM (COMBINED)', 'dt_webform' ) ?></h2>
             <h2 class="nav-tab-wrapper">
                 <a href="<?php echo esc_attr( $link ) . 'general' ?>" class="nav-tab <?php ( $tab == 'general' || ! isset( $tab ) ) ? esc_attr_e( 'nav-tab-active', 'dt_webform' ) : print ''; ?>"><?php esc_attr_e( 'General', 'dt_webform' ) ?></a>
+                <a href="<?php echo esc_attr( $link ) . 'api_keys' ?>" class="nav-tab <?php ( $tab == 'api_keys' ) ? esc_attr_e( 'nav-tab-active', 'dt_webform' ) : print ''; ?>"><?php esc_attr_e( 'API Keys', 'dt_webform' ) ?></a>
                 <a href="<?php echo esc_attr( $link ) . 'settings' ?>" class="nav-tab <?php ( $tab == 'settings' ) ? esc_attr_e( 'nav-tab-active', 'dt_webform' ) : print ''; ?>"><?php esc_attr_e( 'Settings', 'dt_webform' ) ?></a>
             </h2>
 
@@ -126,6 +127,10 @@ class DT_Webform_Menu {
                 case "settings":
                     $object = new DT_Webform_Tab_Settings();
                     $object->content();
+                    break;
+                case 'api_keys':
+                    $object = DT_Webform_Api_Keys::instance();
+                    $object->api_keys_page();
                     break;
                 default:
                     break;
@@ -157,6 +162,7 @@ class DT_Webform_Menu {
             <h2><?php esc_attr_e( 'DISCIPLE TOOLS - WEBFORM (HOME)', 'dt_webform' ) ?></h2>
             <h2 class="nav-tab-wrapper">
                 <a href="<?php echo esc_attr( $link ) . 'general' ?>" class="nav-tab <?php ( $tab == 'general' || ! isset( $tab ) ) ? esc_attr_e( 'nav-tab-active', 'dt_webform' ) : print ''; ?>"><?php esc_attr_e( 'General', 'dt_webform' ) ?></a>
+                <a href="<?php echo esc_attr( $link ) . 'api_keys' ?>" class="nav-tab <?php ( $tab == 'api_keys' ) ? esc_attr_e( 'nav-tab-active', 'dt_webform' ) : print ''; ?>"><?php esc_attr_e( 'API Keys', 'dt_webform' ) ?></a>
                 <a href="<?php echo esc_attr( $link ) . 'settings' ?>" class="nav-tab <?php ( $tab == 'settings' ) ? esc_attr_e( 'nav-tab-active', 'dt_webform' ) : print ''; ?>"><?php esc_attr_e( 'Settings', 'dt_webform' ) ?></a>
             </h2>
 
@@ -169,6 +175,10 @@ class DT_Webform_Menu {
                 case "settings":
                     $object = new DT_Webform_Tab_Settings();
                     $object->content();
+                    break;
+                case 'api_keys':
+                    $object = DT_Webform_Api_Keys::instance();
+                    $object->api_keys_page();
                     break;
                 default:
                     break;

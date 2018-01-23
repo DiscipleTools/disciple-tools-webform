@@ -66,12 +66,8 @@ class DT_Webform_Api_Keys
      * @access public
      * @since  0.1.0
      */
-    public function api_keys_page()
+    public function get_keys()
     {
-
-        if ( !current_user_can( "manage_dt" ) ) {
-            wp_die( 'You do not have permission to this page' );
-        }
 
         $keys = get_option( "dt_webform_api_keys", [] );
 
@@ -96,7 +92,8 @@ class DT_Webform_Api_Keys
                 }
             }
         }
-        $this->template( $keys );
+        return $keys;
+
     }
 
     /**
@@ -117,7 +114,14 @@ class DT_Webform_Api_Keys
     /**
      * @param $keys
      */
-    public function template( $keys ) {
+    public function api_keys_page() {
+
+        if ( !current_user_can( "manage_dt" ) ) {
+            wp_die( 'You do not have permission to this page' );
+        }
+
+        $keys = $this->get_keys();
+
         ?>
         <div class="wrap">
             <div id="poststuff">

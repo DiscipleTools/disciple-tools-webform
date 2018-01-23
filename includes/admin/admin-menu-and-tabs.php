@@ -59,6 +59,9 @@ class DT_Webform_Menu {
             update_option( 'dt_webform_state', sanitize_key( wp_unslash( $_POST['initialize_plugin_state'] ) ), false );
         }
 
+        // Initialize Plugin Settings
+        self::initialize_settings();
+
         // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
         $current_theme = get_option( 'current_theme' );
         if ( ! 'Disciple Tools' == $current_theme ) {
@@ -220,7 +223,7 @@ class DT_Webform_Menu {
                     $object->content();
                     break;
                 case "settings":
-                    $object = new DT_Webform_Tab_Settings();
+                    $object = new DT_Webform_Remote_Tab_Settings();
                     $object->content();
                     break;
                 default:
@@ -352,6 +355,25 @@ class DT_Webform_Menu {
             <!-- End Box -->
         </form>
         <?php
+    }
+
+    protected static function initialize_settings() {
+        $home = get_option( 'dt_webform_home_settings' );
+        if ( ! $home ) {
+            $default = [];
+            update_option( 'dt_webform_home_settings', $default, false );
+        }
+        $remote = get_option( 'dt_webform_remote_settings' );
+        if ( ! $remote ) {
+            $default = [
+                  'api_link' => [
+                      'client_id' => '',
+                      'client_token' => '',
+                      'client_url' => '',
+                  ]
+            ];
+            update_option( 'dt_webform_remote_settings', $default, false );
+        }
     }
 }
 DT_Webform_Menu::instance();
@@ -498,6 +520,132 @@ class DT_Webform_Tab_Settings
             </tr>
             </tbody>
         </table>
+        <br>
+        <!-- End Box -->
+        <?php
+    }
+
+    public function right_column() {
+        ?>
+        <!-- Box -->
+        <table class="widefat striped">
+            <thead>
+            <th>Information</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    Content
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <!-- End Box -->
+        <?php
+    }
+
+}
+
+/**
+ * Class DT_Webform_Tab_Settings
+ */
+class DT_Webform_Remote_Tab_Settings
+{
+    public function content() {
+
+        $this->process_post();
+
+        // begin columns template
+        DT_Webform_Page_Template::template( 'begin' );
+
+        $this->main_column(); // main column content
+
+        // begin right column template
+        DT_Webform_Page_Template::template( 'right_column' );
+
+        DT_Webform_Menu::initialize_plugin_state_form_select();
+
+        $this->right_column(); // right column content
+
+        // end columns template
+        DT_Webform_Page_Template::template( 'end' );
+
+    }
+
+    public function process_post() {
+        /**
+         * Update API Link to Webform Home form
+         */
+        if ( isset( $_POST['remote_api_link_form'] ) && isset( $_POST['dt_webform_remote_api_link_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_POST['dt_webform_remote_api_link_nonce'] ) ), 'dt_webform_remote_api_link' ) ) {
+            $remote = get_option( 'dt_webform_remote_settings' );
+            if ( ! $remote ) {
+                DT_Webform_Menu::initialize_plugin_state_form_select();
+                $remote = get_option( 'dt_webform_remote_settings' );
+            }
+
+            $remote['api_link']['client_id'] = ( ! isset( $_POST['client_id'] ) || empty( $_POST['client_id'] ) ) ? '' : sanitize_text_field( wp_unslash( $_POST['client_id'] ) );
+            $remote['api_link']['client_token'] = ( ! isset( $_POST['client_token'] ) || empty( $_POST['client_token'] ) ) ? '' : sanitize_key( wp_unslash( $_POST['client_token'] ) );
+            $remote['api_link']['client_url'] = ( ! isset( $_POST['client_url'] ) || empty( $_POST['client_url'] ) ) ? '' : sanitize_text_field( wp_unslash( $_POST['client_url'] ) );
+
+            update_option( 'dt_webform_remote_settings', $remote, false );
+        }
+    }
+
+    public function main_column() {
+        $remote = get_option( 'dt_webform_remote_settings' );
+        if ( ! $remote ) {
+            DT_Webform_Menu::initialize_plugin_state_form_select();
+            $remote = get_option( 'dt_webform_remote_settings' );
+        }
+        ?>
+        <!-- Box -->
+        <form method="post" action="">
+            <?php wp_nonce_field( 'dt_webform_remote_api_link', 'dt_webform_remote_api_link_nonce', true, true ) ?>
+            <table class="widefat striped">
+                <thead>
+                <tr>
+                    <td colspan="2">
+                        API Link to Webform Home
+                    </td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="max-width:20px;">
+                        <label for="client_id">Client ID</label>
+                    </td>
+                    <td>
+                        <input type="text" name="client_id" id="client_id" value="<?php echo esc_attr( $remote['api_link']['client_id'] ) ?>"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="client_token">Client Token</label>
+                    </td>
+                    <td>
+                        <input type="text" name="client_token" id="client_token" value="<?php echo esc_attr( $remote['api_link']['client_token'] ) ?>"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="client_url">Client URL</label>
+                    </td>
+                    <td>
+                        <input type="text" name="client_url" id="client_url" value="<?php echo esc_attr( $remote['api_link']['client_url'] ) ?>"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="submit" class="button" name="remote_api_link_form" value="1">Update</button>
+                    </td>
+                    <td>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
         <br>
         <!-- End Box -->
         <?php

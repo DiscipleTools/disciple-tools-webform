@@ -120,6 +120,7 @@ class DT_Webform {
      * @return void
      */
     private function initialize_plugin_state() {
+
         if ( is_admin() ) {
             // Admin and tabs menu
             require_once( 'includes/admin/admin-menu-and-tabs.php' );
@@ -134,7 +135,8 @@ class DT_Webform {
      */
     private function home() {
 
-        require_once( 'includes/home/rest-endpoints.php' );
+        require_once( 'includes/home/home-endpoints.php' );
+        require_once( 'includes/home/home.php' );
 
         if ( is_admin() ) {
 
@@ -149,7 +151,9 @@ class DT_Webform {
      */
     private function remote() {
 
-        require_once( 'includes/remote/rest-endpoints.php' );
+        require_once( 'includes/remote/remote-endpoints.php' );
+        require_once( 'includes/remote/active-forms-post-type.php' );
+        require_once( 'includes/remote/remote.php' );
 
         if ( is_admin() ) {
 
@@ -166,6 +170,8 @@ class DT_Webform {
     private function includes() {
 
         require_once( 'includes/admin/api-keys.php' );
+        require_once( 'includes/admin/admin.php' );
+
 
         if ( is_admin() ) {
             // Admin and tabs menu

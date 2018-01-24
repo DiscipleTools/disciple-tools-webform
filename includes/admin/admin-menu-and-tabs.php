@@ -286,7 +286,7 @@ class DT_Webform_Menu
 
             <?php DT_Webform_Page_Template::template( 'begin' ) ?>
 
-            <?php self::initialize_plugin_state_form_select() ?>
+            <?php DT_Webform_Admin::initialize_plugin_state_metabox() ?>
 
             <?php DT_Webform_Page_Template::template( 'right_column' ) ?>
 
@@ -296,101 +296,7 @@ class DT_Webform_Menu
         <?php
     }
 
-    /**
-     * Re-usable form to edit state of the plugin.
-     */
-    public static function initialize_plugin_state_form_select()
-    {
-        // Set selections
-        $options = [
-        [
-        'key'   => 'combined',
-        'label' => __( 'Combined', 'dt_webform' ),
-        ],
-        [
-        'key'   => 'home',
-        'label' => __( 'Home', 'dt_webform' ),
-        ],
-        ];
 
-        // Check if Disciple Tools Theme is present. If not, limit select to remote server.
-        $current_theme = get_option( 'current_theme' );
-        if ( ! 'Disciple Tools' == $current_theme ) {
-            $options = [
-            [
-            'key'   => 'remote',
-            'label' => __( 'Remote', 'dt_webform' ),
-            ],
-            ];
-        }
-
-        // Get current selection
-        $state = get_option( 'dt_webform_state' );
-        ?>
-        <form method="post" action="">
-            <?php wp_nonce_field( 'dt_webform_select_state', 'dt_webform_select_state_nonce', true, true ) ?>
-            <!-- Box -->
-            <table class="widefat striped">
-                <thead>
-                <th>Plugin State</th>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <label for="initialize_plugin_state">Configure the state of the plugin: </label><br>
-                        <select name="initialize_plugin_state" id="initialize_plugin_state">
-                            <option value="">Select</option>
-                            <option value="" disabled>---</option>
-                            <?php
-                            foreach ( $options as $option ) {
-                                echo '<option value="' . esc_attr( $option['key'] ) . '" ';
-                                if ( $option['key'] == $state ) {
-                                    echo 'selected';
-                                }
-                                echo '>' . esc_attr( $option['label'] ) . '</option>';
-                            }
-                            ?>
-                        </select>
-                        <span><button class="button-like-link" type="button" onclick="jQuery('#state-help').toggle();">explain settings</button></span>
-                    </td>
-                </tr>
-                <tr id="state-help" style="display: none;">
-                    <td>
-                        Three different configurations:
-                        <p>
-                            <strong>Home</strong><br>
-                            Home configuration sets up just the half of the plugin that integrates with Disciple Tools.
-                            Choosing this option assumes that you have a remote server running separatedly with the
-                            'remote' setting on the plugin configured.
-                        </p>
-                        <p>
-                            <strong>Remote</strong><br>
-                            The 'Remote' configuration sets up only the remote webform server. Choosing this option
-                            assumes that you have a Disciple Tools server running elsewhere with the Webform plugin
-                            installed and configured as 'home'. If Disciple Tools Theme is not installed, Remote will be
-                            the only installation option.
-                        </p>
-                        <p>
-                            <strong>Combined</strong><br>
-                            The 'Combined' configuration sets up the Webform plugin to run the webform server from the
-                            same system as the Disciple Tools System. Choosing this option assumes that you have a
-                            remote server running separatedly with the 'remote' setting on the plugin configured.
-                        </p>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button class="button" type="submit">Update</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <br>
-            <!-- End Box -->
-        </form>
-        <?php
-    }
 
     protected static function initialize_settings()
     {
@@ -417,7 +323,7 @@ class DT_Webform_Menu
     public function styles()
     {
         // This makes sure that the positioning is also good for right-to-left languages
-        $x = is_rtl() ? 'left' : 'right';
+//        $x = is_rtl() ? 'left' : 'right';
 
         echo "
 			<style>
@@ -505,7 +411,7 @@ class DT_Webform_Tab_General
         <!-- Box -->
         <table class="widefat striped">
             <thead>
-            <th>Header</th>
+            <tr><td>Header</td></tr>
             </thead>
             <tbody>
             <tr>
@@ -526,7 +432,7 @@ class DT_Webform_Tab_General
         <!-- Box -->
         <table class="widefat striped">
             <thead>
-            <th>Information</th>
+            <tr><td>Information</td></tr>
             </thead>
             <tbody>
             <tr>
@@ -554,12 +460,12 @@ class DT_Webform_Home_Tab_Settings
         // begin columns template
         DT_Webform_Page_Template::template( 'begin' );
 
+        DT_Webform_Admin::initialize_plugin_state_metabox();
         $this->main_column(); // main column content
 
         // begin right column template
         DT_Webform_Page_Template::template( 'right_column' );
 
-        DT_Webform_Menu::initialize_plugin_state_form_select();
 
         $this->right_column(); // right column content
 
@@ -570,42 +476,14 @@ class DT_Webform_Home_Tab_Settings
     public function main_column()
     {
         ?>
-        <!-- Box -->
-        <table class="widefat striped">
-            <thead>
-            <th>Header</th>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    Content
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br>
-        <!-- End Box -->
+
         <?php
     }
 
     public function right_column()
     {
         ?>
-        <!-- Box -->
-        <table class="widefat striped">
-            <thead>
-            <th>Information</th>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    Content
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br>
-        <!-- End Box -->
+
         <?php
     }
 
@@ -619,128 +497,19 @@ class DT_Webform_Remote_Tab_Settings
     public function content()
     {
 
-        $this->process_post();
-
         // begin columns template
         DT_Webform_Page_Template::template( 'begin' );
 
-        $this->main_column(); // main column content
+        DT_Webform_Remote::site_link_metabox();
+        DT_Webform_Admin::initialize_plugin_state_metabox();
 
         // begin right column template
         DT_Webform_Page_Template::template( 'right_column' );
 
-        DT_Webform_Menu::initialize_plugin_state_form_select();
-
-        $this->right_column(); // right column content
 
         // end columns template
         DT_Webform_Page_Template::template( 'end' );
     }
-
-    public function process_post()
-    {
-        /**
-         * Update API Link to Webform Home form
-         */
-        if ( isset( $_POST['remote_api_link_form'] ) && isset( $_POST['dt_webform_remote_api_link_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_POST['dt_webform_remote_api_link_nonce'] ) ), 'dt_webform_remote_api_link' ) ) {
-            $remote = get_option( 'dt_webform_remote_settings' );
-            if ( ! $remote ) {
-                DT_Webform_Menu::initialize_plugin_state_form_select();
-                $remote = get_option( 'dt_webform_remote_settings' );
-            }
-
-            $remote['api_link']['client_id'] = ( ! isset( $_POST['client_id'] ) || empty( $_POST['client_id'] ) ) ? '' : sanitize_text_field( wp_unslash( $_POST['client_id'] ) );
-            $remote['api_link']['client_token'] = ( ! isset( $_POST['client_token'] ) || empty( $_POST['client_token'] ) ) ? '' : sanitize_key( wp_unslash( $_POST['client_token'] ) );
-            $remote['api_link']['client_url'] = ( ! isset( $_POST['client_url'] ) || empty( $_POST['client_url'] ) ) ? '' : sanitize_text_field( wp_unslash( $_POST['client_url'] ) );
-
-            update_option( 'dt_webform_remote_settings', $remote, false );
-        }
-    }
-
-    public function main_column()
-    {
-        $remote = get_option( 'dt_webform_remote_settings' );
-        if ( ! $remote ) {
-            DT_Webform_Menu::initialize_plugin_state_form_select();
-            $remote = get_option( 'dt_webform_remote_settings' );
-        }
-        ?>
-        <!-- Box -->
-        <form method="post" action="">
-            <?php wp_nonce_field( 'dt_webform_remote_api_link', 'dt_webform_remote_api_link_nonce', true, true ) ?>
-            <table class="widefat striped">
-                <thead>
-                <tr>
-                    <td colspan="2">
-                        API Link to Webform Home
-                    </td>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td style="max-width:20px;">
-                        <label for="client_id">Client ID</label>
-                    </td>
-                    <td>
-                        <input type="text" name="client_id" id="client_id"
-                               value="<?php echo esc_attr( $remote['api_link']['client_id'] ) ?>"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="client_token">Client Token</label>
-                    </td>
-                    <td>
-                        <input type="text" name="client_token" id="client_token"
-                               value="<?php echo esc_attr( $remote['api_link']['client_token'] ) ?>"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="client_url">Client URL</label>
-                    </td>
-                    <td>
-                        <input type="text" name="client_url" id="client_url"
-                               value="<?php echo esc_attr( $remote['api_link']['client_url'] ) ?>"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button type="submit" class="button" name="remote_api_link_form" value="1">Update</button>
-                    </td>
-                    <td>
-
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </form>
-        <br>
-        <!-- End Box -->
-        <?php
-    }
-
-    public function right_column()
-    {
-        ?>
-        <!-- Box -->
-        <table class="widefat striped">
-            <thead>
-            <th>Information</th>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    Content
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br>
-        <!-- End Box -->
-        <?php
-    }
-
 }
 
 /**
@@ -749,6 +518,27 @@ class DT_Webform_Remote_Tab_Settings
  * This page generates the private API keys that link two sites together
  */
 class DT_Webform_Home_Tab_Site_Links
+{
+    public function content()
+    {
+        // begin columns template
+        DT_Webform_Page_Template::template( 'begin' );
+
+        DT_Webform_Home::site_api_link_metabox(); // main column content
+
+        // begin right column template
+        DT_Webform_Page_Template::template( 'right_column' );
+
+
+        // end columns template
+        DT_Webform_Page_Template::template( 'end' );
+    }
+}
+
+/**
+ * Class DT_Webform_Tab_General
+ */
+class DT_Webform_Remote_Tab_Forms
 {
     public function content()
     {
@@ -761,7 +551,6 @@ class DT_Webform_Home_Tab_Site_Links
         // begin right column template
         DT_Webform_Page_Template::template( 'right_column' );
 
-        $this->right_column(); // right column content
 
         // end columns template
         DT_Webform_Page_Template::template( 'end' );
@@ -769,7 +558,7 @@ class DT_Webform_Home_Tab_Site_Links
 
     public function main_column()
     {
-        $prefix = 'dt_webform_site';
+        $prefix = 'dt_webform_remote';
         $keys = DT_Webform_Api_Keys::update_keys( $prefix );
         ?>
         <h3><?php esc_html_e( 'API Keys', 'dt_webform' ) ?></h3>
@@ -790,16 +579,16 @@ class DT_Webform_Home_Tab_Site_Links
             </table>
             <h2><?php esc_html_e( 'Existing Keys', 'dt_webform' ) ?></h2>
 
-                <?php
-                if ( ! empty( $keys ) ) :
-                    foreach ( $keys as $id => $key ): ?>
-                <table class="widefat">
-                    <thead>
-                    <tr>
-                        <th colspan="2"><?php esc_html_e( 'Setup information for ', 'dt_webform' ) ?>"<?php echo esc_html( $key["id"] ); ?>"</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+            <?php
+            if ( ! empty( $keys ) ) :
+                foreach ( $keys as $id => $key ): ?>
+                    <table class="widefat">
+                        <thead>
+                        <tr>
+                            <th colspan="2"><?php esc_html_e( 'Setup information for ', 'dt_webform' ) ?>"<?php echo esc_html( $key["id"] ); ?>"</th>
+                        </tr>
+                        </thead>
+                        <tbody>
                         <tr>
                             <td><?php esc_html_e( 'ID', 'dt_webform' ) ?></td>
                             <td><?php echo esc_html( $key["id"] ); ?></td>
@@ -819,95 +608,24 @@ class DT_Webform_Home_Tab_Site_Links
                                 <p style="display:none;" id="delete-<?php echo esc_html( $key["id"] ); ?>">
                                     Are you sure you want to delete this record? This is a permanent action.<br>
                                     <button type="submit" class="button" name="delete"
-                                           value="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Permanently Delete', 'dt_webform' ) ?>
+                                            value="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Permanently Delete', 'dt_webform' ) ?>
                                     </button>
                                 </p>
                             </td>
                         </tr>
-                    </tbody>
-                    <br>
-                </table>
-                    <?php endforeach;  ?>
+                        </tbody>
+                        <br>
+                    </table>
+                <?php endforeach;  ?>
 
-                <?php else : ?>
-                    <p>No stored keys. To add a key use the token generator to create a key.</p>
+            <?php else : ?>
+                <p>No stored keys. To add a key use the token generator to create a key.</p>
 
-                <?php endif; ?>
+            <?php endif; ?>
 
         </form>
         <?php
     }
 
-    public function right_column()
-    {
-        ?>
-        <?php
-    }
-
-}
-
-/**
- * Class DT_Webform_Tab_General
- */
-class DT_Webform_Remote_Tab_Forms
-{
-    public function content()
-    {
-
-        // begin columns template
-        DT_Webform_Page_Template::template( 'begin' );
-
-        $this->main_column(); // main column content
-
-        // begin right column template
-        DT_Webform_Page_Template::template( 'right_column' );
-
-        $this->right_column(); // right column content
-
-        // end columns template
-        DT_Webform_Page_Template::template( 'end' );
-    }
-
-    public function main_column()
-    {
-        ?>
-        <!-- Box -->
-        <table class="widefat striped">
-            <thead>
-            <th>Header</th>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    Content
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br>
-        <!-- End Box -->
-        <?php
-    }
-
-    public function right_column()
-    {
-        ?>
-        <!-- Box -->
-        <table class="widefat striped">
-            <thead>
-            <th>Information</th>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    Content
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br>
-        <!-- End Box -->
-        <?php
-    }
 
 }

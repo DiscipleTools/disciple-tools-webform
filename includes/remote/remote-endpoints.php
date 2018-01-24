@@ -74,6 +74,14 @@ class DT_Webform_Remote_Endpoints
             ],
             ]
         );
+        register_rest_route(
+            $namespace, '/site_link_check', [
+                [
+                    'methods'  => WP_REST_Server::READABLE,
+                    'callback' => [ $this, 'site_link_check' ],
+                ],
+            ]
+        );
     }
 
     /**
@@ -99,4 +107,46 @@ class DT_Webform_Remote_Endpoints
             return new WP_Error( "notification_param_error", "Please provide a valid array", [ 'status' => 400 ] );
         }
     }
+
+    /**
+     * Get tract from submitted address
+     *
+     * @param  WP_REST_Request $request
+     *
+     * @access public
+     * @since  0.1.0
+     * @return string|WP_Error|array The contact on success
+     */
+    public function site_link_check( WP_REST_Request $request )
+    {
+        $prefix = 'dt_webform_site';
+        $params = $request->get_params();
+
+        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
+            return DT_Webform_Api_Keys::check_api_key( $params['id'], $params['token'], $prefix );
+        } else {
+            return new WP_Error( "notification_param_error", "Please provide a valid array", [ 'status' => 400 ] );
+        }
+    }
+
+    /**
+     * Check to see if an api key and token exist
+     *
+     * @param $id
+     * @param $token
+     * @param $prefix
+     *
+     * @return bool
+     */
+    public static function check_if_remote_is_linked( $id, $token, $prefix = '' )
+    {
+        if ( empty( $prefix ) ) {
+            $prefix = DT_Webform::$token;
+        }
+
+        $keys = get_option( $prefix . '_api_keys', [] );
+
+        return isset( $keys[ $id ] ) && $keys[ $id ]['token'] == $token;
+    }
 }
+DT_Webform_Remote_Endpoints::instance();

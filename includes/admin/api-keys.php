@@ -72,12 +72,13 @@ class DT_Webform_Api_Keys
     /**
      * Check to see if an api key and token exist
      *
-     * @param $client_id
-     * @param $client_token
+     * @param $id
+     * @param $token
+     * @param $prefix
      *
      * @return bool
      */
-    public static function check_api_key( $prefix, $id, $token )
+    public static function check_api_key( $id, $token, $prefix = '' )
     {
         if ( empty( $prefix ) ) {
             $prefix = DT_Webform::$token;
@@ -87,6 +88,8 @@ class DT_Webform_Api_Keys
 
         return isset( $keys[ $id ] ) && $keys[ $id ]['token'] == $token;
     }
+
+
 
     /**
      * Display an admin notice on the page

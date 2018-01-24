@@ -58,7 +58,7 @@ class DT_Webform {
      * @access public
      * @return object
      */
-    public $token;
+    public static $token = 'dt_webform';
     public $version;
     public $dir_path = '';
     public $dir_uri = '';
@@ -193,7 +193,6 @@ class DT_Webform {
         $this->img_uri      = trailingslashit( $this->dir_uri . 'img' );
 
         // Admin and settings variables
-        $this->token             = 'dt_webform';
         $this->version             = '0.1';
     }
 

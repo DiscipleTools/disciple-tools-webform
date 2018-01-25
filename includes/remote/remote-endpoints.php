@@ -74,6 +74,14 @@ class DT_Webform_Remote_Endpoints
                 ],
             ]
         );
+        register_rest_route(
+            $namespace, '/webform/form_submit', [
+                [
+                    'methods'  => WP_REST_Server::CREATABLE,
+                    'callback' => [ $this, 'form_submit' ],
+                ],
+            ]
+        );
     }
 
 
@@ -98,6 +106,20 @@ class DT_Webform_Remote_Endpoints
         } else {
             return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
         }
+    }
+
+    public function form_submit( WP_REST_Request $request )
+    {
+        $params = $request->get_params();
+        return $params;
+
+//        $prefix = 'dt_webform_site';
+//
+//        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
+//            return DT_Webform_Api_Keys::check_api_key( $params['id'], $params['token'], $prefix );
+//        } else {
+//            return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
+//        }
     }
 
 

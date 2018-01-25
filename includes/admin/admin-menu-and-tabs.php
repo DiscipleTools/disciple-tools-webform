@@ -295,8 +295,6 @@ class DT_Webform_Menu
         <?php
     }
 
-
-
     protected static function initialize_settings()
     {
         $home = get_option( 'dt_webform_home_settings' );
@@ -308,13 +306,7 @@ class DT_Webform_Menu
         }
         $remote = get_option( 'dt_webform_remote_settings' );
         if ( ! $remote ) {
-            $default = [
-                'api_link' => [
-                    'client_id'    => '',
-                    'client_token' => '',
-                    'client_url'   => '',
-                ],
-            ];
+            $default = [];
             update_option( 'dt_webform_remote_settings', $default, false );
         }
     }

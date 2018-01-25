@@ -15,34 +15,46 @@
  */
 class DT_Webform_Public_Webform
 {
-    /**
-     * DT_Webform_Public_Webform The single instance of DT_Webform_Public_Webform.
-     *
-     * @var    object
-     * @access private
-     * @since  0.1.0
-     */
-    private static $_instance = null;
+    public static function form_template() {
+        ?>
+        <html>
+        <head>
 
-    /**
-     * Main DT_Webform_Public_Webform Instance
-     * Ensures only one instance of DT_Webform_Public_Webform is loaded or can be loaded.
-     *
-     * @since  0.1.0
-     * @static
-     * @return DT_Webform_Public_Webform instance
-     */
-    public static function instance()
-    {
-        if ( is_null( self::$_instance ) ) {
-            self::$_instance = new self();
-        }
+        </head>
+        <body>
+            Sampel Form
+            <form method="post">
+                <table>
+                    <tr>
+                        <td><label for="first_name">First Name</label></td>
+                        <td><input type="text" name="first_name" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="last_name">Last Name</label></td>
+                        <td><input type="text" name="last_name" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="email">Email</label></td>
+                        <td><input type="text" name="first_name" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="phone">Phone</label></td>
+                        <td><input type="text" name="phone" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="preference">Preference</label></td>
+                        <td><input type="text" name="preference" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="notes">Notes</label></td>
+                        <td><input type="text" name="notes" value="" /></td>
+                    </tr>
+                </table>
+            </form>
 
-        return self::$_instance;
-    } // End instance()
-
-    public function __construct()
-    {
+        </body>
+        </html>
+        <?php
     }
 
 }

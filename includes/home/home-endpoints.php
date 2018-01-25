@@ -64,20 +64,21 @@ class DT_Webform_Home_Endpoints
     public function add_api_routes()
     {
         $version = '1';
-        $namespace = 'dt-webform/v' . $version;
+        $namespace = 'dt-public/v' . $version;
 
         register_rest_route(
-            $namespace, '/trigger_check/(?P<notification_id>\d+)', [
-            [
-            'methods'  => WP_REST_Server::CREATABLE,
-            'callback' => [ $this, 'trigger_check' ],
-            ],
+            $namespace, '/webform/site_link_check', [
+                [
+                    'methods'  => WP_REST_Server::CREATABLE,
+                    'callback' => [ $this, 'site_link_check' ],
+                ],
             ]
         );
     }
 
     /**
-     * Get tract from submitted address
+     * Verify is site is linked
+     * @todo identical function hosted in remote-endpoints.php. Reevaluate if this is the DRYest option.
      *
      * @param  WP_REST_Request $request
      *
@@ -85,18 +86,17 @@ class DT_Webform_Home_Endpoints
      * @since  0.1.0
      * @return string|WP_Error|array The contact on success
      */
-    public function trigger_check( WP_REST_Request $request )
+    public function site_link_check( WP_REST_Request $request )
     {
         $params = $request->get_params();
-        if ( isset( $params['notification_id'] ) ) {
-            $result = Disciple_Tools_Notifications::mark_viewed( $params['notification_id'] );
-            if ( $result["status"] ) {
-                return $result['rows_affected'];
-            } else {
-                return new WP_Error( "mark_viewed_processing_error", $result["message"], [ 'status' => 400 ] );
-            }
+
+        $prefix = 'dt_webform_site';
+
+        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
+            return DT_Webform_Api_Keys::check_api_key( $params['id'], $params['token'], $prefix );
         } else {
-            return new WP_Error( "notification_param_error", "Please provide a valid array", [ 'status' => 400 ] );
+            return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
         }
     }
 }
+DT_Webform_Home_Endpoints::instance();

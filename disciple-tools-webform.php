@@ -60,10 +60,17 @@ class DT_Webform {
      */
     public static $token = 'dt_webform';
     public $version;
-    public $dir_path = '';
-    public $dir_uri = '';
-    public $img_uri = '';
+    public $dir_path;
+    public $dir_uri;
+    public $assets_uri;
+    public $img_uri;
+    public $js_uri;
+    public $css_uri;
     public $includes_path;
+    public $admin_path;
+    public $home_path;
+    public $remote_path;
+    public $assets_path;
 
     /**
      * Returns the instance.
@@ -152,8 +159,8 @@ class DT_Webform {
     private function remote() {
 
         require_once( 'includes/remote/remote-endpoints.php' );
-        require_once( 'includes/remote/active-forms-post-type.php' );
         require_once( 'includes/remote/remote.php' );
+        require_once( 'includes/remote/active-forms-post-type.php' );
 
         if ( is_admin() ) {
 
@@ -169,13 +176,14 @@ class DT_Webform {
      */
     private function includes() {
 
-        require_once( 'includes/admin/api-keys.php' );
+        require_once( 'includes/admin/api-keys.php' ); // api key service
         require_once( 'includes/admin/admin.php' );
+        require_once( 'assets/enqueue-scripts.php' ); // enqueue scripts and styles
 
 
         if ( is_admin() ) {
             // Admin and tabs menu
-            require_once( 'includes/admin/admin-menu-and-tabs.php' );
+            require_once( 'includes/admin/admin-menu-and-tabs.php' ); // main wp-admin menu and ui
         }
     }
 
@@ -194,12 +202,19 @@ class DT_Webform {
 
         // Plugin directory paths.
         $this->includes_path      = trailingslashit( $this->dir_path . 'includes' );
+        $this->admin_path         = trailingslashit( $this->includes_path . 'admin' );
+        $this->home_path          = trailingslashit( $this->includes_path . 'home' );
+        $this->remote_path        = trailingslashit( $this->includes_path . 'remote' );
+        $this->assets_path        = trailingslashit( $this->dir_path . 'assets' );
 
         // Plugin directory URIs.
-        $this->img_uri      = trailingslashit( $this->dir_uri . 'img' );
+        $this->assets_uri   = trailingslashit( $this->dir_uri . 'assets' );
+        $this->img_uri      = trailingslashit( $this->assets_uri . 'img' );
+        $this->js_uri       = trailingslashit( $this->dir_uri . 'js' );
+        $this->css_uri      = trailingslashit( $this->dir_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '0.1';
+        $this->version             = '0.1.0';
     }
 
     /**

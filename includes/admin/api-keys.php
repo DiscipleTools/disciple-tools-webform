@@ -30,40 +30,89 @@ class DT_Webform_Api_Keys
      * Create, Update, and Delete api keys
      *
      * @param $prefix string
-     * @return mixed
+     * @return mixed|\WP_Error
      */
     public static function update_keys( $prefix = '' ) {
         if ( empty( $prefix ) ) {
             $prefix = DT_Webform::$token;
         }
-
         $keys = get_option( $prefix . '_api_keys', [] );
 
         if ( isset( $_POST[ $prefix . '_nonce' ] ) && wp_verify_nonce( sanitize_key( $_POST[ $prefix . '_nonce' ] ), $prefix . '_action' ) ) {
 
-            if ( isset( $_POST[ $prefix .'_id' ] ) && !empty( $_POST[ $prefix .'_id' ] ) ) {
+            if ( ! isset( $_POST['action'] ) ) {
+                self::admin_notice( 'No action field defined in form submission.', 'error' );
+                return $keys;
+            }
+            $action = sanitize_text_field( wp_unslash( $_POST['action'] ) );
 
-                $client_id = wordwrap( strtolower( sanitize_text_field( wp_unslash( $_POST[ $prefix .'_id' ] ) ) ), 1, '-', 0 );
-                $token = bin2hex( random_bytes( 32 ) );
-                $url = home_url();
+            switch ( $action ) {
 
-                if ( !isset( $keys[ $client_id ] ) ) {
-                    $keys[ $client_id ] = [
-                        'id'    => $client_id,
+                case 'create':
+                    if ( ! isset( $_POST['id'] ) || empty( $_POST['id'] ) || ! isset( $_POST['url'] ) || empty( $_POST['url'] ) ) {
+                        self::admin_notice( 'ID or URL fields required', 'error' );
+                        return $keys;
+                    }
+
+                    $id = wordwrap( strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ), 1, '-', 0 );
+                    $token = bin2hex( random_bytes( 32 ) );
+                    $url = sanitize_text_field( wp_unslash( $_POST['url'] ) );
+
+                    if ( ! isset( $keys[ $id ] ) ) {
+                        $keys[ $id ] = [
+                            'id'    => $id,
+                            'token' => $token,
+                            'url'   => $url,
+                        ];
+
+                        update_option( $prefix . '_api_keys', $keys, false );
+
+                        return $keys;
+                    } else {
+                        self::admin_notice( 'ID already exists.', 'error' );
+                        return $keys;
+                    }
+                    break;
+
+                case 'update':
+
+                    if ( ! isset( $_POST['id'] )
+                        || empty( $_POST['id'] )
+                        || ! isset( $_POST['token'] )
+                        || empty( $_POST['token'] )
+                        || ! isset( $_POST['url'] )
+                        || empty( $_POST['url'] )
+                    ){
+                        self::admin_notice( 'Missing id, token, or url fields.', 'error' );
+                        return $keys;
+                    }
+
+                    $id     = sanitize_text_field( wp_unslash( $_POST['id'] ) );
+                    $token  = sanitize_key( wp_unslash( $_POST['token'] ) );
+                    $url    = sanitize_text_field( wp_unslash( $_POST['url'] ) );
+
+                    $keys[ $id ] = [
+                        'id'    => $id,
                         'token' => $token,
                         'url'   => $url,
                     ];
-                    update_option( $prefix . '_api_keys', $keys, false );
-                } else {
-                    self::admin_notice( 'ID already exists', 'error' );
-                }
-            } elseif ( isset( $_POST['delete'] ) ) {
-                if ( $keys[ sanitize_text_field( wp_unslash( $_POST['delete'] ) ) ] ) {
 
-                    unset( $keys[ sanitize_text_field( wp_unslash( $_POST['delete'] ) ) ] );
                     update_option( $prefix . '_api_keys', $keys, false );
 
-                }
+                    return $keys;
+                    break;
+
+                case 'delete':
+                    if ( ! isset( $_POST['id'] ) ) {
+                        self::admin_notice( 'Delete: Key not found.', 'error' );
+                        return $keys;
+                    }
+                    unset( $keys[ $_POST['id'] ] );
+
+                    update_option( $prefix . '_api_keys', $keys, false );
+
+                    return $keys;
+                    break;
             }
         }
         return $keys;
@@ -89,8 +138,6 @@ class DT_Webform_Api_Keys
         return isset( $keys[ $id ] ) && $keys[ $id ]['token'] == $token;
     }
 
-
-
     /**
      * Display an admin notice on the page
      *
@@ -106,4 +153,5 @@ class DT_Webform_Api_Keys
         echo esc_html( $notice );
         echo '</p></div>';
     }
+
 }

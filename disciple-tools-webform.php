@@ -71,6 +71,7 @@ class DT_Webform {
     public $home_path;
     public $remote_path;
     public $assets_path;
+    public $public_uri;
 
     /**
      * Returns the instance.
@@ -209,9 +210,10 @@ class DT_Webform {
 
         // Plugin directory URIs.
         $this->assets_uri   = trailingslashit( $this->dir_uri . 'assets' );
+        $this->public_uri   = trailingslashit( $this->dir_uri . 'public' );
         $this->img_uri      = trailingslashit( $this->assets_uri . 'img' );
-        $this->js_uri       = trailingslashit( $this->dir_uri . 'js' );
-        $this->css_uri      = trailingslashit( $this->dir_uri . 'css' );
+        $this->js_uri       = trailingslashit( $this->assets_uri . 'js' );
+        $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
         $this->version             = '0.1.0';

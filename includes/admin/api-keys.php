@@ -55,7 +55,7 @@ class DT_Webform_Api_Keys
                     }
 
                     $id = wordwrap( strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ), 1, '-', 0 );
-                    $token = bin2hex( random_bytes( 32 ) );
+                    $token = self::generate_token( 32 );
                     $url = sanitize_text_field( wp_unslash( $_POST['url'] ) );
 
                     if ( ! isset( $keys[ $id ] ) ) {
@@ -116,6 +116,10 @@ class DT_Webform_Api_Keys
             }
         }
         return $keys;
+    }
+
+    public static function generate_token( $length = 32 ) {
+        return bin2hex( random_bytes( $length ) );
     }
 
     /**

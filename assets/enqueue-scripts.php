@@ -8,7 +8,7 @@ function dt_admin_webform_scripts()
     global $pagenow;
 
     if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) {
-        dt_write_log( 'made it' );
+
         wp_enqueue_script( 'dt_webform_admin_script', dt_webform()->assets_uri . 'js/admin.js', [
             'jquery',
             'jquery-ui-core',

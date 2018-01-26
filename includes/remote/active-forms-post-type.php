@@ -53,7 +53,6 @@ class DT_Webform_Active_Form_Post_Type
             add_action( 'admin_head', [ $this, 'scripts' ], 20 );
 
             if ( $pagenow == 'edit.php' && isset( $_GET['post_type'] ) && esc_attr( sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) == $this->post_type ) {
-                add_action( 'admin_head', array( $this, 'scripts' ) );
             }
         }
     }
@@ -94,7 +93,7 @@ class DT_Webform_Active_Form_Post_Type
         'label'                 => __( 'Form', 'dt_webform' ),
         'description'           => __( 'DT Webform Forms', 'dt_webform' ),
         'labels'                => $labels,
-        'supports'              => array( 'title', 'custom-fields' ),
+        'supports'              => array( 'title' ),
         'hierarchical'          => false,
         'public'                => false,
         'show_ui'               => true,
@@ -122,7 +121,10 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function meta_box_setup()
     {
-        add_meta_box( $this->post_type . '_fields', __( 'Group Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'high' );
+
     }
 
     /**
@@ -132,6 +134,51 @@ class DT_Webform_Active_Form_Post_Type
     {
         $this->meta_box_content( 'info' ); // prints
     }
+    /**
+     * Load type metabox
+     */
+    public function load_embed_meta_box()
+    {
+        global $pagenow, $post;
+
+
+        if ( 'post-new.php' == $pagenow ) {
+            echo 'Embed code will display after you save the new form';
+            return;
+        }
+        $width = get_metadata( 'post', $post->ID, 'width', true );
+        $height = get_metadata( 'post', $post->ID, 'height', true );
+
+        print '<label for="embed-code">Copy and Paste this embed code</label><br>';
+        print '<textarea cols="60" rows="5">';
+        $code = '
+<iframe src="'. dt_webform()->public_uri .'form.html?token='. get_metadata( 'post', $post->ID, 'token', true ).'"
+width="'. esc_attr( $width ) . 'px"
+height="'. esc_attr( $height ) . 'px"></iframe>';
+        print esc_attr( $code );
+        print '</textarea>';
+
+
+    }
+
+    /**
+     * Load type metabox
+     */
+    public function load_demo_meta_box()
+    {
+        global $pagenow, $post;
+        if ( 'post-new.php' == $pagenow ) {
+            echo 'Demo will display after you save the new form';
+            return;
+        }
+        get_metadata( 'post', $post->ID, 'token', true );
+        ?>
+        <iframe src="<?php echo esc_attr( dt_webform()->public_uri ) ?>form.html?token=<?php echo esc_attr( get_metadata( 'post', $post->ID, 'token', true ) ) ?>"
+                width="<?php echo esc_attr( get_metadata( 'post', $post->ID, 'width', true ) ) . 'px' ?>"
+                height="<?php echo esc_attr( get_metadata( 'post', $post->ID, 'height', true ) ) . 'px'  ?>"></iframe>
+        <?php
+    }
+
 
     /**
      * The contents of our meta box.
@@ -169,8 +216,20 @@ class DT_Webform_Active_Form_Post_Type
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
                             break;
+                        case 'textarea':
+                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td><textarea name="' . esc_attr( $k ) . '" type="text" id="' . esc_attr( $k ) . '" class="regular-text" />' . esc_attr( $data ) . '</textarea>' . "\n";
+                            echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
+                            echo '</td><tr/>' . "\n";
+                            break;
+                        case 'display_only':
+                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td>' . esc_attr( $data )  . "\n";
+                            echo '<input name="' . esc_attr( $k ) . '" type="hidden" id="' . esc_attr( $k ) . '" class="regular-text" value="' . esc_attr( $data ) . '" />';
+                            echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
+                            echo '</td><tr/>' . "\n";
+                            break;
                         case 'date':
-                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td><input name="' . esc_attr( $k ) . '" class="datepicker regular-text" type="text" id="' . esc_attr( $k ) . '"  value="' . esc_attr( $data ) . '" />' . "\n";
+                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td>
+                                    <input name="' . esc_attr( $k ) . '" class="datepicker regular-text" type="text" id="' . esc_attr( $k ) . '"  value="' . esc_attr( $data ) . '" />' . "\n";
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
 
@@ -193,26 +252,6 @@ class DT_Webform_Active_Form_Post_Type
                             echo '</td><tr/>' . "\n";
                             break;
 
-                        case 'radio':
-                            echo '<tr valign="top"><th scope="row">' . esc_attr( $v['name'] ) . '</th>
-                                <td><fieldset>';
-                            // Iterate the buttons
-                            $increment_the_radio_button = 1;
-                            foreach ( $v['default'] as $vv ) {
-                                echo '<label for="' . esc_attr( "$k-$increment_the_radio_button" ) . '">' . esc_attr( $vv ) . '</label>
-                                    <input class="drm-radio" type="radio" name="' . esc_attr( $k ) . '" id="' . esc_attr( $k . '-' . $increment_the_radio_button ) . '" value="' . esc_attr( $vv ) . '" ';
-                                if ( $vv == $data ) {
-                                    echo 'checked';
-                                }
-                                echo '>';
-                                $increment_the_radio_button++;
-                            }
-                            echo '</fieldset>' . "\n";
-                            echo '<p class="description">' . esc_attr( $v['description'] ) . '</p>' . "\n";
-                            echo '</td><tr/>' . "\n";
-                            break;
-
-
                         default:
                             break;
                     }
@@ -234,8 +273,6 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function meta_box_save( int $post_id )
     {
-        //        global $post, $messages;
-
         // Verify
         if ( get_post_type() != $this->post_type ) {
             return $post_id;
@@ -263,20 +300,6 @@ class DT_Webform_Active_Form_Post_Type
 
         $field_data = $this->get_custom_fields_settings();
         $fields = array_keys( $field_data );
-
-        if ( ( isset( $_POST['new-key-address'] ) && !empty( $_POST['new-key-address'] ) ) && ( isset( $_POST['new-value-address'] ) && !empty( $_POST['new-value-address'] ) ) ) { // catch and prepare new contact fields
-            $k = explode( "_", sanitize_text_field( wp_unslash( $_POST['new-key-address'] ) ) );
-            $type = $k[1];
-            $number_key = dt_address_metabox()->create_channel_metakey( "address" );
-            $details_key = $number_key . "_details";
-            $details = [
-            'type' => $type,
-            'verified' => false
-            ];
-            //save the field and the field details
-            add_post_meta( $post_id, strtolower( $number_key ), sanitize_text_field( wp_unslash( $_POST['new-value-address'] ) ), true );
-            add_post_meta( $post_id, strtolower( $details_key ), $details, true );
-        }
 
         foreach ( $fields as $f ) {
 
@@ -309,22 +332,53 @@ class DT_Webform_Active_Form_Post_Type
 
         $fields = [];
 
-        $fields['group_status'] = [
-            'name'        => __( 'Group Status', 'disciple_tools' ),
+        $fields['description'] = [
+        'name'        => __( 'Description', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'textarea',
+        'default'     => '',
+        'section'     => 'info',
+        ];
+
+        $fields['width'] = [
+        'name'        => __( 'Width', 'dt_webform' ),
+        'description' => 'pixels',
+        'type'        => 'text',
+        'default'     => '300',
+        'section'     => 'info',
+        ];
+        $fields['height'] = [
+        'name'        => __( 'Height', 'dt_webform' ),
+        'description' => 'pixels',
+        'type'        => 'text',
+        'default'     => '300',
+        'section'     => 'info',
+        ];
+        $fields['theme'] = [
+            'name'        => __( 'Theme', 'dt_webform' ),
             'description' => '',
             'type'        => 'key_select',
             'default'     => [
-            'inactive' => __( 'Inactive', 'disciple_tools' ),
-            'active'   => __( 'Active', 'disciple_tools' ),
+                'simple' => __( 'Simple', 'dt_webform' ),
+                'heavy'   => __( 'Heavy', 'dt_webform' ),
             ],
             'section'     => 'info',
         ];
+        $fields['token'] = [
+        'name'        => __( 'Token', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'display_only',
+        'default'     => DT_Webform_Api_Keys::generate_token( 16 ),
+        'section'     => 'info',
+        ];
+
 
 
         return apply_filters( 'dt_custom_fields_settings', $fields );
     } // End get_custom_fields_settings()
 
     public function scripts() {
+        global $pagenow;
         if ( get_current_screen()->post_type == $this->post_type ) {
             echo '<script type="text/javascript">
                     jQuery(document).ready( function($) {
@@ -333,11 +387,15 @@ class DT_Webform_Active_Form_Post_Type
                         $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">Return to List</a>\');
                     
                     });
-                
+                </script>';
+        }
+        // Catches post delete redirect to standard custom post type list, and redirects to the form list in the plugin.
+        if ( $pagenow == 'edit.php' && isset( $_GET['post_type'] ) && esc_attr( sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) == $this->post_type ) {
+            echo '<script type="text/javascript">
+                    window.location.href = "'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms";
                 </script>';
         }
     }
-
 
 
 

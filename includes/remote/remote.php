@@ -98,6 +98,9 @@ if ( !class_exists( 'WP_List_Table' )){
 }
 class DT_Webform_Forms_List extends WP_List_Table {
 
+    /**
+     * Call this public function to embed the list on a page: DT_Webform_Forms_List::forms_list_box
+     */
     public static function forms_list_box() {
         $list_table = new DT_Webform_Forms_List();
         $list_table->prepare_items();
@@ -105,8 +108,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
         ?>
         <div class="wrap">
 
-            <a href="<?php echo esc_html( admin_url() ) ?>post-new.php?post_type=dt_webform_forms" class="page-title-action">Add New</a>
-            <hr class="wp-header-end"><br>
+            <a href="<?php echo esc_html( admin_url() ) ?>post-new.php?post_type=dt_webform_forms" class="page-title-action">Add New Form</a>
 
             <!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
             <form id="movies-filter" method="get">
@@ -132,34 +134,35 @@ class DT_Webform_Forms_List extends WP_List_Table {
 
     public function column_default( $item, $column_name){
         switch ($column_name){
-            case 'title':
-            case 'director1':
+            case 'name':
+                //Build row actions
+                $actions = array(
+                'edit'      => sprintf( '<a href="%spost.php?post=%s&action=%s">Edit</a>', admin_url(), $item->ID, 'edit' ),
+                'embed'    => sprintf( '<a href="#" onclick="jQuery(\'#embed-%s\').toggle();">Show Embed Form</a><span id="embed-%s" style="display:none;"><br>%s</span>', $item->ID, $item->ID, 'embed code' ),
+                );
+
+                //Return the title contents
+                return sprintf('<strong><a href="%spost.php?post=%s&action=%s">%s</a></strong> %s',
+                    admin_url(),
+                    $item->ID,
+                    'edit',
+                    $item->post_title,
+                    $this->row_actions( $actions )
+                );
+            case 'description':
+                return get_metadata( 'post', $item->ID, 'description', true );
+            case 'if_coloumn_name_is_field_name':
                 return $item->{$column_name};
             default:
                 return print_r( $item, true ); //Show the whole array for troubleshooting purposes
         }
     }
 
-    public function column_title( $item){
-
-        //Build row actions
-        $actions = array(
-        'edit'      => sprintf( '<a href="%spost.php?post=%s&action=%s">Edit</a>', admin_url(), $item->ID, 'edit' ),
-        'embed'    => sprintf( '<a href="#" onclick="jQuery(\'#embed-%s\').toggle();">Show Embed Form</a><span id="embed-%s" style="display:none;"><br>%s</span>', $item->ID, $item->ID, 'embed code' ),
-        );
-
-        //Return the title contents
-        return sprintf('%1$s <span style="color:silver">(id:%2$s)</span>%3$s',
-            /*$1%s*/ $item->post_title,
-            /*$2%s*/ $item->ID,
-            /*$3%s*/ $this->row_actions( $actions )
-        );
-    }
 
     public function column_cb( $item){
         return sprintf(
             '<input type="checkbox" name="%1$s[]" value="%2$s" />',
-            /*$1%s*/ $this->_args['singular'],  //Let's simply repurpose the table's singular label ("movie")
+            /*$1%s*/ $this->_args['singular'],  //Let's simply repurpose the table's singular label
             /*$2%s*/ $item->ID                //The value of the checkbox should be the record's id
         );
     }
@@ -167,21 +170,22 @@ class DT_Webform_Forms_List extends WP_List_Table {
     public function get_columns(){
         $columns = array(
         'cb'        => '<input type="checkbox" />', //Render a checkbox instead of text
-        'title'     => 'Title',
+        'name'     => 'Name',
+        'description' => 'Description',
         );
         return $columns;
     }
 
     public function get_sortable_columns() {
         $sortable_columns = array(
-        'title'     => array( 'title',false ),     //true means it's already sorted
+        'name'     => array( 'name',false ),     //true means it's already sorted
         );
         return $sortable_columns;
     }
 
     public function get_bulk_actions() {
         $actions = array(
-        'delete'    => 'Delete'
+//        'delete'    => 'Delete'
         );
         return $actions;
     }
@@ -199,7 +203,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
 
         global $wpdb;
 
-        $per_page = 5;
+        $per_page = 10;
         $order = ( !empty( $_REQUEST['order'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'asc'; //If no order, default to asc
         $paged = ( !empty( $_REQUEST['paged'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['paged'] ) ) : '1'; //If no order, default to asc
 

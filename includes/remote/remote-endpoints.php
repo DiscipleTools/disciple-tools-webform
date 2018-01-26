@@ -108,6 +108,11 @@ class DT_Webform_Remote_Endpoints
         }
     }
 
+    /**
+     * @param \WP_REST_Request $request
+     *
+     * @return array
+     */
     public function form_submit( WP_REST_Request $request )
     {
         $params = $request->get_params();

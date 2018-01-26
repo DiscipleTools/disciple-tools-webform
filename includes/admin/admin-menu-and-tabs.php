@@ -192,7 +192,7 @@ class DT_Webform_Menu
         if ( isset( $_GET["tab"] ) ) {
             $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
         } else {
-            $active_tab = 'general';
+            $active_tab = 'remote_forms';
         }
 
         $title = __( 'DISCIPLE TOOLS - WEBFORM (REMOTE)' );
@@ -200,10 +200,6 @@ class DT_Webform_Menu
         $link = 'admin.php?page=' . $this->token . '&tab=';
 
         $tab_bar = [
-            [
-                'key' => 'general',
-                'label' => __( 'General', 'dt_webform' ),
-            ],
             [
                 'key' => 'remote_forms',
                 'label' => __( 'Forms', 'dt_webform' ),
@@ -322,33 +318,62 @@ class DT_Webform_Page_Template
     /**
      * @param $section
      */
-    public static function template( $section )
+    public static function template( $section, $columns = 2 )
     {
-        switch ( $section ) {
-            case 'begin':
-                ?>
-                <div class="wrap">
-                <div id="poststuff">
-                <div id="post-body" class="metabox-holder columns-2">
-                <div id="post-body-content">
-                <!-- Main Column -->
-                <?php
+        switch ( $columns ) {
+
+            case '1':
+                switch ( $section ) {
+                    case 'begin':
+                        ?>
+                        <div class="wrap">
+                        <div id="poststuff">
+                        <div id="post-body" class="metabox-holder columns-1">
+                        <div id="post-body-content">
+                        <!-- Main Column -->
+                        <?php
+                        break;
+
+
+                    case 'end':
+                        ?>
+                        </div><!-- postbox-container 1 -->
+                        </div><!-- post-body meta box container -->
+                        </div><!--poststuff end -->
+                        </div><!-- wrap end -->
+                        <?php
+                        break;
+                }
                 break;
-            case 'right_column':
-                ?>
-                <!-- End Main Column -->
-                </div><!-- end post-body-content -->
-                <div id="postbox-container-1" class="postbox-container">
-                <!-- Right Column -->
-                <?php
-            break;
-            case 'end':
-                ?>
-                </div><!-- postbox-container 1 -->
-                </div><!-- post-body meta box container -->
-                </div><!--poststuff end -->
-                </div><!-- wrap end -->
-                <?php
+
+            case '2':
+                switch ( $section ) {
+                    case 'begin':
+                        ?>
+                        <div class="wrap">
+                        <div id="poststuff">
+                        <div id="post-body" class="metabox-holder columns-2">
+                        <div id="post-body-content">
+                        <!-- Main Column -->
+                        <?php
+                        break;
+                    case 'right_column':
+                        ?>
+                        <!-- End Main Column -->
+                        </div><!-- end post-body-content -->
+                        <div id="postbox-container-1" class="postbox-container">
+                        <!-- Right Column -->
+                        <?php
+                    break;
+                    case 'end':
+                        ?>
+                        </div><!-- postbox-container 1 -->
+                        </div><!-- post-body meta box container -->
+                        </div><!--poststuff end -->
+                        </div><!-- wrap end -->
+                        <?php
+                        break;
+                }
                 break;
         }
     }
@@ -498,16 +523,12 @@ class DT_Webform_Remote_Tab_Forms
     {
 
         // begin columns template
-        DT_Webform_Page_Template::template( 'begin' );
+        DT_Webform_Page_Template::template( 'begin', 1 );
 
-        DT_Webform_Remote::forms_metabox();
-
-        // begin right column template
-        DT_Webform_Page_Template::template( 'right_column' );
-
+        DT_Webform_Forms_List::forms_list_box();
 
         // end columns template
-        DT_Webform_Page_Template::template( 'end' );
+        DT_Webform_Page_Template::template( 'end', 1 );
     }
 
 }

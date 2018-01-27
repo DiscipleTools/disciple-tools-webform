@@ -16,13 +16,12 @@ let getUrlParameter = function getUrlParameter(sParam) {
 
 function submit_form() {
     let url = 'http://remote'
-    let data = {
-        "token": jQuery('#token').val(),
-        "first_name": jQuery('#first_name').val(),
-        "last_name": jQuery('#last_name').val(),
-        "email": jQuery('#email').val(),
-        "phone": jQuery('#phone').val()
-    }
+    let $inputs = jQuery(':input');
+    let data = {};
+    $inputs.each(function() {
+        data[this.name] = jQuery(this).val();
+    });
+
     return jQuery.ajax({
         type: "POST",
         data: JSON.stringify(data),
@@ -32,12 +31,12 @@ function submit_form() {
     })
         .done(function (data) {
             jQuery.each(data, function(n, i) {
-                jQuery('#report').append(n + ': ' + i + '<br>')
+                // jQuery('#report').append(n + ': ' + i + '<br>')
+                jQuery('#report').append('Success')
             })
-
         })
         .fail(function (err) {
-            jQuery('#report').html('Not Linked')
+            jQuery('#report').html('Failed')
         })
         ;
 }

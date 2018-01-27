@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class DT_Webform_Menu
  */
+DT_Webform_Menu::instance(); // Initialize class
 class DT_Webform_Menu
 {
 
@@ -205,6 +206,10 @@ class DT_Webform_Menu
                 'label' => __( 'Forms', 'dt_webform' ),
             ],
             [
+                'key' => 'new_leads',
+                'label' => __( 'New Leads', 'dt_webform' ),
+            ],
+            [
                 'key' => 'remote_settings',
                 'label' => __( 'Settings', 'dt_webform' ),
             ],
@@ -258,6 +263,9 @@ class DT_Webform_Menu
                     $object = new DT_Webform_Remote_Tab_Forms();
                     $object->content();
                     break;
+                case "new_leads":
+                    $this->new_leads_tab();
+                    break;
                 default:
                     break;
             }
@@ -291,13 +299,11 @@ class DT_Webform_Menu
         <?php
     }
 
-    protected static function initialize_settings()
+    protected static function initialize_settings() // todo: I do not think this options setup is necissary.
     {
         $home = get_option( 'dt_webform_home_settings' );
         if ( ! $home ) {
-            $default = [
-                'remote_api_key' => [],
-            ];
+            $default = [];
             update_option( 'dt_webform_home_settings', $default, false );
         }
         $remote = get_option( 'dt_webform_remote_settings' );
@@ -306,9 +312,18 @@ class DT_Webform_Menu
             update_option( 'dt_webform_remote_settings', $default, false );
         }
     }
+
+    public function new_leads_tab() {
+        // begin columns template
+        DT_Webform_Page_Template::template( 'begin', 1 );
+
+        DT_Webform_New_Leads_List::list_box();
+
+        // end columns template
+        DT_Webform_Page_Template::template( 'end', 1 );
+    }
 }
 
-DT_Webform_Menu::instance();
 
 /**
  * Class DT_Webform_Page_Template
@@ -525,7 +540,7 @@ class DT_Webform_Remote_Tab_Forms
         // begin columns template
         DT_Webform_Page_Template::template( 'begin', 1 );
 
-        DT_Webform_Forms_List::forms_list_box();
+        DT_Webform_Forms_List::list_box();
 
         // end columns template
         DT_Webform_Page_Template::template( 'end', 1 );

@@ -162,6 +162,7 @@ class DT_Webform {
         require_once( 'includes/remote/remote-endpoints.php' );
         require_once( 'includes/remote/remote.php' );
         require_once( 'includes/remote/active-forms-post-type.php' );
+        require_once( 'includes/remote/new-leads-post-type.php' );
 
         if ( is_admin() ) {
 

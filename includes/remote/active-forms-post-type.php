@@ -51,9 +51,6 @@ class DT_Webform_Active_Form_Post_Type
             add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
             add_action( 'save_post', [ $this, 'meta_box_save' ] );
             add_action( 'admin_head', [ $this, 'scripts' ], 20 );
-
-            if ( $pagenow == 'edit.php' && isset( $_GET['post_type'] ) && esc_attr( sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) == $this->post_type ) {
-            }
         }
     }
 
@@ -124,6 +121,7 @@ class DT_Webform_Active_Form_Post_Type
         add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_new_leads', __( 'New Leads', 'dt_webform' ), [ $this, 'load_new_leads_meta_box' ], $this->post_type, 'normal', 'low' );
 
     }
 
@@ -133,6 +131,14 @@ class DT_Webform_Active_Form_Post_Type
     public function load_info_meta_box()
     {
         $this->meta_box_content( 'info' ); // prints
+    }
+
+    /**
+     * Load type metabox
+     */
+    public function load_new_leads_meta_box()
+    {
+        DT_Webform_New_Leads_List::list_box();
     }
 
 

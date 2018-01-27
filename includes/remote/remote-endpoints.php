@@ -111,25 +111,44 @@ class DT_Webform_Remote_Endpoints
     /**
      * @param \WP_REST_Request $request
      *
-     * @return array
+     * @return array|\WP_Error
      */
     public function form_submit( WP_REST_Request $request )
     {
         $params = $request->get_params();
 
-        // check for correct token
+        // Token Validation
+        if ( ! isset( $params['token'] ) || empty( $params['token'] ) ) { // @todo Need to add actual token checking
+            return new WP_Error( "token_failure", "Token missing.", [ 'status' => 400 ] );
+        } else {
+            $token = sanitize_text_field( wp_unslash( $params['token'] ) );
 
-        return $params;
+            // pull token from all active forms
 
-//        $prefix = 'dt_webform_site';
-//
-//        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
-//            return DT_Webform_Api_Keys::check_api_key( $params['id'], $params['token'], $prefix );
-//        } else {
-//            return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
-//        }
+            // check provided token against form tokens
+
+            if ( ! $token ) { // if token is not valid, then error
+                return new WP_Error( "token_failure", "Token not valid.", [ 'status' => 401 ] );
+            }
+        }
+
+        // Prepare Insert
+        $args = [
+            'post_type' => 'dt_webform_new_leads',
+            'post_title' => $params['name'],
+            'comment_status' => 'closed',
+            'ping_status' => 'closed',
+        ];
+        foreach ( $params as $key => $value ) {
+            $key = sanitize_text_field( wp_unslash( $key ) );
+            $value = sanitize_text_field( wp_unslash( $value ) );
+            $args['meta_input'][$key] = $value;
+        }
+
+        // Insert
+        $status = wp_insert_post( $args, true );
+
+        return $status;
     }
-
-
 }
 DT_Webform_Remote_Endpoints::instance();

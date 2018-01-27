@@ -138,7 +138,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
                 //Build row actions
                 $actions = array(
                 'edit'      => sprintf( '<a href="%spost.php?post=%s&action=%s">Edit</a>', admin_url(), $item->ID, 'edit' ),
-                'embed'    => sprintf( '<a href="#" onclick="jQuery(\'#embed-%s\').toggle();">Show Embed Form</a><span id="embed-%s" style="display:none;"><br>%s</span>', $item->ID, $item->ID, 'embed code' ),
+                'embed'    => sprintf( '<a href="#" onclick="jQuery(\'#embed-%s\').toggle();">Show Embed Form</a>', $item->ID ),
                 );
 
                 //Return the title contents
@@ -151,6 +151,16 @@ class DT_Webform_Forms_List extends WP_List_Table {
                 );
             case 'description':
                 return get_metadata( 'post', $item->ID, 'description', true );
+            case 'embed':
+                $width = get_metadata( 'post', $item->ID, 'width', true );
+                $height = get_metadata( 'post', $item->ID, 'height', true );
+                $token = get_metadata( 'post', $item->ID, 'token', true );
+                $site = dt_webform()->public_uri;
+
+                $code = '<textarea cols="30" rows="7" id="embed-'.$item->ID.'" style="display:none;"><iframe src="'. esc_attr( $site ) .'form.html?token='. esc_attr( $token )
+                    .'" width="'. esc_attr( $width ) .'px" height="'. esc_attr( $height ) .'px"></iframe></textarea></span>';
+
+                return $code;
             case 'if_coloumn_name_is_field_name':
                 return $item->{$column_name};
             default:
@@ -172,6 +182,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
         'cb'        => '<input type="checkbox" />', //Render a checkbox instead of text
         'name'     => 'Name',
         'description' => 'Description',
+        'embed' => '',
         );
         return $columns;
     }

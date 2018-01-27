@@ -116,6 +116,9 @@ class DT_Webform_Remote_Endpoints
     public function form_submit( WP_REST_Request $request )
     {
         $params = $request->get_params();
+
+        // check for correct token
+
         return $params;
 
 //        $prefix = 'dt_webform_site';

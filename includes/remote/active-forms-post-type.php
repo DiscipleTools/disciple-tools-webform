@@ -134,48 +134,54 @@ class DT_Webform_Active_Form_Post_Type
     {
         $this->meta_box_content( 'info' ); // prints
     }
-    /**
-     * Load type metabox
-     */
-    public function load_embed_meta_box()
-    {
-        global $pagenow, $post;
 
+
+    /**
+     * Load embed metabox
+     */
+    public function load_embed_meta_box( $post )
+    {
+        global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
             echo 'Embed code will display after you save the new form';
             return;
         }
+
         $width = get_metadata( 'post', $post->ID, 'width', true );
         $height = get_metadata( 'post', $post->ID, 'height', true );
+        $token = get_metadata( 'post', $post->ID, 'token', true );
+        $site = dt_webform()->public_uri;
 
-        print '<label for="embed-code">Copy and Paste this embed code</label><br>';
-        print '<textarea cols="60" rows="5">';
-        $code = '
-<iframe src="'. dt_webform()->public_uri .'form.html?token='. get_metadata( 'post', $post->ID, 'token', true ).'"
-width="'. esc_attr( $width ) . 'px"
-height="'. esc_attr( $height ) . 'px"></iframe>';
-        print esc_attr( $code );
-        print '</textarea>';
+        ?>
+        <label for="embed-code">Copy and Paste this embed code</label><br>
+        <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
+            ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
 
-
+        </textarea>
+        <?php
     }
 
     /**
-     * Load type metabox
+     * Load demo metabox
      */
-    public function load_demo_meta_box()
+    public function load_demo_meta_box( $post )
     {
-        global $pagenow, $post;
+        global $pagenow;
+
         if ( 'post-new.php' == $pagenow ) {
-            echo 'Demo will display after you save the new form';
+            echo 'Embed code will display after you save the new form';
             return;
         }
-        get_metadata( 'post', $post->ID, 'token', true );
+
+        $width = get_metadata( 'post', $post->ID, 'width', true );
+        $height = get_metadata( 'post', $post->ID, 'height', true );
+        $token = get_metadata( 'post', $post->ID, 'token', true );
+        $site = dt_webform()->public_uri;
+
         ?>
-        <iframe src="<?php echo esc_attr( dt_webform()->public_uri ) ?>form.html?token=<?php echo esc_attr( get_metadata( 'post', $post->ID, 'token', true ) ) ?>"
-                width="<?php echo esc_attr( get_metadata( 'post', $post->ID, 'width', true ) ) . 'px' ?>"
-                height="<?php echo esc_attr( get_metadata( 'post', $post->ID, 'height', true ) ) . 'px'  ?>"></iframe>
+        <iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
+        ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
         <?php
     }
 

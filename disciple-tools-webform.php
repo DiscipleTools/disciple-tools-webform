@@ -172,7 +172,7 @@ class DT_Webform {
 
         require_once( 'includes/admin/api-keys.php' ); // api key service
         require_once( 'includes/admin/admin.php' );
-        require_once( 'assets/enqueue-scripts.php' ); // enqueue scripts and styles
+        require_once( 'includes/assets/enqueue-scripts.php' ); // enqueue scripts and styles
         require_once( 'includes/remote/active-forms-post-type.php' );
         require_once( 'includes/remote/new-leads-post-type.php' ); // post type for the new leads post type
         require_once( 'includes/admin/tables.php' );
@@ -202,12 +202,11 @@ class DT_Webform {
         $this->admin_path         = trailingslashit( $this->includes_path . 'admin' );
         $this->home_path          = trailingslashit( $this->includes_path . 'home' );
         $this->remote_path        = trailingslashit( $this->includes_path . 'remote' );
-        $this->assets_path        = trailingslashit( $this->dir_path . 'assets' );
+        $this->assets_path        = trailingslashit( $this->includes_path . 'assets' );
 
         // Plugin directory URIs.
-        $this->assets_uri   = trailingslashit( $this->dir_uri . 'assets' );
+        $this->assets_uri   = trailingslashit( $this->dir_uri . 'includes/assets' );
         $this->public_uri   = trailingslashit( $this->dir_uri . 'public' );
-        $this->img_uri      = trailingslashit( $this->assets_uri . 'img' );
         $this->js_uri       = trailingslashit( $this->assets_uri . 'js' );
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 

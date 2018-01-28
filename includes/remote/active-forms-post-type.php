@@ -407,7 +407,8 @@ class DT_Webform_Active_Form_Post_Type
                     echo '<script type="text/javascript">
                             jQuery(document).ready( function($) {
                                 
-                                $("#toplevel_page_dt_webform").addClass("current wp-has-current-submenu wp-menu-open");
+                                jQuery("#toplevel_page_dt_extensions").addClass("wp-has-current-submenu wp-menu-open");
+                                jQuery("li:contains(\'Webform\')").addClass("current");
                                 $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">Return to List</a>\');
                             
                             });

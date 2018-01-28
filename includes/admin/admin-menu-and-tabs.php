@@ -112,7 +112,7 @@ class DT_Webform_Menu
         if ( isset( $_GET["tab"] ) ) {
             $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
         } else {
-            $active_tab = 'general';
+            $active_tab = 'new_leads';
         }
 
         $title = __( 'DISCIPLE TOOLS - WEBFORM (COMBINED)' );
@@ -120,22 +120,18 @@ class DT_Webform_Menu
         $link = 'admin.php?page=' . $this->token . '&tab=';
 
         $tab_bar = [
-                [
-                        'key' => 'general',
-                        'label' => __( 'General', 'dt_webform' ),
-                ],
-                [
-                        'key' => 'site_links',
-                        'label' => __( 'Site Links', 'dt_webform' ),
-                ],
-                [
-                        'key' => 'remote_forms',
-                        'label' => __( 'Forms', 'dt_webform' ),
-                ],
-                [
-                        'key' => 'home_settings',
-                        'label' => __( 'Settings', 'dt_webform' ),
-                ],
+            [
+                'key' => 'new_leads',
+                'label' => __( 'New Leads', 'dt_webform' ),
+            ],
+            [
+                    'key' => 'remote_forms',
+                    'label' => __( 'Forms', 'dt_webform' ),
+            ],
+            [
+                    'key' => 'home_settings',
+                    'label' => __( 'Settings', 'dt_webform' ),
+            ],
         ];
 
         $this->tab_loader( $title, $active_tab, $tab_bar, $link );
@@ -154,7 +150,7 @@ class DT_Webform_Menu
         if ( isset( $_GET["tab"] ) ) {
             $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
         } else {
-            $active_tab = 'general';
+            $active_tab = 'new_leads';
         }
 
         $title = __( 'DISCIPLE TOOLS - WEBFORM (HOME)' );
@@ -163,8 +159,8 @@ class DT_Webform_Menu
 
         $tab_bar = [
             [
-                'key' => 'general',
-                'label' => __( 'General', 'dt_webform' ),
+                'key' => 'new_leads',
+                'label' => __( 'New Leads', 'dt_webform' ),
             ],
             [
                 'key' => 'site_links',
@@ -193,7 +189,7 @@ class DT_Webform_Menu
         if ( isset( $_GET["tab"] ) ) {
             $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
         } else {
-            $active_tab = 'remote_forms';
+            $active_tab = 'new_leads';
         }
 
         $title = __( 'DISCIPLE TOOLS - WEBFORM (REMOTE)' );
@@ -202,13 +198,14 @@ class DT_Webform_Menu
 
         $tab_bar = [
             [
-                'key' => 'remote_forms',
-                'label' => __( 'Forms', 'dt_webform' ),
-            ],
-            [
                 'key' => 'new_leads',
                 'label' => __( 'New Leads', 'dt_webform' ),
             ],
+            [
+                'key' => 'remote_forms',
+                'label' => __( 'Forms', 'dt_webform' ),
+            ],
+
             [
                 'key' => 'remote_settings',
                 'label' => __( 'Settings', 'dt_webform' ),

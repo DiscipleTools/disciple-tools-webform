@@ -100,4 +100,15 @@ class DT_Webform_Admin
         </form>
         <?php
     }
+
+}
+
+/**
+ * This returns a simple array versus the multi dimensional array from the get_user_meta function
+ *
+ * @return array
+ */
+function dt_get_simple_post_meta( $post_id ) {
+    return array_map( function ( $a ) { return $a[0];
+    }, get_post_meta( $post_id ) );
 }

@@ -136,9 +136,16 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_new_leads_meta_box()
+    public function load_new_leads_meta_box( $post )
     {
-        DT_Webform_New_Leads_List::list_box();
+        global $pagenow;
+
+        if ( 'post-new.php' == $pagenow ) {
+            echo 'Leads list will display after you save the new form';
+            return;
+        }
+
+        DT_Webform_New_Leads_List::list_box( get_post_meta( $post->ID, 'token', true ) );
     }
 
 
@@ -391,15 +398,32 @@ class DT_Webform_Active_Form_Post_Type
 
     public function scripts() {
         global $pagenow;
+
         if ( get_current_screen()->post_type == $this->post_type ) {
-            echo '<script type="text/javascript">
-                    jQuery(document).ready( function($) {
-                        
-                        $("#toplevel_page_dt_webform").addClass("current wp-has-current-submenu wp-menu-open");
-                        $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">Return to List</a>\');
-                    
-                    });
-                </script>';
+            $state = get_option( 'dt_webform_state' );
+            switch ( $state ) {
+                case 'home':
+                case 'combined':
+                    echo '<script type="text/javascript">
+                            jQuery(document).ready( function($) {
+                                
+                                $("#toplevel_page_dt_webform").addClass("current wp-has-current-submenu wp-menu-open");
+                                $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">Return to List</a>\');
+                            
+                            });
+                        </script>';
+                    break;
+                default: // covers remote and unset states
+                    echo '<script type="text/javascript">
+                            jQuery(document).ready( function($) {
+                                
+                                $("#toplevel_page_dt_webform").addClass("current wp-has-current-submenu wp-menu-open");
+                                $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">Return to List</a>\');
+                            
+                            });
+                        </script>';
+                    break;
+            }
         }
         // Catches post delete redirect to standard custom post type list, and redirects to the form list in the plugin.
         if ( $pagenow == 'edit.php' && isset( $_GET['post_type'] ) && esc_attr( sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) == $this->post_type ) {

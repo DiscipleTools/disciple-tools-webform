@@ -15,7 +15,7 @@ let getUrlParameter = function getUrlParameter(sParam) {
 };
 
 function submit_form() {
-    let url = 'http://remote'
+    let url = get_url()
     let $inputs = jQuery(':input');
     let data = {};
     $inputs.each(function() {
@@ -30,13 +30,14 @@ function submit_form() {
         url: url + '/wp-json/dt-public/v1/webform/form_submit',
     })
         .done(function (data) {
-            jQuery.each(data, function(n, i) {
-                // jQuery('#report').append(n + ': ' + i + '<br>')
-                jQuery('#report').append('Success')
-            })
+            jQuery('#report').append('Success')
+
         })
         .fail(function (err) {
             jQuery('#report').html('Failed')
-        })
-        ;
+        });
+}
+
+function get_url() {
+    return window.location.protocol + '//' + window.location.hostname
 }

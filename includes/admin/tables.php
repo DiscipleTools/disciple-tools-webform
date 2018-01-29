@@ -172,6 +172,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
  */
 class DT_Webform_New_Leads_List extends WP_List_Table {
 
+    public static $token;
     /**
      * Call this public function to embed the list on a page: DT_Webform_Forms_List::forms_list_box
      */
@@ -193,7 +194,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
     }
 
     public function __construct(){
-        global $status, $page;
+        $this->token = self::$token;
 
         //Set parent defaults
         parent::__construct( array(

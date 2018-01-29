@@ -8,6 +8,11 @@
  */
 
 /**
+ * Initialize class
+ */
+DT_Webform_Active_Form_Post_Type::instance();
+
+/**
  * Class DT_Webform_Active_Form_Post_Type
  */
 class DT_Webform_Active_Form_Post_Type
@@ -46,7 +51,6 @@ class DT_Webform_Active_Form_Post_Type
         add_action( 'init', [ $this, 'register_post_type' ] );
 
         if ( is_admin() ) {
-            global $pagenow;
 
             add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
             add_action( 'save_post', [ $this, 'meta_box_save' ] );
@@ -142,10 +146,35 @@ class DT_Webform_Active_Form_Post_Type
 
         if ( 'post-new.php' == $pagenow ) {
             echo 'Leads list will display after you save the new form';
-            return;
-        }
+        } else {
 
-        DT_Webform_New_Leads_List::list_box( get_post_meta( $post->ID, 'token', true ) );
+            $token = get_post_meta( $post->ID, 'token', true );
+            $args = [
+                 'post_type' => 'dt_webform_new_leads',
+                 'meta_value' => $token,
+            ];
+            $results = new WP_Query( $args );
+
+            if ( $results->found_posts > 0 && ! is_wp_error( $results ) ) {
+
+                echo '<table class="widefat striped">';
+                echo '<tr><td>Name</td><td>Phone</td><td>Email</td><td>Date</td></tr>';
+                foreach ( $results->posts as $record ) {
+
+                    echo '<tr>';
+                    echo '<td>' . esc_attr( get_post_meta( $record->ID, 'name', true ) ) . '</td>';
+                    echo '<td>' . esc_attr( get_post_meta( $record->ID, 'phone', true ) ) . '</td>';
+                    echo '<td>' . esc_attr( get_post_meta( $record->ID, 'email', true ) ) . '</td>';
+                    echo '<td>' . esc_attr( $record->post_date ) . '</td>';
+                    echo '</tr>';
+
+                }
+                echo '</table>';
+
+            } else {
+                echo 'No leads found';
+            }
+        }
     }
 
 
@@ -158,21 +187,21 @@ class DT_Webform_Active_Form_Post_Type
 
         if ( 'post-new.php' == $pagenow ) {
             echo 'Embed code will display after you save the new form';
-            return;
         }
+        else {
+            $width = get_metadata( 'post', $post->ID, 'width', true );
+            $height = get_metadata( 'post', $post->ID, 'height', true );
+            $token = get_metadata( 'post', $post->ID, 'token', true );
+            $site = dt_webform()->public_uri;
 
-        $width = get_metadata( 'post', $post->ID, 'width', true );
-        $height = get_metadata( 'post', $post->ID, 'height', true );
-        $token = get_metadata( 'post', $post->ID, 'token', true );
-        $site = dt_webform()->public_uri;
-
-        ?>
-        <label for="embed-code">Copy and Paste this embed code</label><br>
-        <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
-            ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
+            ?>
+            <label for="embed-code">Copy and Paste this embed code</label><br>
+            <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
+                ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
 
         </textarea>
-        <?php
+            <?php
+        }
     }
 
     /**
@@ -184,18 +213,18 @@ class DT_Webform_Active_Form_Post_Type
 
         if ( 'post-new.php' == $pagenow ) {
             echo 'Embed code will display after you save the new form';
-            return;
         }
+        else {
+            $width = get_metadata( 'post', $post->ID, 'width', true );
+            $height = get_metadata( 'post', $post->ID, 'height', true );
+            $token = get_metadata( 'post', $post->ID, 'token', true );
+            $site = dt_webform()->public_uri;
 
-        $width = get_metadata( 'post', $post->ID, 'width', true );
-        $height = get_metadata( 'post', $post->ID, 'height', true );
-        $token = get_metadata( 'post', $post->ID, 'token', true );
-        $site = dt_webform()->public_uri;
-
-        ?>
-        <iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
-        ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
-        <?php
+            ?>
+            <iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
+            ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
+            <?php
+        }
     }
 
 
@@ -210,7 +239,7 @@ class DT_Webform_Active_Form_Post_Type
         $fields = get_post_custom( $post_id );
         $field_data = $this->get_custom_fields_settings();
 
-        echo '<input type="hidden" name="dt_' . esc_attr( $this->post_type ) . '_noonce" id="dt_' . esc_attr( $this->post_type ) . '_noonce" value="' . esc_attr( wp_create_nonce( 'update_dt_groups' ) ) . '" />';
+        echo '<input type="hidden" name="dt_' . esc_attr( $this->post_type ) . '_noonce" id="dt_' . esc_attr( $this->post_type ) . '_noonce" value="' . esc_attr( wp_create_nonce( 'update_dt_webforms' ) ) . '" />';
 
         if ( 0 < count( $field_data ) ) {
             echo '<table class="form-table">' . "\n";
@@ -292,21 +321,22 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function meta_box_save( int $post_id )
     {
+
         // Verify
         if ( get_post_type() != $this->post_type ) {
             return $post_id;
         }
         $nonce_key = 'dt_' . $this->post_type . '_noonce';
-        if ( isset( $_POST[ $nonce_key ] ) && !wp_verify_nonce( sanitize_key( $_POST[ $nonce_key ] ), 'update_dt_groups' ) ) {
+        if ( isset( $_POST[ $nonce_key ] ) && !wp_verify_nonce( sanitize_key( $_POST[ $nonce_key ] ), 'update_dt_webforms' ) ) {
             return $post_id;
         }
 
         if ( isset( $_POST['post_type'] ) && 'page' == esc_attr( sanitize_text_field( wp_unslash( $_POST['post_type'] ) ) ) ) {
-            if ( !current_user_can( 'edit_page', $post_id ) ) {
+            if ( !current_user_can( 'manage_dt', $post_id ) ) {
                 return $post_id;
             }
         } else {
-            if ( !current_user_can( 'edit_post', $post_id ) ) {
+            if ( !current_user_can( 'manage_dt', $post_id ) ) {
                 return $post_id;
             }
         }
@@ -334,7 +364,7 @@ class DT_Webform_Active_Form_Post_Type
                     update_post_meta( $post_id, $f, ${$f} );
                 }
             } else {
-                throw new Exception( "Expected field $f to exist" );
+                dt_write_log( "Expected field $f to exist" );
             }
         }
 
@@ -437,4 +467,4 @@ class DT_Webform_Active_Form_Post_Type
 
 
 }
-DT_Webform_Active_Form_Post_Type::instance();
+

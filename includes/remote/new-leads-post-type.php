@@ -44,6 +44,8 @@ class DT_Webform_New_Leads_Post_Type
 
         add_action( 'init', [ $this, 'register_post_type' ] );
 
+        add_action( 'save_post', [ $this, 'auto_accept' ] );
+
     }
 
     // Register Custom Post Type
@@ -100,6 +102,15 @@ class DT_Webform_New_Leads_Post_Type
         register_post_type( $this->post_type, $args );
 
     }
+
+    public function auto_accept( $post_id ) {
+        $options = get_option( 'dt_webform_options' );
+        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
+            DT_Webform_Home::create_contact_record( $post_id );
+        }
+    }
+
+
 
 }
 

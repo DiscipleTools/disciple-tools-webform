@@ -252,6 +252,15 @@ class DT_Webform {
         if ( !empty( $role ) ) {
             $role->add_cap( 'manage_dt' ); // gives access to dt plugin options
         }
+
+        // set up dt_webform_options
+        $options = get_option( 'dt_webform_options' );
+        if ( ! $options ) {
+            $options = [
+                    'auto_approve' => true
+            ];
+            update_option( 'dt_webform_options', $options, false );
+        }
     }
 
     /**

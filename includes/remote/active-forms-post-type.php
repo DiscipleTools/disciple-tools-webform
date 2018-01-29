@@ -125,7 +125,8 @@ class DT_Webform_Active_Form_Post_Type
         add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'high' );
-        add_meta_box( $this->post_type . '_new_leads', __( 'New Leads', 'dt_webform' ), [ $this, 'load_new_leads_meta_box' ], $this->post_type, 'normal', 'low' );
+        add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'normal', 'low' );
+//        add_meta_box( $this->post_type . '_new_leads', __( 'New Leads', 'dt_webform' ), [ $this, 'load_new_leads_meta_box' ], $this->post_type, 'normal', 'low' );
 
     }
 
@@ -140,6 +141,15 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
+    public function load_statistics_meta_box( $post )
+    {
+        echo 'Leads Received: ' . esc_attr( get_post_meta( $post->ID, 'leads_received', true ) ) . '<br> ';
+        echo 'Leads Transferred: ' . esc_attr( get_post_meta( $post->ID, 'leads_transferred', true ) ) . '<br> ';
+    }
+
+    /**
+     * Load type metabox
+     */
     public function load_new_leads_meta_box( $post )
     {
         global $pagenow;
@@ -147,12 +157,11 @@ class DT_Webform_Active_Form_Post_Type
         if ( 'post-new.php' == $pagenow ) {
             echo 'Leads list will display after you save the new form';
         } else {
-
-
+            // table of waiting leads
             $token = get_post_meta( $post->ID, 'token', true );
             $args = [
-                 'post_type' => 'dt_webform_new_leads',
-                 'meta_value' => $token,
+            'post_type' => 'dt_webform_new_leads',
+            'meta_value' => $token,
             ];
             $results = new WP_Query( $args );
 
@@ -277,6 +286,9 @@ class DT_Webform_Active_Form_Post_Type
                             echo '<input name="' . esc_attr( $k ) . '" type="hidden" id="' . esc_attr( $k ) . '" class="regular-text" value="' . esc_attr( $data ) . '" />';
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
+                            break;
+                        case 'hidden':
+                            echo '<input name="' . esc_attr( $k ) . '" type="hidden" id="' . esc_attr( $k ) . '" class="regular-text" value="' . esc_attr( $data ) . '" />';
                             break;
                         case 'date':
                             echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td>
@@ -424,6 +436,21 @@ class DT_Webform_Active_Form_Post_Type
         'section'     => 'info',
         ];
 
+        $fields['leads_received'] = [
+        'name'        => __( 'Leads Received', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'hidden',
+        'default'     => 0,
+        'section'     => 'info',
+        ];
+        $fields['leads_transferred'] = [
+        'name'        => __( 'Leads Transferred', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'hidden',
+        'default'     => 0,
+        'section'     => 'info',
+        ];
+
 
 
         return apply_filters( 'dt_custom_fields_settings', $fields );
@@ -467,7 +494,35 @@ class DT_Webform_Active_Form_Post_Type
         }
     }
 
+    public static function increment_lead_received( $form_id ) {
+        $current_number = get_post_meta( $form_id, 'leads_received', true );
+        if ( ! $current_number ) {
+            $current_number = 0;
+        }
+        $current_number++;
+        update_post_meta( $form_id, 'leads_received', (int) $current_number );
+    }
 
+    public static function increment_lead_transferred( $form_id ) {
+        $current_number = get_post_meta( $form_id, 'leads_transferred', true );
+        if ( ! $current_number ) {
+            $current_number = 0;
+        }
+        $current_number++;
+        update_post_meta( $form_id, 'leads_transferred', (int) $current_number );
+    }
+
+    public static function check_if_valid_token( $token ) {
+        $form_object = new WP_Query( [
+            'post_type' => 'dt_webform_forms',
+            'meta_key' => 'token',
+            'meta_value' => $token
+        ] );
+        if ( is_wp_error( $form_object ) || $form_object->found_posts < 1 ) {
+            return false;
+        }
+        return $form_object->post->ID;
+    }
 
 }
 

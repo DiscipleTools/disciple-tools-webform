@@ -101,6 +101,83 @@ class DT_Webform_Admin
         <?php
     }
 
+    public static function auto_approve_metabox()
+    {
+        // Check for post
+        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ), 'dt_webform_auto_approve' ) ) {
+
+            $options = get_option( 'dt_webform_options' );
+            if ( isset( $_POST['auto_approve'] ) ) {
+                $options['auto_approve'] = true;
+            } else {
+                $options['auto_approve'] = false;
+            }
+
+            update_option( 'dt_webform_options', $options, false );
+        }
+
+        // Get status of auto approve
+        $options = get_option( 'dt_webform_options' );
+
+        ?>
+        <form method="post" action="">
+            <?php wp_nonce_field( 'dt_webform_auto_approve', 'dt_webform_auto_approve_nonce', false, true ) ?>
+            <!-- Box -->
+            <table class="widefat striped">
+                <thead>
+                <th>Auto Approve</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <label for="auto_approve">Auto Approve: </label>
+                        <input type="checkbox" id="auto_approve" name="auto_approve" value="1" <?php echo ( $options['auto_approve'] ) ? 'checked' : ''; ?> />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <button class="button" type="submit">Update</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <!-- End Box -->
+        </form>
+        <?php
+    }
+
+    public static function statistics_for_all_forms() {
+        // query all forms
+        $form_object = new WP_Query( [ 'post_type' => 'dt_webform_forms' ] );
+        if ( is_wp_error( $form_object ) || $form_object->found_posts < 1 ) {
+            return [
+                'leads_received' => 0,
+                'leads_transferred' => 0,
+            ];
+        }
+
+        $leads_received = 0;
+        $leads_transferred = 0;
+
+        foreach ( $form_object->posts as $record ) {
+            $received = get_post_meta( $record->ID, 'leads_received' );
+            if ( $received ) {
+                $leads_received += (int) $received;
+            }
+            $transferred = get_post_meta( $record->ID, 'leads_transferred' );
+            if ( $transferred ) {
+                $leads_transferred += (int) $transferred;
+            }
+        }
+
+        return [
+          'leads_received' => $leads_received,
+          'leads_transferred' => $leads_transferred,
+        ];
+    }
+
 }
 
 /**

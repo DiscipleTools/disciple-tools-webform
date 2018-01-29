@@ -65,9 +65,6 @@ class DT_Webform_Menu
             update_option( 'dt_webform_state', sanitize_key( wp_unslash( $_POST['initialize_plugin_state'] ) ), false );
         }
 
-        // Initialize Plugin Settings
-        self::initialize_settings();
-
         // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
         $current_theme = get_option( 'current_theme' );
         if ( ! 'Disciple Tools' == $current_theme ) {
@@ -108,31 +105,37 @@ class DT_Webform_Menu
         if ( ! current_user_can( 'manage_dt' ) ) {
             wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
         }
-
-        if ( isset( $_GET["tab"] ) ) {
-            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
-        } else {
-            $active_tab = 'new_leads';
-        }
-
         $title = __( 'DISCIPLE TOOLS - WEBFORM (COMBINED)' );
 
         $link = 'admin.php?page=' . $this->token . '&tab=';
 
         $tab_bar = [
             [
-                'key' => 'new_leads',
+                'key'   => 'new_leads',
                 'label' => __( 'New Leads', 'dt_webform' ),
             ],
             [
-                    'key' => 'remote_forms',
-                    'label' => __( 'Forms', 'dt_webform' ),
+                'key' => 'remote_forms',
+                'label' => __( 'Forms', 'dt_webform' ),
             ],
             [
-                    'key' => 'home_settings',
-                    'label' => __( 'Settings', 'dt_webform' ),
+                'key' => 'home_settings',
+                'label' => __( 'Settings', 'dt_webform' ),
             ],
         ];
+
+        // determine active tabs
+        $active_tab = 'new_leads';
+
+        $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
+        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
+            unset( $tab_bar[0] );
+            $active_tab = $tab_bar[1]['key'];
+        }
+
+        if ( isset( $_GET["tab"] ) ) {
+            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
+        }
 
         $this->tab_loader( $title, $active_tab, $tab_bar, $link );
     }
@@ -147,11 +150,6 @@ class DT_Webform_Menu
             wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
         }
 
-        if ( isset( $_GET["tab"] ) ) {
-            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
-        } else {
-            $active_tab = 'new_leads';
-        }
 
         $title = __( 'DISCIPLE TOOLS - WEBFORM (HOME)' );
 
@@ -159,7 +157,7 @@ class DT_Webform_Menu
 
         $tab_bar = [
             [
-                'key' => 'new_leads',
+                'key'   => 'new_leads',
                 'label' => __( 'New Leads', 'dt_webform' ),
             ],
             [
@@ -171,6 +169,19 @@ class DT_Webform_Menu
                 'label' => __( 'Settings', 'dt_webform' ),
             ],
         ];
+
+        // determine active tabs
+        $active_tab = 'new_leads';
+
+        $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
+        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
+            unset( $tab_bar[0] );
+            $active_tab = $tab_bar[1]['key'];
+        }
+
+        if ( isset( $_GET["tab"] ) ) {
+            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
+        }
 
         $this->tab_loader( $title, $active_tab, $tab_bar, $link );
 
@@ -186,31 +197,38 @@ class DT_Webform_Menu
             wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
         }
 
-        if ( isset( $_GET["tab"] ) ) {
-            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
-        } else {
-            $active_tab = 'new_leads';
-        }
-
         $title = __( 'DISCIPLE TOOLS - WEBFORM (REMOTE)' );
 
         $link = 'admin.php?page=' . $this->token . '&tab=';
 
         $tab_bar = [
             [
-                'key' => 'new_leads',
+                'key'   => 'new_leads',
                 'label' => __( 'New Leads', 'dt_webform' ),
             ],
             [
                 'key' => 'remote_forms',
                 'label' => __( 'Forms', 'dt_webform' ),
             ],
-
             [
-                'key' => 'remote_settings',
+                'key' => 'home_settings',
                 'label' => __( 'Settings', 'dt_webform' ),
             ],
         ];
+
+        // determine active tabs
+        $active_tab = 'new_leads';
+
+        $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
+        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
+            unset( $tab_bar[0] );
+            dt_write_log( $tab_bar );
+            $active_tab = $tab_bar[1]['key'];
+        }
+
+        if ( isset( $_GET["tab"] ) ) {
+            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
+        }
 
         $this->tab_loader( $title, $active_tab, $tab_bar, $link );
     }
@@ -296,25 +314,17 @@ class DT_Webform_Menu
         <?php
     }
 
-    protected static function initialize_settings() // todo: I do not think this options setup is necissary.
-    {
-        $home = get_option( 'dt_webform_home_settings' );
-        if ( ! $home ) {
-            $default = [];
-            update_option( 'dt_webform_home_settings', $default, false );
-        }
-        $remote = get_option( 'dt_webform_remote_settings' );
-        if ( ! $remote ) {
-            $default = [];
-            update_option( 'dt_webform_remote_settings', $default, false );
-        }
-    }
-
     public function new_leads_tab() {
+
         // begin columns template
         DT_Webform_Page_Template::template( 'begin', 1 );
 
-        DT_Webform_New_Leads_List::list_box();
+        $options = get_option( 'dt_webform_options' );
+        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
+            echo 'Tab no longer valid because you have selected "Auto Approve"';
+        } else {
+            DT_Webform_New_Leads_List::list_box();
+        }
 
         // end columns template
         DT_Webform_Page_Template::template( 'end', 1 );
@@ -468,6 +478,7 @@ class DT_Webform_Home_Tab_Settings
         // begin columns template
         DT_Webform_Page_Template::template( 'begin' );
 
+        DT_Webform_Admin::auto_approve_metabox();
         DT_Webform_Admin::initialize_plugin_state_metabox();
 
         // begin right column template
@@ -492,6 +503,7 @@ class DT_Webform_Remote_Tab_Settings
         DT_Webform_Page_Template::template( 'begin' );
 
         DT_Webform_Remote::site_link_metabox();
+        DT_Webform_Admin::auto_approve_metabox();
         DT_Webform_Admin::initialize_plugin_state_metabox();
 
         // begin right column template

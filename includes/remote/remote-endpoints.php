@@ -111,7 +111,7 @@ class DT_Webform_Remote_Endpoints
     /**
      * @param \WP_REST_Request $request
      *
-     * @return array|\WP_Error
+     * @return bool|\WP_Error
      */
     public function form_submit( WP_REST_Request $request )
     {
@@ -122,12 +122,9 @@ class DT_Webform_Remote_Endpoints
             return new WP_Error( "token_failure", "Token missing.", [ 'status' => 400 ] );
         } else {
             $token = sanitize_text_field( wp_unslash( $params['token'] ) );
+            $form_id = DT_Webform_Active_Form_Post_Type::check_if_valid_token( $token );
 
-            // pull token from all active forms
-
-            // check provided token against form tokens
-
-            if ( ! $token ) { // if token is not valid, then error
+            if ( ! $form_id ) { // if token is not valid, then error
                 return new WP_Error( "token_failure", "Token not valid.", [ 'status' => 401 ] );
             }
         }
@@ -135,7 +132,7 @@ class DT_Webform_Remote_Endpoints
         // Prepare Insert
         $args = [
             'post_type' => 'dt_webform_new_leads',
-            'post_title' => $params['name'],
+            'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
             'comment_status' => 'closed',
             'ping_status' => 'closed',
         ];
@@ -147,8 +144,12 @@ class DT_Webform_Remote_Endpoints
 
         // Insert
         $status = wp_insert_post( $args, true );
-
-        return $status;
+        if ( is_wp_error( $status ) ) {
+            return $status;
+        } else {
+            DT_Webform_Active_Form_Post_Type::increment_lead_received( $form_id );
+            return 1;
+        }
     }
 }
 DT_Webform_Remote_Endpoints::instance();

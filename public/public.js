@@ -30,7 +30,7 @@ function submit_form() {
         url: url + '/wp-json/dt-public/v1/webform/form_submit',
     })
         .done(function (data) {
-            jQuery('#report').append('Success')
+            jQuery('#report').html('Success')
 
         })
         .fail(function (err) {

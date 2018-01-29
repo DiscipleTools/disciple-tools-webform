@@ -5,7 +5,6 @@
 
 class DT_Webform_Home
 {
-
     public static function site_api_link_metabox() {
 
         $prefix = 'dt_webform_site';
@@ -94,6 +93,40 @@ class DT_Webform_Home
             <p>No stored keys. To add a key use the token generator to create a key.</p>
         <?php endif; ?>
         <?php
+
+    }
+
+    /**
+     * @param $new_lead_id
+     *
+     * @return bool|\WP_Error
+     */
+    public static function create_contact_record( $new_lead_id ) {
+
+        $check_permission = false;
+
+        // Build fields
+        $new_lead_meta = dt_get_simple_post_meta( $new_lead_id );
+        if ( ! isset( $new_lead_meta['name'] ) || empty( $new_lead_meta['name'] ) ) {
+            return new WP_Error( 'missing_contact_info', 'Missing name' );
+        }
+        $fields = [
+                'title' => $new_lead_meta['name'],
+                'phone' => ( isset( $new_lead_meta['phone'] ) ) ? $new_lead_meta['phone'] : '',
+                'email' => ( isset( $new_lead_meta['email'] ) ) ? $new_lead_meta['email'] : '',
+        ];
+
+        // Post to contact
+        $result = Disciple_Tools_Contacts::create_contact( $fields, $check_permission );
+
+        if ( is_wp_error( $result ) ) {
+            return new WP_Error( 'failed_to_insert_contact', $result->get_error_message() );
+        }
+
+        // Delete new leads record after success
+        wp_delete_post( $new_lead_id, true );
+
+        return $result;
 
     }
 

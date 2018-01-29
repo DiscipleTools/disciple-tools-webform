@@ -263,16 +263,27 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
 
     public function get_sortable_columns() {
         $sortable_columns = array(
-        'name'     => array( 'name',false ),     //true means it's already sorted
+            'name'     => array( 'name', false ),     //true means it's already sorted
         );
         return $sortable_columns;
     }
 
     public function get_bulk_actions() {
-        $actions = array(
-        'delete'    => __( 'Delete', 'dt_webform' ),
-        'approve' => __( 'Approve', 'dt_webform' ),
-        );
+        $actions = [
+            'delete'    => __( 'Delete', 'dt_webform' ),
+        ];
+
+        $state = get_option( 'dt_webform_state' );
+        switch ( $state ) {
+            case 'home':
+            case 'combined':
+                $actions['approve'] = __( 'Approve', 'dt_webform' ); // for the home drop down to approve a stuck record
+                break;
+            default: // if no option exists, then the plugin is forced to selection screen.
+                $actions['transfer'] = __( 'Transfer', 'dt_webform' ); // for the remote drop down to transfer a stuck record
+                break;
+        }
+
         return $actions;
     }
 
@@ -280,6 +291,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
 
         //Detect when a bulk action is being triggered...
         if ( 'delete' === $this->current_action() ) {
+
             if ( ! isset( $_GET['form'] ) ) {
                 return new WP_Error( 'failed_to_delete', 'Form field missing' );
             }
@@ -293,11 +305,29 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
                 }
             }
         }
-        if ( 'approve' === $this->current_action() ) {
-            dt_write_log( 'APPROVE!' );
 
+        if ( 'approve' === $this->current_action() ) {
+
+            if ( ! isset( $_GET['form'] ) || ! is_array( $_GET['form'] ) ) {
+                dt_write_log( 'Form data and/or array missing' );
+                return new WP_Error( 'failed_bulk_actions', 'Form data and/or array missing' );
+            }
+
+            $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
+
+            foreach ( $selected_records as $selected_record ) {
+                $result = DT_Webform_Home::create_contact_record( $selected_record );
+
+                if ( is_wp_error( $result ) ) {
+                    dt_write_log( 'failed to create contact ' . $selected_record . ' (' . $result->get_error_message() . ')' ); // @todo do something with a failed record approval
+                }
+            }
         }
 
+        if ( 'transfer' === $this->current_action() ) {
+            $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
+            DT_Webform_Remote::manual_transfer_of_new_lead( $selected_records );
+        }
     }
 
     public function prepare_items( $token = null ) {

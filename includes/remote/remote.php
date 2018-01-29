@@ -85,5 +85,8 @@ class DT_Webform_Remote
         <?php
     }
 
+    public static function manual_transfer_of_new_lead( $selected_records ) {
+        // send trigger to create contacts from new lead array records
+    }
 
 }

@@ -148,6 +148,7 @@ class DT_Webform_Active_Form_Post_Type
             echo 'Leads list will display after you save the new form';
         } else {
 
+
             $token = get_post_meta( $post->ID, 'token', true );
             $args = [
                  'post_type' => 'dt_webform_new_leads',
@@ -170,6 +171,8 @@ class DT_Webform_Active_Form_Post_Type
 
                 }
                 echo '</table>';
+
+                echo '<p ><a href="">refresh</a></p>';
 
             } else {
                 echo 'No leads found';

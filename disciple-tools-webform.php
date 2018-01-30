@@ -131,6 +131,7 @@ class DT_Webform {
 
         if ( is_admin() ) {
             // Admin and tabs menu
+            require_once( 'includes/admin/admin.php' );
             require_once( 'includes/admin/admin-menu-and-tabs.php' );
         }
     }

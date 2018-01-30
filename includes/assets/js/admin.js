@@ -11,7 +11,11 @@ function check_link_status(id, token, url ) {
         url: url + '/wp-json/dt-public/v1/webform/site_link_check',
     })
         .done(function (data) {
-            jQuery('#' + id + '-status').html('Linked')
+            if( data ) {
+                jQuery('#' + id + '-status').html('Linked')
+            } else {
+                jQuery('#' + id + '-status').html('Not Linked')
+            }
         })
         .fail(function (err) {
             jQuery('#' + id + '-status').html('Not Linked')

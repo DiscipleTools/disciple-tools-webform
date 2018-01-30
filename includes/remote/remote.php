@@ -5,15 +5,42 @@
 
 class DT_Webform_Remote
 {
+    /**
+     * Cleans potentially extra site records from previous configurations of the plugin.
+     *
+     * @param $keys
+     *
+     * @return mixed
+     */
+    public static function clean_site_records( $keys, $prefix ) {
+        if( empty( $keys ) ) {
+            return $keys;
+        }
+
+        if( count($keys) > 1 ) {
+
+            foreach( $keys as $key => $value ) {
+                $home_link = $value;
+                $cleaned[ $key ] = $value;
+                update_option($prefix . '_api_keys', $cleaned, true );
+                break;
+            }
+
+        } else {
+            foreach( $keys as $key ) {
+                $home_link = $key;
+                break;
+            }
+        }
+
+        return $home_link;
+    }
+
     public static function site_link_metabox()
     {
         $prefix = 'dt_webform_site';
         $keys = DT_Webform_Api_Keys::update_keys( $prefix );
-
-        foreach ( $keys as $key ) {
-            $home_link = $key;
-        } // end foreach
-
+        $home_link = self::clean_site_records( $keys, $prefix );
         ?>
         <form method="post" action="">
             <?php wp_nonce_field( $prefix . '_action', $prefix . '_nonce' ); ?>
@@ -32,7 +59,7 @@ class DT_Webform_Remote
                     </td>
                     <td>
                         <input type="text" name="id" id="id" class="regular-text"
-                               value="<?php echo ( isset( $home_link['id'] ) ) ? esc_attr( $home_link['id'] ) : '' ?>" required/>
+                               <?php echo ( isset( $home_link['id'] ) ) ? 'value="' . esc_attr( $home_link['id'] ) . '" readonly' : '' ?> /> (case sensitive)
                     </td>
                 </tr>
                 <tr>
@@ -41,7 +68,7 @@ class DT_Webform_Remote
                     </td>
                     <td>
                         <input type="text" name="token" id="token" class="regular-text"
-                               value="<?php echo ( isset( $home_link['token'] ) ) ? esc_attr( $home_link['token'] ) : '' ?>" required/>
+                        <?php echo ( isset( $home_link['token'] ) ) ? 'value="' . esc_attr( $home_link['token'] ) . '" readonly' : '' ?> />
                     </td>
                 </tr>
                 <tr>
@@ -50,34 +77,38 @@ class DT_Webform_Remote
                     </td>
                     <td>
                         <input type="text" name="url" id="url" class="regular-text" placeholder="http://www.website.com"
-                               value="<?php echo ( isset( $home_link['url'] ) ) ? esc_attr( $home_link['url'] ) : '' ?>" required/>
+                        <?php echo ( isset( $home_link['url'] ) ) ? 'value="' . esc_attr( $home_link['url'] ) . '" readonly' : '' ?> />
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <button type="submit" class="button" name="action" value="update"><?php esc_html_e( 'Update', 'dt_webform' ) ?></button>
-                        <span class="float-right">
-                            <button type="submit" class="button-like-link" name="action" value="delete"><?php esc_html_e( 'Unlink Site', 'dt_webform' ) ?></button>
-                        </span>
+                        <?php if( isset( $home_link['id'] ) ) : ?>
+                            <button type="submit" class="button" name="action" value="delete"><?php esc_html_e( 'Unlink Site', 'dt_webform' ) ?></button>
+                        <?php else: ?>
+                            <button type="submit" class="button" name="action" value="update"><?php esc_html_e( 'Update', 'dt_webform' ) ?></button>
+                        <?php endif; ?>
                     </td>
                 </tr>
+
+                <?php if( isset( $home_link['id'] ) && ! empty( $home_link ) ) : ?>
                 <tr>
                     <td colspan="2">
                         <span style="float:right">
                                 <?php esc_html_e( 'Status:', 'dt_webform' ) ?>
                             <strong>
-                                    <span id="<?php echo esc_attr( $key['id'] ); ?>-status">
+                                    <span id="<?php echo esc_attr( $home_link['id'] ); ?>-status">
                                         <?php esc_html_e( 'Checking Status', 'dt_webform' ) ?>
                                     </span>
                                 </strong>
                             </span>
                         <script>
                             jQuery(document).ready(function() {
-                                check_link_status( '<?php echo esc_attr( $key['id'] ); ?>', '<?php echo esc_attr( $key['token'] ); ?>', '<?php echo esc_attr( $key['url'] ); ?>' );
+                                check_link_status( '<?php echo esc_attr( $home_link['id'] ); ?>', '<?php echo esc_attr( $home_link['token'] ); ?>', '<?php echo esc_attr( $home_link['url'] ); ?>' );
                             })
                         </script>
                     </td>
                 </tr>
+                <?php endif; ?>
                 </tbody>
             </table>
         </form>
@@ -86,6 +117,33 @@ class DT_Webform_Remote
     }
 
     public static function manual_transfer_of_new_lead( $selected_records ) {
+        // get option
+        $home = get_option('dt_webform_site_api_keys');
+        if( ! isset( $home ) || empty( $home ) ) {
+            return new WP_Error('site_settings_not_set', 'Site keys are empty.');
+        }
+        foreach( $home as $key => $value ) {
+            $id = $value['id'];
+            $token = $value['token'];
+            $url = $value['url'];
+            break;
+        }
+
+        // create hash key and url
+        $md5_hash_id = DT_Webform_API_Keys::one_hour_encryption( $id );
+
+        // Test if site is linked
+        $args = [
+                'method' => 'GET',
+                'body' => [
+                    'id' => $md5_hash_id,
+                    'token' => $token,
+                ]
+        ];
+        $result = wp_remote_get($url . '/wp-json/dt-public/v1/webform/site_link_hash_check', $args );
+        dt_write_log( $result );
+
+        // process each
         foreach ( $selected_records as $selected_record ) {
             dt_write_log( 'Requested transfer of ' . $selected_record ); // @todo finish transfer logic. unfinished
 

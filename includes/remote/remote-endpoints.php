@@ -1,18 +1,10 @@
 <?php
-
 /**
  * DT_Webform_Remote_Endpoints
  *
  * @class      DT_Webform_Remote_Endpoints
- * @version    0.1.0
  * @since      0.1.0
- * @package    Disciple_Tools
- */
-
-/**
- * @todo
- * 1. Create endpoint to deliver new contacts
- * 2. Create endpoint to confirm successful transfer of contacts
+ * @package    DT_Webform
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -101,7 +93,7 @@ class DT_Webform_Remote_Endpoints
 
         $prefix = 'dt_webform_site';
 
-        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
+        if ( isset( $params['token'] ) ) {
             return DT_Webform_Api_Keys::check_api_key( $params['id'], $params['token'], $prefix );
         } else {
             return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );

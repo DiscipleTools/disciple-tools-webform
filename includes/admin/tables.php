@@ -131,8 +131,6 @@ class DT_Webform_Forms_List extends WP_List_Table {
 
     public function prepare_items() {
 
-        global $wpdb;
-
         $per_page = 10;
         $order = ( !empty( $_REQUEST['order'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'asc'; //If no order, default to asc
         $paged = ( !empty( $_REQUEST['paged'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['paged'] ) ) : '1'; //If no order, default to asc
@@ -163,8 +161,6 @@ class DT_Webform_Forms_List extends WP_List_Table {
             'total_pages' => ceil( $total_items /$per_page )   //WE have to calculate the total number of pages
         ) );
     }
-
-
 }
 
 /**

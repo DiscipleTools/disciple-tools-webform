@@ -99,17 +99,17 @@ class DT_Webform {
             $state = get_option( 'dt_webform_state' );
             switch ( $state ) {
                 case 'combined':
-                    $instance->includes();
                     $instance->home();
                     $instance->remote();
+                    $instance->includes();
                     break;
                 case 'home':
-                    $instance->includes();
                     $instance->home();
+                    $instance->includes();
                     break;
                 case 'remote':
-                    $instance->includes();
                     $instance->remote();
+                    $instance->includes();
                     break;
                 default: // if no option exists, then the plugin is forced to selection screen.
                     $instance->initialize_plugin_state();
@@ -130,9 +130,9 @@ class DT_Webform {
     private function initialize_plugin_state() {
 
         if ( is_admin() ) {
-            // Admin and tabs menu
-            require_once( 'includes/admin/admin.php' );
-            require_once( 'includes/admin/admin-menu-and-tabs.php' );
+            $this->home();
+            $this->remote();
+            $this->includes();
         }
     }
 
@@ -173,10 +173,10 @@ class DT_Webform {
 
         require_once( 'includes/remote/active-forms-post-type.php' );
         require_once( 'includes/remote/new-leads-post-type.php' ); // post type for the new leads post type
+        require_once( 'includes/admin/tables.php' );
         require_once( 'includes/admin/api-keys.php' ); // api key service
         require_once( 'includes/admin/admin.php' );
         require_once( 'includes/assets/enqueue-scripts.php' ); // enqueue scripts and styles
-        require_once( 'includes/admin/tables.php' );
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {
@@ -272,6 +272,10 @@ class DT_Webform {
      * @return void
      */
     public static function deactivation() {
+        delete_option('dt_webform_options');
+        delete_option('dt_webform_state');
+        delete_option('external_updates-disciple-tools-webform');
+        delete_option('dt_webform_site_api_keys');
     }
 
     /**

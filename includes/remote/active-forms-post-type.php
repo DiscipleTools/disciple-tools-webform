@@ -143,8 +143,28 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function load_statistics_meta_box( $post )
     {
-        echo 'Leads Received: ' . esc_attr( get_post_meta( $post->ID, 'leads_received', true ) ) . '<br> ';
-        echo 'Leads Transferred: ' . esc_attr( get_post_meta( $post->ID, 'leads_transferred', true ) ) . '<br> ';
+        global $pagenow;
+
+        if ( 'post-new.php' == $pagenow ) {
+
+            echo 'Leads list will display after you save the new form';
+
+        } else {
+
+            $received = esc_attr( get_post_meta( $post->ID, 'leads_received', true ) );
+            if ( ! $received ) {
+                $received = 0;
+                update_post_meta( $post->ID, 'leads_received', $received );
+            }
+            $transferred = esc_attr( get_post_meta( $post->ID, 'leads_transferred', true ) );
+            if ( ! $transferred ) {
+                $transferred = 0;
+                update_post_meta( $post->ID, 'leads_transferred', $transferred );
+            }
+            echo 'Leads Received: ' . $received . '<br> ';
+            echo 'Leads Transferred: ' . $transferred . '<br> ';
+
+        }
     }
 
     /**
@@ -288,7 +308,7 @@ class DT_Webform_Active_Form_Post_Type
                             echo '</td><tr/>' . "\n";
                             break;
                         case 'hidden':
-                            echo '<input name="' . esc_attr( $k ) . '" type="hidden" id="' . esc_attr( $k ) . '" class="regular-text" value="' . esc_attr( $data ) . '" />';
+//                            echo '<input name="' . esc_attr( $k ) . '" type="hidden" id="' . esc_attr( $k ) . '" class="regular-text" value="' . esc_attr( $data ) . '" />';
                             break;
                         case 'date':
                             echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td>
@@ -435,23 +455,6 @@ class DT_Webform_Active_Form_Post_Type
         'default'     => DT_Webform_Api_Keys::generate_token( 16 ),
         'section'     => 'info',
         ];
-
-        $fields['leads_received'] = [
-        'name'        => __( 'Leads Received', 'dt_webform' ),
-        'description' => '',
-        'type'        => 'hidden',
-        'default'     => 0,
-        'section'     => 'info',
-        ];
-        $fields['leads_transferred'] = [
-        'name'        => __( 'Leads Transferred', 'dt_webform' ),
-        'description' => '',
-        'type'        => 'hidden',
-        'default'     => 0,
-        'section'     => 'info',
-        ];
-
-
 
         return apply_filters( 'dt_custom_fields_settings', $fields );
     } // End get_custom_fields_settings()

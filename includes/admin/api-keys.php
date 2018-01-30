@@ -54,9 +54,9 @@ class DT_Webform_Api_Keys
                         return $keys;
                     }
 
-                    $id = wordwrap( strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ), 1, '-', 0 );
+                    $id = trim( wordwrap( strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ), 1, '-', 0 ) );
                     $token = self::generate_token( 32 );
-                    $url = sanitize_text_field( wp_unslash( $_POST['url'] ) );
+                    $url = trim(sanitize_text_field( wp_unslash( $_POST['url'] ) ) );
 
                     if ( ! isset( $keys[ $id ] ) ) {
                         $keys[ $id ] = [
@@ -87,9 +87,9 @@ class DT_Webform_Api_Keys
                         return $keys;
                     }
 
-                    $id     = sanitize_text_field( wp_unslash( $_POST['id'] ) );
-                    $token  = sanitize_key( wp_unslash( $_POST['token'] ) );
-                    $url    = sanitize_text_field( wp_unslash( $_POST['url'] ) );
+                    $id     = trim( wordwrap( strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ), 1, '-', 0 ) );
+                    $token  = trim( sanitize_key( wp_unslash( $_POST['token'] ) ) );
+                    $url    = trim( sanitize_text_field( wp_unslash( $_POST['url'] ) ) );
 
                     $keys[ $id ] = [
                         'id'    => $id,
@@ -121,6 +121,59 @@ class DT_Webform_Api_Keys
     public static function generate_token( $length = 32 ) {
         return bin2hex( random_bytes( $length ) );
     }
+
+    /**
+     * This method ecrypts with md5 and the GMT date. So every day, this encryption will change. Using this method
+     * requires that both of the servers have their timezone in Settings > General > Timezone correctly set.
+     *
+     * @note Key changes every hour
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    public static function one_hour_encryption( $value ) {
+        return md5( $value . current_time( 'Y-m-dH', 1 ) );
+    }
+
+    /**
+     * Tests id or token against options values. Decrypts md5 hash created with one_hour_encryption
+     *
+     * @param $type     ( Can be either 'id' or 'token' )
+     * @param $value
+     *
+     * @return string|\WP_Error
+     */
+    public static function check_one_hour_encryption( $type, $value ) {
+        switch( $type ) {
+            case 'id':
+                $keys = get_option( 'dt_webform_site_api_keys', [] );
+                foreach( $keys as $key => $array ) {
+                    if( md5( $key . current_time( 'Y-m-dH', 1 ) ) == $value ) {
+                        return $key;
+                    }
+                }
+                return new WP_Error('no_match_found', 'The id supplied was not found');
+                break;
+            case 'token':
+                $keys = get_option( 'dt_webform_site_api_keys', [] );
+                foreach( $keys as $key => $array ) {
+                    if( isset( $array['token'] ) && md5( $array['token'] . current_time( 'Y-m-dH', 1 ) ) == $value ) {
+                        return $key;
+                    }
+                }
+                return new WP_Error('no_match_found', 'The token supplied was not found');
+                break;
+        }
+        return new WP_Error('no_match_found', 'Missing $type designation.');
+    }
+
+    public static function check_token( $id, $token )
+    {
+        $keys = get_option( 'dt_webform_site_api_keys');
+        return isset( $keys[ $id ] ) && $keys[ $id ]['token'] == $token;
+    }
+
 
     /**
      * Check to see if an api key and token exist

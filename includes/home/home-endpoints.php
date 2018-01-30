@@ -1,23 +1,20 @@
 <?php
-
 /**
  * DT_Webform_Home_Endpoints
  *
  * @class      DT_Webform_Home_Endpoints
- * @version    0.1.0
  * @since      0.1.0
- * @package    Disciple_Tools
- */
-
-/**
- * @todo
- * 1. Create endpoint to trigger a remote get check for new leads from the forms server
- * 2.
+ * @package    DT_Webform
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
+
+/**
+ * Initialize instance
+ */
+DT_Webform_Home_Endpoints::instance();
 
 /**
  * Class DT_Webform_Home_Endpoints
@@ -74,6 +71,40 @@ class DT_Webform_Home_Endpoints
                 ],
             ]
         );
+        register_rest_route(
+            $namespace, '/webform/site_link_hash_check', [
+                [
+                    'methods'  => WP_REST_Server::READABLE,
+                    'callback' => [ $this, 'site_link_hash_check' ],
+                ],
+            ]
+        );
+        register_rest_route(
+            $namespace, '/webform/trigger_collection/(?P<id>[\w]+)', [
+                [
+                'methods'  => WP_REST_Server::READABLE,
+                'callback' => [ $this, 'trigger_collection' ],
+                ],
+            ]
+        );
+    }
+
+    public function trigger_collection( WP_REST_Request $request )
+    {
+        $params = $request->get_params();
+
+        if ( isset( $params['id'] ) ) {
+            dt_write_log( wp_remote_head('http://localhost/wp-json/dt-public/v1/webform/site_link_check') );
+            return [
+             '1' => md5( $params['id'] ),
+             '2' => md5( 'mason-the-great-22' . current_time( 'Y-m-dH', 1 ) ),
+             '3' => DT_Webform_API_Keys::one_hour_encryption( 'mason-the-great-22' ),
+             '4' => DT_Webform_API_Keys::check_one_hour_encryption( 'id', DT_Webform_API_Keys::one_hour_encryption( 'mason-the-great-22' ) ),
+             '5' => current_time( 'Y-m-dH', 1 ),
+            ];
+        } else {
+            return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
+        }
     }
 
     /**
@@ -98,5 +129,28 @@ class DT_Webform_Home_Endpoints
             return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
         }
     }
+
+    public function site_link_hash_check( WP_REST_Request $request )
+    {
+        $params = $request->get_params();
+
+
+        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
+            // check id
+            $id_result = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
+            if( is_wp_error( $id_result ) || ! $id_result ) {
+                return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
+            }
+
+            // check token
+            $token_result = DT_Webform_API_Keys::check_token( $id_result, $params['token'] );
+            if( is_wp_error( $token_result ) || ! $token_result  ) {
+                return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
+            } else {
+                return true;
+            }
+        } else {
+            return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
+        }
+    }
 }
-DT_Webform_Home_Endpoints::instance();

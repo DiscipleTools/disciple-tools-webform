@@ -62,13 +62,13 @@ class DT_Webform_Menu
 
         // Process state change form
         if ( ( isset( $_POST['initialize_plugin_state'] ) && ! empty( $_POST['initialize_plugin_state'] ) ) && ( isset( $_POST['dt_webform_select_state_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_POST['dt_webform_select_state_nonce'] ) ), 'dt_webform_select_state' ) ) ) {
-            update_option( 'dt_webform_state', sanitize_key( wp_unslash( $_POST['initialize_plugin_state'] ) ), false );
+            update_option( 'dt_webform_state', sanitize_key( wp_unslash( $_POST['initialize_plugin_state'] ) ), true );
         }
 
         // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
         $current_theme = get_option( 'current_theme' );
-        if ( ! 'Disciple Tools' == $current_theme ) {
-            update_option( 'dt_webform_state', 'remote', false );
+        if ( 'Disciple Tools' != $current_theme ) {
+            update_option( 'dt_webform_state', 'remote', true );
             add_menu_page( __( 'Webform (DT)', 'disciple_tools' ), __( 'Webform (DT)', 'disciple_tools' ), 'manage_dt', $this->token, [ $this, 'remote' ], 'dashicons-admin-generic', 59 );
         } else {
             // Load menus
@@ -211,7 +211,7 @@ class DT_Webform_Menu
                 'label' => __( 'Forms', 'dt_webform' ),
             ],
             [
-                'key' => 'home_settings',
+                'key' => 'remote_settings',
                 'label' => __( 'Settings', 'dt_webform' ),
             ],
         ];
@@ -222,7 +222,6 @@ class DT_Webform_Menu
         $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
         if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
             unset( $tab_bar[0] );
-            dt_write_log( $tab_bar );
             $active_tab = $tab_bar[1]['key'];
         }
 
@@ -258,10 +257,7 @@ class DT_Webform_Menu
 
             <?php
             switch ( $active_tab ) {
-                case "general":
-                    $object = new DT_Webform_Tab_General();
-                    $object->content();
-                    break;
+
                 case "home_settings":
                     $object = new DT_Webform_Home_Tab_Settings();
                     $object->content();
@@ -331,141 +327,6 @@ class DT_Webform_Menu
     }
 }
 
-
-/**
- * Class DT_Webform_Page_Template
- */
-class DT_Webform_Page_Template
-{
-    /**
-     * @param $section
-     */
-    public static function template( $section, $columns = 2 )
-    {
-        switch ( $columns ) {
-
-            case '1':
-                switch ( $section ) {
-                    case 'begin':
-                        ?>
-                        <div class="wrap">
-                        <div id="poststuff">
-                        <div id="post-body" class="metabox-holder columns-1">
-                        <div id="post-body-content">
-                        <!-- Main Column -->
-                        <?php
-                        break;
-
-
-                    case 'end':
-                        ?>
-                        </div><!-- postbox-container 1 -->
-                        </div><!-- post-body meta box container -->
-                        </div><!--poststuff end -->
-                        </div><!-- wrap end -->
-                        <?php
-                        break;
-                }
-                break;
-
-            case '2':
-                switch ( $section ) {
-                    case 'begin':
-                        ?>
-                        <div class="wrap">
-                        <div id="poststuff">
-                        <div id="post-body" class="metabox-holder columns-2">
-                        <div id="post-body-content">
-                        <!-- Main Column -->
-                        <?php
-                        break;
-                    case 'right_column':
-                        ?>
-                        <!-- End Main Column -->
-                        </div><!-- end post-body-content -->
-                        <div id="postbox-container-1" class="postbox-container">
-                        <!-- Right Column -->
-                        <?php
-                    break;
-                    case 'end':
-                        ?>
-                        </div><!-- postbox-container 1 -->
-                        </div><!-- post-body meta box container -->
-                        </div><!--poststuff end -->
-                        </div><!-- wrap end -->
-                        <?php
-                        break;
-                }
-                break;
-        }
-    }
-}
-
-/**
- * Class DT_Webform_Tab_General
- */
-class DT_Webform_Tab_General
-{
-    public function content()
-    {
-
-        // begin columns template
-        DT_Webform_Page_Template::template( 'begin' );
-
-        $this->main_column(); // main column content
-
-        // begin right column template
-        DT_Webform_Page_Template::template( 'right_column' );
-
-        $this->right_column(); // right column content
-
-        // end columns template
-        DT_Webform_Page_Template::template( 'end' );
-    }
-
-    public function main_column()
-    {
-        ?>
-        <!-- Box -->
-        <table class="widefat striped">
-            <thead>
-            <tr><td>Header</td></tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    Content
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br>
-        <!-- End Box -->
-        <?php
-    }
-
-    public function right_column()
-    {
-        ?>
-        <!-- Box -->
-        <table class="widefat striped">
-            <thead>
-            <tr><td>Information</td></tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    Content
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br>
-        <!-- End Box -->
-        <?php
-    }
-
-}
 
 /**
  * Class DT_Webform_Tab_Settings
@@ -555,4 +416,73 @@ class DT_Webform_Remote_Tab_Forms
         DT_Webform_Page_Template::template( 'end', 1 );
     }
 
+}
+
+/**
+ * Class DT_Webform_Page_Template
+ */
+class DT_Webform_Page_Template
+{
+    /**
+     * @param $section
+     */
+    public static function template( $section, $columns = 2 )
+    {
+        switch ( $columns ) {
+
+            case '1':
+                switch ( $section ) {
+                    case 'begin':
+                        ?>
+                        <div class="wrap">
+                        <div id="poststuff">
+                        <div id="post-body" class="metabox-holder columns-1">
+                        <div id="post-body-content">
+                        <!-- Main Column -->
+                        <?php
+                        break;
+
+
+                    case 'end':
+                        ?>
+                        </div><!-- postbox-container 1 -->
+                        </div><!-- post-body meta box container -->
+                        </div><!--poststuff end -->
+                        </div><!-- wrap end -->
+                        <?php
+                        break;
+                }
+                break;
+
+            case '2':
+                switch ( $section ) {
+                    case 'begin':
+                        ?>
+                        <div class="wrap">
+                        <div id="poststuff">
+                        <div id="post-body" class="metabox-holder columns-2">
+                        <div id="post-body-content">
+                        <!-- Main Column -->
+                        <?php
+                        break;
+                case 'right_column':
+                    ?>
+                    <!-- End Main Column -->
+                    </div><!-- end post-body-content -->
+                    <div id="postbox-container-1" class="postbox-container">
+                    <!-- Right Column -->
+                    <?php
+                    break;
+                    case 'end':
+                        ?>
+                        </div><!-- postbox-container 1 -->
+                        </div><!-- post-body meta box container -->
+                        </div><!--poststuff end -->
+                        </div><!-- wrap end -->
+                        <?php
+                        break;
+                }
+                break;
+        }
+    }
 }

@@ -19,7 +19,7 @@ class DT_Webform_Home
             <table class="widefat striped">
                 <tr>
                     <td><label for="id"><?php esc_html_e( 'Name', 'dt_webform' ) ?></label></td>
-                    <td><input type="text" id="id" name="id" required></td>
+                    <td><input type="text" id="id" name="id" required> (Case Sensitive)</td>
                 </tr>
                 <tr>
                     <td><label for="url"><?php esc_html_e( 'Remote URL', 'dt_webform' ) ?></label></td>
@@ -51,6 +51,10 @@ class DT_Webform_Home
                     <tr>
                         <td><?php esc_html_e( 'Token', 'dt_webform' ) ?></td>
                         <td><?php echo esc_html( $key['token'] ); ?></td>
+                    </tr>
+                    <tr>
+                        <td><?php esc_html_e( 'Home URL', 'dt_webform' ) ?></td>
+                        <td><?php echo esc_html( home_url() ); ?></td>
                     </tr>
                     <tr>
                         <td><?php esc_html_e( 'Remote URL', 'dt_webform' ) ?></td>
@@ -148,5 +152,7 @@ class DT_Webform_Home
         return $result;
 
     }
+
+
 
 }

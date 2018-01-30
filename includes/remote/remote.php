@@ -86,7 +86,13 @@ class DT_Webform_Remote
     }
 
     public static function manual_transfer_of_new_lead( $selected_records ) {
-        // send trigger to create contacts from new lead array records
+        foreach ( $selected_records as $selected_record ) {
+            dt_write_log( 'Requested transfer of ' . $selected_record ); // @todo finish transfer logic. unfinished
+
+        }
+//        wp_remote_post( $url, $args );
+        // trigger remote get from home server
+
     }
 
 }

@@ -465,13 +465,13 @@ class DT_Webform_Page_Template
                         <!-- Main Column -->
                         <?php
                         break;
-                case 'right_column':
-                    ?>
-                    <!-- End Main Column -->
-                    </div><!-- end post-body-content -->
-                    <div id="postbox-container-1" class="postbox-container">
-                    <!-- Right Column -->
-                    <?php
+                    case 'right_column':
+                        ?>
+                        <!-- End Main Column -->
+                        </div><!-- end post-body-content -->
+                        <div id="postbox-container-1" class="postbox-container">
+                        <!-- Right Column -->
+                        <?php
                     break;
                     case 'end':
                         ?>

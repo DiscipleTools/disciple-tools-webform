@@ -13,21 +13,20 @@ class DT_Webform_Remote
      * @return mixed
      */
     public static function clean_site_records( $keys, $prefix ) {
-        if( empty( $keys ) ) {
+        if ( empty( $keys ) ) {
             return $keys;
         }
 
-        if( count($keys) > 1 ) {
+        if ( count( $keys ) > 1 ) {
 
-            foreach( $keys as $key => $value ) {
+            foreach ( $keys as $key => $value ) {
                 $home_link = $value;
                 $cleaned[ $key ] = $value;
-                update_option($prefix . '_api_keys', $cleaned, true );
+                update_option( $prefix . '_api_keys', $cleaned, true );
                 break;
             }
-
         } else {
-            foreach( $keys as $key ) {
+            foreach ( $keys as $key ) {
                 $home_link = $key;
                 break;
             }
@@ -59,7 +58,7 @@ class DT_Webform_Remote
                     </td>
                     <td>
                         <input type="text" name="id" id="id" class="regular-text"
-                               <?php echo ( isset( $home_link['id'] ) ) ? 'value="' . esc_attr( $home_link['id'] ) . '" readonly' : '' ?> /> (case sensitive)
+                                <?php echo ( isset( $home_link['id'] ) ) ? 'value="' . esc_attr( $home_link['id'] ) . '" readonly' : '' ?> /> (case sensitive)
                     </td>
                 </tr>
                 <tr>
@@ -82,15 +81,15 @@ class DT_Webform_Remote
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <?php if( isset( $home_link['id'] ) ) : ?>
+                        <?php if ( isset( $home_link['id'] ) ) : ?>
                             <button type="submit" class="button" name="action" value="delete"><?php esc_html_e( 'Unlink Site', 'dt_webform' ) ?></button>
-                        <?php else: ?>
+                        <?php else : ?>
                             <button type="submit" class="button" name="action" value="update"><?php esc_html_e( 'Update', 'dt_webform' ) ?></button>
                         <?php endif; ?>
                     </td>
                 </tr>
 
-                <?php if( isset( $home_link['id'] ) && ! empty( $home_link ) ) : ?>
+                <?php if ( isset( $home_link['id'] ) && ! empty( $home_link ) ) : ?>
                 <tr>
                     <td colspan="2">
                         <span style="float:right">
@@ -118,11 +117,11 @@ class DT_Webform_Remote
 
     public static function manual_transfer_of_new_lead( $selected_records ) {
         // get option
-        $home = get_option('dt_webform_site_api_keys');
-        if( ! isset( $home ) || empty( $home ) ) {
-            return new WP_Error('site_settings_not_set', 'Site keys are empty.');
+        $home = get_option( 'dt_webform_site_api_keys' );
+        if ( ! isset( $home ) || empty( $home ) ) {
+            return new WP_Error( 'site_settings_not_set', 'Site keys are empty.' );
         }
-        foreach( $home as $key => $value ) {
+        foreach ( $home as $key => $value ) {
             $id = $value['id'];
             $token = $value['token'];
             $url = $value['url'];
@@ -140,7 +139,7 @@ class DT_Webform_Remote
                     'token' => $token,
                 ]
         ];
-        $result = wp_remote_get($url . '/wp-json/dt-public/v1/webform/site_link_hash_check', $args );
+        $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/site_link_hash_check', $args );
         dt_write_log( $result );
 
         // process each

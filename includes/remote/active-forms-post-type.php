@@ -161,8 +161,8 @@ class DT_Webform_Active_Form_Post_Type
                 $transferred = 0;
                 update_post_meta( $post->ID, 'leads_transferred', $transferred );
             }
-            echo 'Leads Received: ' . $received . '<br> ';
-            echo 'Leads Transferred: ' . $transferred . '<br> ';
+            echo 'Leads Received: ' . esc_attr( $received ) . '<br> ';
+            echo 'Leads Transferred: ' . esc_attr( $transferred ) . '<br> ';
 
         }
     }

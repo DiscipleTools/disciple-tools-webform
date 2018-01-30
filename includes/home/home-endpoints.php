@@ -94,7 +94,7 @@ class DT_Webform_Home_Endpoints
         $params = $request->get_params();
 
         if ( isset( $params['id'] ) ) {
-            dt_write_log( wp_remote_head('http://localhost/wp-json/dt-public/v1/webform/site_link_check') );
+            dt_write_log( wp_remote_head( 'http://localhost/wp-json/dt-public/v1/webform/site_link_check' ) );
             return [
              '1' => md5( $params['id'] ),
              '2' => md5( 'mason-the-great-22' . current_time( 'Y-m-dH', 1 ) ),
@@ -138,13 +138,13 @@ class DT_Webform_Home_Endpoints
         if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
             // check id
             $id_result = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
-            if( is_wp_error( $id_result ) || ! $id_result ) {
+            if ( is_wp_error( $id_result ) || ! $id_result ) {
                 return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
             }
 
             // check token
             $token_result = DT_Webform_API_Keys::check_token( $id_result, $params['token'] );
-            if( is_wp_error( $token_result ) || ! $token_result  ) {
+            if ( is_wp_error( $token_result ) || ! $token_result ) {
                 return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
             } else {
                 return true;

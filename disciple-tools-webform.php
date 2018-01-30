@@ -272,10 +272,10 @@ class DT_Webform {
      * @return void
      */
     public static function deactivation() {
-        delete_option('dt_webform_options');
-        delete_option('dt_webform_state');
-        delete_option('external_updates-disciple-tools-webform');
-        delete_option('dt_webform_site_api_keys');
+        delete_option( 'dt_webform_options' );
+        delete_option( 'dt_webform_state' );
+        delete_option( 'external_updates-disciple-tools-webform' );
+        delete_option( 'dt_webform_site_api_keys' );
     }
 
     /**

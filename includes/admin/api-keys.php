@@ -56,7 +56,7 @@ class DT_Webform_Api_Keys
 
                     $id = trim( wordwrap( strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ), 1, '-', 0 ) );
                     $token = self::generate_token( 32 );
-                    $url = trim(sanitize_text_field( wp_unslash( $_POST['url'] ) ) );
+                    $url = trim( sanitize_text_field( wp_unslash( $_POST['url'] ) ) );
 
                     if ( ! isset( $keys[ $id ] ) ) {
                         $keys[ $id ] = [
@@ -145,32 +145,32 @@ class DT_Webform_Api_Keys
      * @return string|\WP_Error
      */
     public static function check_one_hour_encryption( $type, $value ) {
-        switch( $type ) {
+        switch ( $type ) {
             case 'id':
                 $keys = get_option( 'dt_webform_site_api_keys', [] );
-                foreach( $keys as $key => $array ) {
-                    if( md5( $key . current_time( 'Y-m-dH', 1 ) ) == $value ) {
+                foreach ( $keys as $key => $array ) {
+                    if ( md5( $key . current_time( 'Y-m-dH', 1 ) ) == $value ) {
                         return $key;
                     }
                 }
-                return new WP_Error('no_match_found', 'The id supplied was not found');
+                return new WP_Error( 'no_match_found', 'The id supplied was not found' );
                 break;
             case 'token':
                 $keys = get_option( 'dt_webform_site_api_keys', [] );
-                foreach( $keys as $key => $array ) {
-                    if( isset( $array['token'] ) && md5( $array['token'] . current_time( 'Y-m-dH', 1 ) ) == $value ) {
+                foreach ( $keys as $key => $array ) {
+                    if ( isset( $array['token'] ) && md5( $array['token'] . current_time( 'Y-m-dH', 1 ) ) == $value ) {
                         return $key;
                     }
                 }
-                return new WP_Error('no_match_found', 'The token supplied was not found');
+                return new WP_Error( 'no_match_found', 'The token supplied was not found' );
                 break;
         }
-        return new WP_Error('no_match_found', 'Missing $type designation.');
+        return new WP_Error( 'no_match_found', 'Missing $type designation.' );
     }
 
     public static function check_token( $id, $token )
     {
-        $keys = get_option( 'dt_webform_site_api_keys');
+        $keys = get_option( 'dt_webform_site_api_keys' );
         return isset( $keys[ $id ] ) && $keys[ $id ]['token'] == $token;
     }
 

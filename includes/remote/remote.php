@@ -137,19 +137,11 @@ class DT_Webform_Remote
                 'body' => [
                     'id' => $md5_hash_id,
                     'token' => $token,
+                    'selected_records' => $selected_records,
                 ]
         ];
         $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/site_link_hash_check', $args );
-        dt_write_log( $result );
-
-        // process each
-        foreach ( $selected_records as $selected_record ) {
-            dt_write_log( 'Requested transfer of ' . $selected_record ); // @todo finish transfer logic. unfinished
-
-        }
-//        wp_remote_post( $url, $args );
-        // trigger remote get from home server
+        dt_write_log( $result['body'] );
 
     }
-
 }

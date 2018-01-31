@@ -232,6 +232,8 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
 
             case 'date':
                 return $item->post_date;
+            case 'transfer':
+                return ( get_post_meta( $item->ID, 'scheduled_for_transfer', true ) ) ? 'Yes' : '';
 
             default:
                 return print_r( $item, true ); //Show the whole array for troubleshooting purposes
@@ -254,6 +256,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
         'data'      => 'Form Data',
         'source'    => 'Source',
         'date'      => 'Date Submitted',
+        'transfer' => 'Transfer Scheduled'
         );
         return $columns;
     }
@@ -323,7 +326,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
 
         if ( 'transfer' === $this->current_action() ) {
             $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
-            DT_Webform_Remote::manual_transfer_of_new_lead( $selected_records );
+            DT_Webform_Remote::trigger_transfer_of_new_leads( false, $selected_records );
         }
     }
 

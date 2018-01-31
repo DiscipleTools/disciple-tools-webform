@@ -146,7 +146,6 @@ class DT_Webform {
 
         require_once( 'includes/home/home-endpoints.php' );
         require_once( 'includes/home/home.php' );
-        require_once( 'includes/home/async-collector.php' );
 
     }
 
@@ -179,6 +178,7 @@ class DT_Webform {
         require_once( 'includes/admin/admin.php' );
         require_once( 'includes/assets/enqueue-scripts.php' ); // enqueue scripts and styles
         require_once( 'includes/admin/wp-async-request.php' ); // ascync task manager
+        require_once( 'includes/home/async-collector.php' );
 
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.

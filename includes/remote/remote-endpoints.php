@@ -12,6 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Initialize instance
+ */
+DT_Webform_Remote_Endpoints::instance();
+/**
  * Class DT_Webform_Remote_Endpoints
  */
 class DT_Webform_Remote_Endpoints
@@ -71,6 +75,14 @@ class DT_Webform_Remote_Endpoints
                 [
                     'methods'  => WP_REST_Server::CREATABLE,
                     'callback' => [ $this, 'form_submit' ],
+                ],
+            ]
+        );
+        register_rest_route(
+            $namespace, '/webform/get_collection', [
+                [
+                    'methods'  => WP_REST_Server::READABLE,
+                    'callback' => [ $this, 'get_collection' ],
                 ],
             ]
         );
@@ -143,5 +155,42 @@ class DT_Webform_Remote_Endpoints
             return 1;
         }
     }
+
+    public function get_collection( WP_REST_Request $request )
+    {
+        $params = $request->get_params();
+
+        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
+            // check id
+            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
+            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
+                return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
+            }
+
+            // check token
+            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
+            if ( is_wp_error( $token_result ) || ! $token_result ) {
+                return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
+            } else {
+                // call async process to schedule collection
+                dt_write_log( 'remote collection end point ' );
+
+                if ( isset( $params['get_all'] ) && $params['get_all'] ) {
+                    // get all records and transfer
+                    return [
+                        'posts' => 'all posts',
+                    ];
+                } elseif ( isset( $params['selected_records'] ) && ! empty( $params['selected_records'] ) ) {
+                    return [
+                        'posts' => 'selected posts',
+                    ];
+                } else {
+                    return new WP_Error( "missing_params", "Missing either the `get_all` or the `selected_records` parameters.", [ 'status' => 400 ] );
+                }
+            }
+        } else {
+            return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
+        }
+    }
 }
-DT_Webform_Remote_Endpoints::instance();
+

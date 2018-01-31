@@ -80,7 +80,7 @@ class DT_Webform_Home_Endpoints
             ]
         );
         register_rest_route(
-            $namespace, '/webform/trigger_collection/(?P<id>[\w]+)', [
+            $namespace, '/webform/trigger_collection', [
                 [
                 'methods'  => WP_REST_Server::READABLE,
                 'callback' => [ $this, 'trigger_collection' ],
@@ -95,19 +95,25 @@ class DT_Webform_Home_Endpoints
 
         if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
             // check id
-            $id_result = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
-            if ( is_wp_error( $id_result ) || ! $id_result ) {
+            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
+            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
                 return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
             }
 
             // check token
-            $token_result = DT_Webform_API_Keys::check_token( $id_result, $params['token'] );
+            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
             if ( is_wp_error( $token_result ) || ! $token_result ) {
                 return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
             } else {
                 // call async process to schedule collection
-                $collector = new DT_Webform_Async_Collector();
-                $collector->launch( $params['selected_records'] ); // @todo left off here.
+                dt_write_log( 'trigger collection end point ' );
+
+                try {
+                    $collector = new DT_Webform_Collector();
+                    $collector->launch( $id_decrypted, $params['token'], $params['get_all'], $params['selected_records'] );
+                } catch ( Exception $e ) {
+                    return new WP_Error( 'failed_to_create_async', $e->getMessage() );
+                }
 
                 // return successful scheduled message
                 return true;
@@ -146,13 +152,13 @@ class DT_Webform_Home_Endpoints
 
         if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
             // check id
-            $id_result = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
-            if ( is_wp_error( $id_result ) || ! $id_result ) {
+            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
+            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
                 return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
             }
 
             // check token
-            $token_result = DT_Webform_API_Keys::check_token( $id_result, $params['token'] );
+            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
             if ( is_wp_error( $token_result ) || ! $token_result ) {
                 return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
             } else {

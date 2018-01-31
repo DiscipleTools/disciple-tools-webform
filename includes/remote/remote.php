@@ -115,7 +115,16 @@ class DT_Webform_Remote
         <?php
     }
 
-    public static function manual_transfer_of_new_lead( $selected_records ) {
+    /**
+     * Trigger transfer of new leads
+     *
+     * @param bool  $get_all
+     * @param array $selected_records
+     *
+     * @return bool|\WP_Error
+     */
+    public static function trigger_transfer_of_new_leads( $get_all = true, $selected_records = [] ) {
+
         // get option
         $home = get_option( 'dt_webform_site_api_keys' );
         if ( ! isset( $home ) || empty( $home ) ) {
@@ -128,20 +137,42 @@ class DT_Webform_Remote
             break;
         }
 
-        // create hash key and url
+        // Create hash key and url
         $md5_hash_id = DT_Webform_API_Keys::one_hour_encryption( $id );
 
-        // Test if site is linked
+        // Send remote request
         $args = [
                 'method' => 'GET',
                 'body' => [
                     'id' => $md5_hash_id,
                     'token' => $token,
+                    'get_all' => $get_all,
                     'selected_records' => $selected_records,
                 ]
         ];
-        $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/site_link_hash_check', $args );
-        dt_write_log( $result['body'] );
+        $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/trigger_collection', $args );
+        if ( is_wp_error( $result ) ) {
+            dt_write_log( $result );
+            return new WP_Error( 'failed_remote_get', $result->get_error_message() );
+        }
 
+
+        // if true, then tag all records with 'scheduled for transfer'
+        if ( ! empty( $selected_records ) ) {
+            foreach ( $selected_records as $selected_record) {
+                update_post_meta( $selected_record, 'scheduled_for_transfer', true );
+            }
+        } else {
+            $all_leads = new WP_Query( [ 'post_type' => 'dt_webform_new_leads' ] );
+            if ( is_wp_error( $all_leads ) ) {
+                return new WP_Error( 'new_leads_query_error', 'Failed query for new leads' );
+            }
+            if ( $all_leads->found_posts > 0 ) {
+                foreach ( $all_leads->posts as $lead ) {
+                    update_post_meta( $lead->ID, 'scheduled_for_transfer', true );
+                }
+            }
+        }
+        return true;
     }
 }

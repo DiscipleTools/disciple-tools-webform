@@ -51,14 +51,22 @@ class DT_Webform_Collector extends DT_Webform_Async_Task
         if( isset( $_POST[ 'action' ] ) && sanitize_key( wp_unslash( $_POST[ 'action' ] ) ) == 'dt_async_webform_collector' && isset( $_POST[ '_nonce' ] ) && $this->verify_async_nonce( sanitize_key( wp_unslash( $_POST[ '_nonce' ] ) ) ) ) {
 
             dt_write_log( 'collect leads inside' ); // @todo remove
-            dt_write_log( $_POST ); // @todo remove
 
-            // get Post variables
+            // @codingStandardsIgnoreLine
+            if ( ! isset( $_POST[0] ) || ! isset( $_POST[1] ) || ! isset( $_POST[2] ) || ! isset( $_POST[3] ) ) {
+                return new WP_Error( 'not_all_variables_present', 'Missing some of the required variables.' );
+            }
+
+            // @codingStandardsIgnoreLine
             $id = sanitize_key( wp_unslash( $_POST[0] ) );
             $md5_hash_id = DT_Webform_API_Keys::one_hour_encryption( $id );
+            // @codingStandardsIgnoreLine
             $token = sanitize_key( wp_unslash( $_POST[1] ) );
+            // @codingStandardsIgnoreLine
             $get_all = sanitize_key( wp_unslash( $_POST[2] ) );
+            // @codingStandardsIgnoreLine
             $selected_records = array_map( 'sanitize_key', wp_unslash( $_POST[3] ) );
+            // @codingStandardsIgnoreEnd
 
             // 1. get url
             $keys = get_option( 'dt_webform_site_api_keys' );

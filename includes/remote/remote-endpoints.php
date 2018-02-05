@@ -192,5 +192,31 @@ class DT_Webform_Remote_Endpoints
             return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
         }
     }
+
+    /**
+     * Verify the token and id of a REST request
+     * @param $params
+     *
+     * @return bool|\WP_Error
+     */
+    protected function verify_param_id_and_token( $params ) {
+        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
+            // check id
+            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
+            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
+                return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
+            }
+
+            // check token
+            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
+            if ( is_wp_error( $token_result ) || ! $token_result ) {
+                return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
+            } else {
+                return true;
+            }
+        } else {
+            return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
+        }
+    }
 }
 

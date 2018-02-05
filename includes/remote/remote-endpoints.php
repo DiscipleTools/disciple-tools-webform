@@ -86,6 +86,14 @@ class DT_Webform_Remote_Endpoints
                 ],
             ]
         );
+        register_rest_route(
+            $namespace, '/webform/delete_confirmation', [
+                [
+                    'methods'  => WP_REST_Server::READABLE,
+                    'callback' => [ $this, 'delete_confirmation' ],
+                ],
+            ]
+        );
     }
 
 
@@ -133,24 +141,15 @@ class DT_Webform_Remote_Endpoints
             }
         }
 
-        // Prepare Insert
-        $args = [
-            'post_type' => 'dt_webform_new_leads',
-            'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
-            'comment_status' => 'closed',
-            'ping_status' => 'closed',
-        ];
-        foreach ( $params as $key => $value ) {
-            $key = sanitize_text_field( wp_unslash( $key ) );
-            $value = sanitize_text_field( wp_unslash( $value ) );
-            $args['meta_input'][$key] = $value;
-        }
+        $status = DT_Webform_New_Leads_Post_Type::insert_post( $params );
 
-        // Insert
-        $status = wp_insert_post( $args, true );
         if ( is_wp_error( $status ) ) {
             return $status;
         } else {
+            // Add the form title to the record.
+            $form_title = DT_Webform_Active_Form_Post_Type::get_form_title_by_token( $params['token'] );
+            update_post_meta( $status, 'form_title', $form_title );
+            // Increment the lead for for receiving
             DT_Webform_Active_Form_Post_Type::increment_lead_received( $form_id );
             return 1;
         }
@@ -176,14 +175,44 @@ class DT_Webform_Remote_Endpoints
                 dt_write_log( 'remote collection end point ' );
 
                 if ( isset( $params['get_all'] ) && $params['get_all'] ) {
-                    // get all records and transfer
-                    return [
-                        'posts' => 'all posts',
-                    ];
+                    // get requested records
+                    $transfer_data = [];
+                    $results = new WP_Query(['post_type' => 'dt_webform_new_leads', 'post_status' => 'publish, draft']);
+                    if( $results->post_count > 0 ) {
+                        foreach( $results->posts as $result) {
+                            $meta = dt_get_simple_post_meta($result->ID);
+                            $meta['ID'] = $result->ID;
+                            unset( $meta['scheduled_for_transfer'] );
+                            $transfer_data[] = $meta;
+                        }
+                    }
+
+                    dt_write_log( $meta );
+
+                    // prepare and send back requested records
+                    return $transfer_data;
                 } elseif ( isset( $params['selected_records'] ) && ! empty( $params['selected_records'] ) ) {
-                    return [
-                        'posts' => 'selected posts',
-                    ];
+                    // get requested records
+                    $transfer_data = [];
+                    $results = new WP_Query(
+                    [
+                        'post_type' => 'dt_webform_new_leads',
+                        'post_status' => 'publish, draft',
+                        'post__in'  => array_map( 'sanitize_key', $params['selected_records'] ),
+                    ]);
+                    if( $results->post_count > 0 ) {
+                        foreach( $results->posts as $result) {
+                            $meta = dt_get_simple_post_meta($result->ID);
+                            $meta['ID'] = $result->ID;
+                            unset( $meta['scheduled_for_transfer'] );
+                            $transfer_data[] = $meta;
+                        }
+                    }
+
+                    dt_write_log( $meta );
+
+                    // prepare and send back requested records
+                    return $transfer_data;
                 } else {
                     return new WP_Error( "missing_params", "Missing either the `get_all` or the `selected_records` parameters.", [ 'status' => 400 ] );
                 }
@@ -192,6 +221,35 @@ class DT_Webform_Remote_Endpoints
             return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
         }
     }
+
+
+    public function delete_confirmation( WP_REST_Request $request )
+    {
+        $params = $request->get_params();
+        $test = $this->verify_param_id_and_token( $params );
+
+        if( ! is_wp_error( $test) && $test ) {
+            dt_write_log( $params );
+
+            foreach( $params['delete_records'] as $records ) {
+                $deleted_status[] = wp_delete_post( $records, true );
+            }
+
+            dt_write_log('Deleted: ' );
+            dt_write_log( $deleted_status );
+
+            if( is_wp_error( $deleted_status ) ) {
+                return new WP_Error( 'failed_to_delete', 'Not all records deleted' );
+            } else {
+                return 1;
+            }
+
+        } else {
+            return new WP_Error( $test->get_error_code(), $test->get_error_message() );
+        }
+
+    }
+
 
     /**
      * Verify the token and id of a REST request

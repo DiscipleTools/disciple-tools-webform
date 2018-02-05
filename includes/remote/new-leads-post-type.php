@@ -148,12 +148,11 @@ class DT_Webform_New_Leads_Post_Type
         else {
             return new WP_Error( 'format_error', 'Object or array required and not found.' );
         }
+
         // Insert
         $status = wp_insert_post( $args, true );
         return $status;
     }
-
-
 
 }
 

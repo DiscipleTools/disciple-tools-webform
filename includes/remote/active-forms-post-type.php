@@ -527,5 +527,16 @@ class DT_Webform_Active_Form_Post_Type
         return $form_object->post->ID;
     }
 
+    public static function get_form_title_by_token( $token ) {
+        $results = new WP_Query( [
+            'post_type' => 'dt_webform_forms',
+            'meta_value' => $token
+        ] );
+        if ( $results->found_posts < 0) {
+            return 'not found';
+        }
+        dt_write_log( $results->post->post_title );
+        return $results->post->post_title;
+    }
 }
 

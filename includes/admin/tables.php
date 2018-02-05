@@ -325,8 +325,10 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
         }
 
         if ( 'transfer' === $this->current_action() ) {
-            $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
-            DT_Webform_Remote::trigger_transfer_of_new_leads( false, $selected_records );
+            if ( isset( $_GET['form'] ) ) {
+                $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
+                DT_Webform_Remote::trigger_transfer_of_new_leads( false, $selected_records );
+            }
         }
     }
 

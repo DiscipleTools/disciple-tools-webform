@@ -177,10 +177,15 @@ class DT_Webform_Remote_Endpoints
                 if ( isset( $params['get_all'] ) && $params['get_all'] ) {
                     // get requested records
                     $transfer_data = [];
-                    $results = new WP_Query(['post_type' => 'dt_webform_new_leads', 'post_status' => 'publish, draft']);
-                    if( $results->post_count > 0 ) {
-                        foreach( $results->posts as $result) {
-                            $meta = dt_get_simple_post_meta($result->ID);
+                    $results = new WP_Query(
+                        [
+                            'post_type' => 'dt_webform_new_leads',
+                            'post_status' => 'publish, draft',
+                        ]
+                    );
+                    if ( $results->post_count > 0 ) {
+                        foreach ( $results->posts as $result ) {
+                            $meta = dt_get_simple_post_meta( $result->ID );
                             $meta['ID'] = $result->ID;
                             unset( $meta['scheduled_for_transfer'] );
                             $transfer_data[] = $meta;
@@ -195,14 +200,15 @@ class DT_Webform_Remote_Endpoints
                     // get requested records
                     $transfer_data = [];
                     $results = new WP_Query(
-                    [
-                        'post_type' => 'dt_webform_new_leads',
-                        'post_status' => 'publish, draft',
-                        'post__in'  => array_map( 'sanitize_key', $params['selected_records'] ),
-                    ]);
-                    if( $results->post_count > 0 ) {
-                        foreach( $results->posts as $result) {
-                            $meta = dt_get_simple_post_meta($result->ID);
+                        [
+                            'post_type' => 'dt_webform_new_leads',
+                            'post_status' => 'publish, draft',
+                            'post__in'  => array_map( 'sanitize_key', $params['selected_records'] ),
+                        ]
+                    );
+                    if ( $results->post_count > 0 ) {
+                        foreach ( $results->posts as $result ) {
+                            $meta = dt_get_simple_post_meta( $result->ID );
                             $meta['ID'] = $result->ID;
                             unset( $meta['scheduled_for_transfer'] );
                             $transfer_data[] = $meta;
@@ -228,22 +234,18 @@ class DT_Webform_Remote_Endpoints
         $params = $request->get_params();
         $test = $this->verify_param_id_and_token( $params );
 
-        if( ! is_wp_error( $test) && $test ) {
+        if ( ! is_wp_error( $test ) && $test ) {
             dt_write_log( $params );
 
-            foreach( $params['delete_records'] as $records ) {
+            foreach ( $params['delete_records'] as $records ) {
                 $deleted_status[] = wp_delete_post( $records, true );
             }
 
-            dt_write_log('Deleted: ' );
-            dt_write_log( $deleted_status );
-
-            if( is_wp_error( $deleted_status ) ) {
+            if ( is_wp_error( $deleted_status ) ) {
                 return new WP_Error( 'failed_to_delete', 'Not all records deleted' );
             } else {
                 return 1;
             }
-
         } else {
             return new WP_Error( $test->get_error_code(), $test->get_error_message() );
         }

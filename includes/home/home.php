@@ -147,7 +147,11 @@ class DT_Webform_Home
         DT_Webform_Active_Form_Post_Type::increment_lead_transferred( $form_id );
 
         // Delete new lead after success
-        wp_delete_post( $new_lead_id, true );
+        $delete_result = wp_delete_post( $new_lead_id, true );
+        if ( is_wp_error( $delete_result ) ) {
+            dt_write_log( $delete_result );
+            return new WP_Error( 'failed_to_delete_contact', $result->get_error_message() );
+        }
 
         return $result;
 

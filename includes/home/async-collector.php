@@ -125,7 +125,7 @@ class DT_Webform_Collector extends DT_Webform_Async_Task
                     ];
                     $delete_result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/delete_confirmation', $delete_args );
 
-                    dt_write_log( json_decode(  $delete_result['body'] ) );
+                    dt_write_log( json_decode( $delete_result['body'] ) );
 
                 }
             }

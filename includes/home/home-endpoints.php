@@ -72,60 +72,17 @@ class DT_Webform_Home_Endpoints
             ]
         );
         register_rest_route(
-            $namespace, '/webform/site_link_hash_check', [
-                [
-                    'methods'  => WP_REST_Server::READABLE,
-                    'callback' => [ $this, 'site_link_hash_check' ],
-                ],
-            ]
-        );
-        register_rest_route(
-            $namespace, '/webform/trigger_collection', [
+            $namespace, '/webform/transfer_collection', [
                 [
                 'methods'  => WP_REST_Server::READABLE,
-                'callback' => [ $this, 'trigger_collection' ],
+                'callback' => [ $this, 'transfer_collection' ],
                 ],
             ]
         );
-    }
-
-    public function trigger_collection( WP_REST_Request $request )
-    {
-        $params = $request->get_params();
-
-        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
-            // check id
-            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
-            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
-                return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
-            }
-
-            // check token
-            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
-            if ( is_wp_error( $token_result ) || ! $token_result ) {
-                return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
-            } else {
-                // call async process to schedule collection
-                dt_write_log( 'trigger collection end point ' );
-
-                try {
-                    $collector = new DT_Webform_Collector();
-                    $collector->launch( $id_decrypted, $params['token'], $params['get_all'], $params['selected_records'] );
-                } catch ( Exception $e ) {
-                    return new WP_Error( 'failed_to_create_async', $e->getMessage() );
-                }
-
-                // return successful scheduled message
-                return true;
-            }
-        } else {
-            return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
-        }
     }
 
     /**
      * Verify is site is linked
-     * @todo identical function hosted in remote-endpoints.php. Reevaluate if this is the DRYest option.
      *
      * @param  WP_REST_Request $request
      *
@@ -146,26 +103,23 @@ class DT_Webform_Home_Endpoints
         }
     }
 
-    public function site_link_hash_check( WP_REST_Request $request )
-    {
+    /**
+     * Respond to transfer request of files
+     *
+     * @param \WP_REST_Request $request
+     */
+    public function transfer_collection( WP_REST_Request $request ) {
+
         $params = $request->get_params();
+        $test = DT_Webform_Admin::verify_param_id_and_token( $params );
 
-        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
-            // check id
-            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
-            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
-                return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
-            }
+        if ( ! is_wp_error( $test ) && $test ) {
+            // @todo build the transfer reception
 
-            // check token
-            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
-            if ( is_wp_error( $token_result ) || ! $token_result ) {
-                return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
-            } else {
-                return true;
-            }
-        } else {
-            return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
+            dt_write_log( $params );
+
+
+
         }
     }
 }

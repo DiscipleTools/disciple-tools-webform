@@ -319,6 +319,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
                 $result = DT_Webform_Home::create_contact_record( $selected_record );
 
                 if ( is_wp_error( $result ) ) {
+                    dt_write_log( 'process_bulk_action()' );
                     dt_write_log( 'failed to create contact ' . $selected_record . ' (' . $result->get_error_message() . ')' ); // @todo do something with a failed record approval
                 }
             }
@@ -327,7 +328,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
         if ( 'transfer' === $this->current_action() ) {
             if ( isset( $_GET['form'] ) ) {
                 $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
-                DT_Webform_Remote::trigger_transfer_of_new_leads( false, $selected_records );
+                DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
             }
         }
     }

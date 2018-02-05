@@ -103,6 +103,10 @@ class DT_Webform_New_Leads_Post_Type
 
     }
 
+    /**
+     * Process lead immediately because the options are set to 'auto_approve'
+     * @param $post_id
+     */
     public function auto_accept( $post_id ) {
         $options = get_option( 'dt_webform_options' );
         if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
@@ -113,40 +117,21 @@ class DT_Webform_New_Leads_Post_Type
     /**
      * Insert Post
      *
-     * @return array|\WP_Error
+     * @return int|\WP_Error
      */
     public static function insert_post( $params ) {
-        if ( is_object( $params ) ) {
-            // Prepare Insert
-            $args = [
-            'post_type' => 'dt_webform_new_leads',
-            'post_title' => sanitize_text_field( wp_unslash( $params->name ) ),
-            'comment_status' => 'closed',
-            'ping_status' => 'closed',
-            ];
-            foreach ( $params as $key => $value ) {
-                $key = sanitize_text_field( wp_unslash( $key ) );
-                $value = sanitize_text_field( wp_unslash( $value ) );
-                $args['meta_input'][$key] = $value;
-            }
-        }
-        elseif ( is_array( $params ) )
-        {
-            // Prepare Insert
-            $args = [
+
+        // Prepare Insert
+        $args = [
             'post_type' => 'dt_webform_new_leads',
             'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
             'comment_status' => 'closed',
             'ping_status' => 'closed',
-            ];
-            foreach ( $params as $key => $value ) {
-                $key = sanitize_text_field( wp_unslash( $key ) );
-                $value = sanitize_text_field( wp_unslash( $value ) );
-                $args['meta_input'][$key] = $value;
-            }
-        }
-        else {
-            return new WP_Error( 'format_error', 'Object or array required and not found.' );
+        ];
+        foreach ( $params as $key => $value ) {
+            $key = sanitize_text_field( wp_unslash( $key ) );
+            $value = sanitize_text_field( wp_unslash( $value ) );
+            $args['meta_input'][$key] = $value;
         }
 
         // Insert

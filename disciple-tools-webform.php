@@ -171,15 +171,13 @@ class DT_Webform {
      */
     private function includes() {
 
-        require_once( 'includes/remote/active-forms-post-type.php' );
-        require_once( 'includes/remote/new-leads-post-type.php' ); // post type for the new leads post type
+        require_once( 'includes/admin/active-forms-post-type.php' );
+        require_once( 'includes/admin/new-leads-post-type.php' ); // post type for the new leads post type
         require_once( 'includes/admin/tables.php' );
         require_once( 'includes/admin/api-keys.php' ); // api key service
         require_once( 'includes/admin/admin.php' );
         require_once( 'includes/assets/enqueue-scripts.php' ); // enqueue scripts and styles
-        require_once( 'includes/admin/wp-async-request.php' ); // ascync task manager
-        require_once( 'includes/home/async-collector.php' );
-
+        require_once( 'includes/admin/wp-async-request.php' ); // async task manager
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {

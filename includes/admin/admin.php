@@ -118,6 +118,10 @@ class DT_Webform_Admin
 
         // Get status of auto approve
         $options = get_option( 'dt_webform_options' );
+        if ( ! self::is_sites_keys_set() ) {
+            self::set_auto_approve_to_false();
+            $options['auto_approve'] = false;
+        }
 
         ?>
         <form method="post" action="">
@@ -202,6 +206,22 @@ class DT_Webform_Admin
         } else {
             return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
         }
+    }
+
+    public static function set_auto_approve_to_false() {
+        $options = get_option( 'dt_webform_options' );
+        $options['auto_approve'] = false;
+        update_option( 'dt_webform_options', $options, false );
+    }
+
+    public static function is_sites_keys_set() {
+        if ( 'remote' == get_option( 'dt_webform_state' ) ) {
+            $site = get_option( 'dt_webform_site_api_keys' );
+            if ( count( $site ) < 1 || ! $site ) { // if no site is connected, then disable auto_approve
+                return false;
+            }
+        }
+        return true;
     }
 
 }

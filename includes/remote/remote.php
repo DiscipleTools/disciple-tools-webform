@@ -129,6 +129,12 @@ class DT_Webform_Remote
         // get option
         $home = get_option( 'dt_webform_site_api_keys' );
         if ( ! isset( $home ) || empty( $home ) ) {
+            // set auto post to false
+            $options = get_option( 'dt_webform_options' );
+            $options['auto_approve'] = false;
+            update_option( 'dt_webform_options', $options, false );
+
+            // respond with error
             return new WP_Error( 'site_settings_not_set', 'Site keys are empty.' );
         }
         foreach ( $home as $key => $value ) {

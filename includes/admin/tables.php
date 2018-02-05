@@ -210,7 +210,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
                 // list form contents
                 $meta = dt_get_simple_post_meta( $item->ID );
                 foreach ( $meta as $key => $value ) {
-                    if ( 'token' != $key && 'last_modified' != $key ) {
+                    if ( 'name' == $key || 'email' == $key || 'phone' == $key ) {
                         print esc_attr( $key ) . ': ' . esc_attr( $value ) . '<br>';
                     }
                 }

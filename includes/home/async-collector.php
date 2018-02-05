@@ -82,8 +82,8 @@ class DT_Webform_Collector extends DT_Webform_Async_Task
             if ( $get_all ) {
                 // if get all is true, then get all available leads from remote source
             } else {
-                // else, get selected records
 
+                // GET selected records from remote
                 $args = [
                     'method' => 'GET',
                     'body' => [
@@ -94,9 +94,39 @@ class DT_Webform_Collector extends DT_Webform_Async_Task
                     ]
                 ];
                 $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/get_collection', $args );
-                dt_write_log( $result['body'] );
+
                 if ( is_wp_error( $result ) ) {
                     return new WP_Error( 'failed_remote_get', $result->get_error_message() );
+                }
+                $records = json_decode( $result['body'] );
+
+                // INSERT selected records
+                if ( count( $records ) > 0 ) {
+                    foreach ( $records as $params ) {
+
+                        $status = DT_Webform_New_Leads_Post_Type::insert_post( $params );
+
+                        if ( is_wp_error( $status ) ) {
+                            $error[] = $status;
+                        } else {
+                            $delete_records[] = $status['old_id'];
+                        }
+                    }
+
+                    // DELETE successful records from remote
+                    $md5_hash_id = DT_Webform_API_Keys::one_hour_encryption( $id );
+                    $delete_args = [
+                        'method' => 'GET',
+                        'body' => [
+                            'id' => $md5_hash_id,
+                            'token' => $token,
+                            'delete_records' => $delete_records,
+                        ]
+                    ];
+                    $delete_result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/delete_confirmation', $delete_args );
+
+                    dt_write_log( json_decode(  $delete_result['body'] ) );
+
                 }
             }
 

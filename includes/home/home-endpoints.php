@@ -107,6 +107,7 @@ class DT_Webform_Home_Endpoints
      * Respond to transfer request of files
      *
      * @param \WP_REST_Request $request
+     * @return array|\WP_Error
      */
     public function transfer_collection( WP_REST_Request $request ) {
 
@@ -114,12 +115,25 @@ class DT_Webform_Home_Endpoints
         $test = DT_Webform_Admin::verify_param_id_and_token( $params );
 
         if ( ! is_wp_error( $test ) && $test ) {
-            // @todo build the transfer reception
+            if ( isset( $params['selected_records'] ) && ! empty( $params['selected_records'] ) ) {
 
-            dt_write_log( $params );
+                $old_records = [];
+                foreach ( $params['selected_records'] as $record ) {
+                    $result = DT_Webform_New_Leads_Post_Type::insert_post( $record );
 
+                    if ( is_wp_error( $result ) || empty( $result ) ) {
+                        $error[] = new WP_Error( 'failed_insert', 'Failed record ' . $record['ID'] );
+                    } else {
+                        $old_records[] = $record['ID'];
+                    }
+                }
+                return $old_records;
 
-
+            } else {
+                return new WP_Error( 'malformed_content', 'Did not find `selected_records` in array.' );
+            }
+        } else {
+            return new WP_Error( 'failed_authentication', 'Failed id and/or token authentication.' );
         }
     }
 }

@@ -156,11 +156,21 @@ class DT_Webform_Remote
             ]
         ];
         $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/transfer_collection', $args );
+
         if ( is_wp_error( $result ) ) {
             return new WP_Error( 'failed_remote_get', $result->get_error_message() );
         }
 
-        // @todo Check if transfer successful, then delete local record
+        if ( isset( $result['body'] ) && ! empty( $result['body'] ) && count( $result['body'] ) > 0 ) {
+            $records = json_decode( $result['body'] );
+
+            foreach ( $records as $record ) {
+                wp_delete_post( $record, true );
+            }
+
+            dt_write_log( 'Start deleting process' );
+            dt_write_log( $records );
+        }
 
         return true;
     }

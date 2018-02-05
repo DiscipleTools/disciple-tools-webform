@@ -113,50 +113,43 @@ class DT_Webform_Home
 
         // Get the id of the form source of the lead
         if ( ! isset( $new_lead_meta['token'] ) || empty( $new_lead_meta['token'] ) ) {
+            dt_write_log( 'Missing token' );
             return new WP_Error( 'missing_contact_info', 'Missing token' );
         }
-        $form_object = new WP_Query( [
-            'post_type' => 'dt_webform_forms',
-            'meta_key' => 'token',
-            'meta_value' => $new_lead_meta['token']
-        ] );
-        if ( is_wp_error( $form_object ) || $form_object->found_posts < 1 ) {
-            return new WP_Error( 'missing_contact_info', 'Failed to get Form object' );
-        }
-
-        $form_id = $form_object->post->ID;
 
         // Build record
         if ( ! isset( $new_lead_meta['name'] ) || empty( $new_lead_meta['name'] ) ) {
+            dt_write_log( 'Missing name' );
             return new WP_Error( 'missing_contact_info', 'Missing name' );
         }
+
+        if ( ! isset( $new_lead_meta['form_title'] ) || empty( $new_lead_meta['form_title'] ) ) {
+            $form_title = 'unknown (token: ' . $new_lead_meta['token'];
+        } else {
+            $form_title = $new_lead_meta['form_title'];
+        }
+
         $fields = [
             'title' => $new_lead_meta['name'],
             'phone' => ( isset( $new_lead_meta['phone'] ) ) ? $new_lead_meta['phone'] : '',
             'email' => ( isset( $new_lead_meta['email'] ) ) ? $new_lead_meta['email'] : '',
-            'initial_comment' => __( 'Original Source: Webform ' ) . '(' . $form_object->post->post_title . ')',
+            'initial_comment' => __( 'Original Source: Webform ' ) . '(' . $form_title . ')',
         ];
 
         // Post to contact
         $result = Disciple_Tools_Contacts::create_contact( $fields, $check_permission );
         if ( is_wp_error( $result ) ) {
+            dt_write_log( 'failed_to_insert_contact' );
             return new WP_Error( 'failed_to_insert_contact', $result->get_error_message() );
         }
-
-        // Increment successful transfer
-        DT_Webform_Active_Form_Post_Type::increment_lead_transferred( $form_id );
 
         // Delete new lead after success
         $delete_result = wp_delete_post( $new_lead_id, true );
         if ( is_wp_error( $delete_result ) ) {
-            dt_write_log( $delete_result );
+            dt_write_log( 'failed_to_delete_contact' );
             return new WP_Error( 'failed_to_delete_contact', $result->get_error_message() );
         }
 
         return $result;
-
     }
-
-
-
 }

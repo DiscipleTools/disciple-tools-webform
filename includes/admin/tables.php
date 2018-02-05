@@ -315,7 +315,10 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
 
             $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
 
+            dt_write_log( $selected_records );
+
             foreach ( $selected_records as $selected_record ) {
+
                 $result = DT_Webform_Home::create_contact_record( $selected_record );
 
                 if ( is_wp_error( $result ) ) {

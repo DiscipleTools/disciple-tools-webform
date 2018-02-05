@@ -177,7 +177,7 @@ class DT_Webform {
         require_once( 'includes/admin/api-keys.php' ); // api key service
         require_once( 'includes/admin/admin.php' );
         require_once( 'includes/assets/enqueue-scripts.php' ); // enqueue scripts and styles
-        require_once( 'includes/admin/wp-async-request.php' ); // async task manager
+        require_once( 'includes/admin/wp-async-request.php' ); // async task manager @todo see if still needed
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {

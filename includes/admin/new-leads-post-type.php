@@ -116,7 +116,7 @@ class DT_Webform_New_Leads_Post_Type
         }
         elseif ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) { // if auto approve is set
             $state = get_option( 'dt_webform_state' );
-            if( 'remote' == $state ) {
+            if ( 'remote' == $state ) {
                 $selected_records[] = $post_id;
                 DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
             } else {

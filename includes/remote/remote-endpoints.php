@@ -222,6 +222,7 @@ class DT_Webform_Remote_Endpoints
         }
     }
 
+
     public function delete_confirmation( WP_REST_Request $request )
     {
         $params = $request->get_params();
@@ -249,6 +250,7 @@ class DT_Webform_Remote_Endpoints
 
     }
 
+
     /**
      * Verify the token and id of a REST request
      * @param $params
@@ -274,6 +276,5 @@ class DT_Webform_Remote_Endpoints
             return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
         }
     }
-
 }
 

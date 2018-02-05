@@ -111,6 +111,8 @@ class DT_Webform_New_Leads_Post_Type
     }
 
     /**
+     * Insert Post
+     *
      * @return array|\WP_Error
      */
     public static function insert_post( $params ) {
@@ -127,7 +129,6 @@ class DT_Webform_New_Leads_Post_Type
                 $value = sanitize_text_field( wp_unslash( $value ) );
                 $args['meta_input'][$key] = $value;
             }
-            $old_id = $params->ID;
         }
         elseif ( is_array( $params ) )
         {
@@ -143,22 +144,15 @@ class DT_Webform_New_Leads_Post_Type
                 $value = sanitize_text_field( wp_unslash( $value ) );
                 $args['meta_input'][$key] = $value;
             }
-            $old_id = $params['ID'];
         }
         else {
             return new WP_Error( 'format_error', 'Object or array required and not found.' );
         }
 
-
         // Insert
         $status = wp_insert_post( $args, true );
-
-        return [
-            'new_id' => $status,
-            'old_id' => $old_id,
-        ];
+        return $status;
     }
-
 
 }
 

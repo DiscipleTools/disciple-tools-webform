@@ -180,4 +180,8 @@ class DT_Webform_Remote
 
         return true;
     }
+
+    public static function get_custom_css( $token ) {
+
+    }
 }

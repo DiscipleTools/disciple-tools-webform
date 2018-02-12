@@ -78,6 +78,14 @@ class DT_Webform_Remote_Endpoints
                 ],
             ]
         );
+        register_rest_route(
+            $namespace, '/webform/custom_css', [
+                [
+                    'methods'  => WP_REST_Server::READABLE,
+                    'callback' => [ $this, 'custom_css' ],
+                ],
+            ]
+        );
     }
 
 
@@ -135,6 +143,26 @@ class DT_Webform_Remote_Endpoints
             // Increment the lead for for receiving
             DT_Webform_Active_Form_Post_Type::increment_lead_received( $form_id );
             return 1;
+        }
+    }
+
+    /**
+     * Verify is site is linked
+     *
+     * @param  WP_REST_Request $request
+     *
+     * @access public
+     * @since  0.1.0
+     * @return string|WP_Error|array The contact on success
+     */
+    public function custom_css( WP_REST_Request $request )
+    {
+        $params = $request->get_params();
+
+        if ( isset( $params['token'] ) ) {
+            return DT_Webform_Remote::get_custom_css( $params['token'] );
+        } else {
+            return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
         }
     }
 }

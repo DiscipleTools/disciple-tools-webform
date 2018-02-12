@@ -4,10 +4,12 @@
     <script src="jquery-migrate-1.4.1.min.js"></script>
     <script src="jquery.validate.min.js"></script>
     <script type="text/javascript" src="public.js"></script>
+
     <script>
         jQuery(document).ready(function () {
             let token = getUrlParameter('token')
             jQuery('#token').val( token )
+            jQuery('#custom-css').append( '<link rel="stylesheet" href="custom-css.php?token=' + getUrlParameter('token') + '" type="text/css" />' )
 
         })
     </script>
@@ -28,7 +30,7 @@
 <body style="background-color:#ffffff">
 <h2>Contact Us</h2>
 
-<form id="contact_form" action="">
+<form id="contact-form" action="">
     <input type="hidden" id="token" name="token" value="" />
     <table>
         <tr>
@@ -45,12 +47,18 @@
         </tr>
         <tr>
             <td></td>
-            <td><button type="button" class="submit-button" onclick="submit_form()">Submit</button></td>
+            <td><button type="button" class="submit-button" onclick="check_form()">Submit</button></td>
         </tr>
 
     </table>
 </form>
 <div id="report"></div>
+<div id="custom-css"></div>
+
+<script>
+    var validator = jQuery('#contact-form').validate();
+    validator.form()
+</script>
 
 </body>
 </html>

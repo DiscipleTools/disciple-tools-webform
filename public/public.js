@@ -14,7 +14,17 @@ let getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
+function check_form() {
+    let validator = jQuery('#contact-form').validate();
+    let status = validator.form()
+    if( status ) {
+        submit_form()
+    }
+
+}
+
 function submit_form() {
+
     let url = get_url()
     let $inputs = jQuery(':input');
     let data = {};
@@ -31,7 +41,7 @@ function submit_form() {
     })
         .done(function (data) {
             jQuery('#report').append('Success<br>')
-
+            jQuery('input').val('')
         })
         .fail(function (err) {
             jQuery('#report').html('Failed')

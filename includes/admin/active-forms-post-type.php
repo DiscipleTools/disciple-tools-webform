@@ -297,7 +297,7 @@ class DT_Webform_Active_Form_Post_Type
                             echo '</td><tr/>' . "\n";
                             break;
                         case 'textarea':
-                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td><textarea name="' . esc_attr( $k ) . '" type="text" id="' . esc_attr( $k ) . '" class="regular-text" />' . esc_attr( $data ) . '</textarea>' . "\n";
+                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td><textarea name="' . esc_attr( $k ) . '" type="text" id="' . esc_attr( $k ) . '" class="regular-text" rows="5" />' . esc_attr( $data ) . '</textarea>' . "\n";
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
                             break;
@@ -448,12 +448,19 @@ class DT_Webform_Active_Form_Post_Type
             ],
             'section'     => 'info',
         ];
+        $fields['custom_css'] = [
+            'name'        => __( 'Custom CSS', 'dt_webform' ),
+            'description' => '',
+            'type'        => 'textarea',
+            'default'     => '',
+            'section'     => 'info',
+        ];
         $fields['token'] = [
-        'name'        => __( 'Token', 'dt_webform' ),
-        'description' => '',
-        'type'        => 'display_only',
-        'default'     => DT_Webform_Api_Keys::generate_token( 16 ),
-        'section'     => 'info',
+            'name'        => __( 'Token', 'dt_webform' ),
+            'description' => '',
+            'type'        => 'display_only',
+            'default'     => DT_Webform_Api_Keys::generate_token( 16 ),
+            'section'     => 'info',
         ];
 
         return apply_filters( 'dt_custom_fields_settings', $fields );
@@ -519,7 +526,8 @@ class DT_Webform_Active_Form_Post_Type
         $form_object = new WP_Query( [
             'post_type' => 'dt_webform_forms',
             'meta_key' => 'token',
-            'meta_value' => $token
+            'meta_value' => $token,
+            'post_status' => 'draft, publish',
         ] );
         if ( is_wp_error( $form_object ) || $form_object->found_posts < 1 ) {
             return false;

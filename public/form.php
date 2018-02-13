@@ -62,23 +62,23 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
     <div class="errorTxt"></div>
 
     <p class="section">
-        <label for="name"><?php esc_attr_e( 'Name', 'dt_webform') ?></label><br>
+        <label for="name"><?php esc_attr_e( 'Name', 'dt_webform' ) ?></label><br>
         <input type="text" id="name" name="name" class="input-text" value="" required/><br>
     </p>
     <p class="section">
-        <label for="phone"><?php esc_attr_e( 'Phone', 'dt_webform') ?></label><br>
+        <label for="phone"><?php esc_attr_e( 'Phone', 'dt_webform' ) ?></label><br>
         <input type="tel" id="phone" name="phone" class="input-text" value="" required/><br>
     </p>
     <p class="section">
-        <label for="email"><?php esc_attr_e( 'Email', 'dt_webform') ?></label><br>
+        <label for="email"><?php esc_attr_e( 'Email', 'dt_webform' ) ?></label><br>
         <input type="email" id="email" name="email" class="input-text" style="display:none;" value=""/>
         <input type="email" id="l" name="l" class="input-text" value=""/><br>
     </p>
 
     <?php
     $fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
-    if( count( $fields) > 0 ) {
-        foreach( $fields as $key => $value ) {
+    if ( count( $fields ) > 0 ) {
+        foreach ( $fields as $key => $value ) {
             $value = maybe_unserialize( $value );
         ?>
             <p>

@@ -569,8 +569,8 @@ class DT_Webform_Active_Form_Post_Type
 
     public static function get_form_id_by_token( $token ) {
         $results = new WP_Query( [
-        'post_type' => 'dt_webform_forms',
-        'meta_value' => $token
+            'post_type' => 'dt_webform_forms',
+            'meta_value' => $token
         ] );
         if ( $results->found_posts < 0) {
             return 'not found';
@@ -595,8 +595,8 @@ class DT_Webform_Active_Form_Post_Type
         $fields = dt_get_simple_post_meta( $post->ID );
         $custom_fields = self::filter_for_custom_fields( $fields );
 
-        if( !empty( $custom_fields ) ) {
-            foreach( $custom_fields as $key => $value ) {
+        if ( !empty( $custom_fields ) ) {
+            foreach ( $custom_fields as $key => $value ) {
                 $value = maybe_unserialize( $value );
                 ?>
                 <p id="<?php echo $key ?>">
@@ -641,7 +641,7 @@ class DT_Webform_Active_Form_Post_Type
 
         $array = self::filter_for_custom_fields( $_POST );
 
-        foreach( $array as $key => $value ) {
+        foreach ( $array as $key => $value ) {
             if ( ! get_post_meta( $post_id, $key ) ) {
                 add_post_meta( $post_id, $key, $value, true );
             } elseif ( $value == '' ) {
@@ -649,14 +649,14 @@ class DT_Webform_Active_Form_Post_Type
             } elseif ( $value != get_post_meta( $post_id, $key, true ) ) {
                 update_post_meta( $post_id, $key, $value );
             } else {
-               dt_write_log( 'No extra field update found' );
+                dt_write_log( 'No extra field update found' );
             }
         }
 
     }
     public static function filter_for_custom_fields( $array ) {
-        return array_filter( $array, function($key) {
-            return strpos($key, 'field_') === 0;
+        return array_filter( $array, function( $key) {
+            return strpos( $key, 'field_' ) === 0;
         }, ARRAY_FILTER_USE_KEY );
     }
 

@@ -54,6 +54,7 @@ class DT_Webform_Active_Form_Post_Type
 
             add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
             add_action( 'save_post', [ $this, 'meta_box_save' ] );
+            add_action( 'save_post', [ $this, 'save_extra_fields' ] );
             add_action( 'admin_head', [ $this, 'scripts' ], 20 );
         }
     }
@@ -283,7 +284,7 @@ class DT_Webform_Active_Form_Post_Type
         $fields = get_post_custom( $post_id );
         $field_data = $this->get_custom_fields_settings();
 
-        echo '<input type="hidden" name="dt_' . esc_attr( $this->post_type ) . '_noonce" id="dt_' . esc_attr( $this->post_type ) . '_noonce" value="' . esc_attr( wp_create_nonce( 'update_dt_webforms' ) ) . '" />';
+        echo '<input type="hidden" name="' . esc_attr( $this->post_type ) . '_noonce" id="' . esc_attr( $this->post_type ) . '_noonce" value="' . esc_attr( wp_create_nonce( 'update_dt_webforms' ) ) . '" />';
 
         if ( 0 < count( $field_data ) ) {
             echo '<table class="form-table">' . "\n";
@@ -373,7 +374,7 @@ class DT_Webform_Active_Form_Post_Type
         if ( get_post_type() != $this->post_type ) {
             return $post_id;
         }
-        $nonce_key = 'dt_' . $this->post_type . '_noonce';
+        $nonce_key = $this->post_type . '_noonce';
         if ( isset( $_POST[ $nonce_key ] ) && !wp_verify_nonce( sanitize_key( $_POST[ $nonce_key ] ), 'update_dt_webforms' ) ) {
             return $post_id;
         }
@@ -563,40 +564,101 @@ class DT_Webform_Active_Form_Post_Type
         if ( $results->found_posts < 0) {
             return 'not found';
         }
-        dt_write_log( $results->post->post_title );
         return $results->post->post_title;
     }
 
+    public static function get_form_id_by_token( $token ) {
+        $results = new WP_Query( [
+        'post_type' => 'dt_webform_forms',
+        'meta_value' => $token
+        ] );
+        if ( $results->found_posts < 0) {
+            return 'not found';
+        }
+        return $results->post->ID;
+    }
+
     public static function get_extra_fields( $token ) {
-        return [
-            [
-                'key' => 'field1',
-                'label' => 'Field1',
-                'type' => 'text',
-                'required' => true
-            ],
-            [
-                'key' => 'field2',
-                'label' => 'Field2',
-                'type' => 'text',
-                'required' => false
-            ],
-        ];
+
+        $post_id = self::get_form_id_by_token( $token );
+        $fields = dt_get_simple_post_meta( $post_id );
+        return self::filter_for_custom_fields( $fields );
+
     }
 
     /**
      * Load type metabox
      */
-    public function load_extra_fields_meta_box()
+    public function load_extra_fields_meta_box( $post )
     {
-        ?>
+        $unique_key = wp_create_nonce( 'unique_key' );
+        $fields = dt_get_simple_post_meta( $post->ID );
+        $custom_fields = self::filter_for_custom_fields( $fields );
+
+        if( !empty( $custom_fields ) ) {
+            foreach( $custom_fields as $key => $value ) {
+                $value = maybe_unserialize( $value );
+                ?>
+                <p id="<?php echo $key ?>">
+                    <input type="text" name="<?php echo $key ?>[key]" placeholder="key" value="<?php echo $value['key'] ?>" required/>&nbsp;
+                    <input type="text" name="<?php echo $key ?>[label]" placeholder="label" value="<?php echo $value['label'] ?>"  required/>&nbsp;
+                    <input type="text" name="<?php echo $key ?>[type]" placeholder="type" value="<?php echo $value['type'] ?>"  required/>&nbsp;
+                    <input type="text" name="<?php echo $key ?>[required]" placeholder="required" value="<?php echo $value['required'] ?>" />
+                    <button type="submit">Update</button>
+                    <button  name="<?php echo $key ?>" onclick="remove_add_custom_fields(<?php echo $key ?>)" value="" >Delete</button>
+                </p>
+                <?php
+            }
+        }
+    ?>
+
+
+        <div id="new-fields"></div>
+
         <p>
-            <input type="text" name="key" placeholder="key" /> <input type="text" name="label" placeholder="label" /> <input type="text" name="type" placeholder="type" /> <input type="text" name="required" placeholder="required" />
+            <button type="submit" class="button" onclick="add_new_custom_fields()" >Add</button>
         </p>
-        <p>
-            <button type="button" class="button" >Add</button>
-        </p>
-        <?php
+        <script>
+            function add_new_custom_fields() {
+                jQuery('#new-fields').html('<p>\n' +
+                    '                <input type="text" name="field_<?php echo $unique_key ?>[key]" placeholder="key" required/>&nbsp;\n' +
+                    '                <input type="text" name="field_<?php echo $unique_key ?>[label]" placeholder="label" required/>&nbsp;\n' +
+                    '                <input type="text" name="field_<?php echo $unique_key ?>[type]" placeholder="type" required/>&nbsp;\n' +
+                    '                <input type="text" name="field_<?php echo $unique_key ?>[required]" placeholder="required" required/>\n' +
+                    '               <button type="submit">Save</button>' +
+                    '               <button onclick="remove_add_custom_fields(new-fields)">Delete</button>' +
+                    '            </p>')
+            }
+            function remove_add_custom_fields( id ) {
+                jQuery('#' + id ).empty().submit()
+
+            }
+        </script>
+    <?php
     }
+
+    public function save_extra_fields( $post_id ) {
+
+        $array = self::filter_for_custom_fields( $_POST );
+
+        foreach( $array as $key => $value ) {
+            if ( ! get_post_meta( $post_id, $key ) ) {
+                add_post_meta( $post_id, $key, $value, true );
+            } elseif ( $value == '' ) {
+                delete_post_meta( $post_id, $key, get_post_meta( $post_id, $key, true ) );
+            } elseif ( $value != get_post_meta( $post_id, $key, true ) ) {
+                update_post_meta( $post_id, $key, $value );
+            } else {
+               dt_write_log( 'No extra field update found' );
+            }
+        }
+
+    }
+    public static function filter_for_custom_fields( $array ) {
+        return array_filter( $array, function($key) {
+            return strpos($key, 'field_') === 0;
+        }, ARRAY_FILTER_USE_KEY );
+    }
+
 }
 

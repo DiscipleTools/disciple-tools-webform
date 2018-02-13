@@ -78,11 +78,12 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
     <?php
     $fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
     if( count( $fields) > 0 ) {
-        foreach( $fields as $field ) {
+        foreach( $fields as $key => $value ) {
+            $value = maybe_unserialize( $value );
         ?>
             <p>
-                <label for="<?php echo $field['key'] ?>"><?php echo $field['label'] ?></label><br>
-                <input type="<?php echo $field['type'] ?>" id="<?php echo $field['key'] ?>" name="<?php echo $field['key'] ?>" class="input-text" value="" <?php echo $field['required'] ? 'required' : '' ?>/><br>
+                <label for="<?php echo $value['key'] ?>"><?php echo $value['label'] ?></label><br>
+                <input type="<?php echo $value['type'] ?>" id="<?php echo $value['key'] ?>" name="<?php echo $value['key'] ?>" class="input-text" value="" <?php echo $value['required'] == 'yes' ? 'required' : '' ?>/><br>
             </p>
         <?php
         }

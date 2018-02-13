@@ -120,8 +120,13 @@ class DT_Webform_Remote_Endpoints
     {
         $params = $request->get_params();
 
+        // Honeypot
+        if ( isset( $params['email'] ) && ! empty( $params['email'] ) ) {
+            return new WP_Error( "teapot_failure", "Oops. Busted you robot. Shame, shame.", [ 'status' => 418 ] );
+        }
+
         // Token Validation
-        if ( ! isset( $params['token'] ) || empty( $params['token'] ) ) { // @todo Need to add actual token checking
+        if ( ! isset( $params['token'] ) || empty( $params['token'] ) ) {
             return new WP_Error( "token_failure", "Token missing.", [ 'status' => 400 ] );
         } else {
             $token = sanitize_text_field( wp_unslash( $params['token'] ) );

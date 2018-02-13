@@ -76,7 +76,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
                 $token = get_metadata( 'post', $item->ID, 'token', true );
                 $site = dt_webform()->public_uri;
 
-                $code = '<textarea cols="30" rows="7" id="embed-'.$item->ID.'" style="display:none;"><iframe src="'. esc_attr( $site ) .'form.html?token='. esc_attr( $token )
+                $code = '<textarea cols="30" rows="7" id="embed-'.$item->ID.'" style="display:none;"><iframe src="'. esc_attr( $site ) .'form.php?token='. esc_attr( $token )
                 .'" width="'. esc_attr( $width ) .'px" height="'. esc_attr( $height ) .'px"></iframe></textarea></span>';
 
                 return $code;

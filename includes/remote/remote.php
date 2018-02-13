@@ -182,6 +182,18 @@ class DT_Webform_Remote
     }
 
     public static function get_custom_css( $token ) {
-
+        global $wpdb;
+        $css = $wpdb->get_var( $wpdb->prepare( "
+            SELECT meta_value FROM $wpdb->postmeta WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) AND meta_key = 'custom_css' LIMIT 1", $token ) );
+        return $css;
     }
+
+    public static function get_form_meta( $token ) {
+        global $wpdb;
+        $post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1", $token ) );
+        return dt_get_simple_post_meta( $post_id );
+    }
+
+
+
 }

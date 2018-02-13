@@ -123,8 +123,10 @@ class DT_Webform_Active_Form_Post_Type
     public function meta_box_setup()
     {
         add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
-        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'high' );
-        add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_appearance', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'low' );
+        add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'normal', 'low' );
 //        add_meta_box( $this->post_type . '_new_leads', __( 'New Leads', 'dt_webform' ), [ $this, 'load_new_leads_meta_box' ], $this->post_type, 'normal', 'low' );
 
@@ -137,6 +139,16 @@ class DT_Webform_Active_Form_Post_Type
     {
         $this->meta_box_content( 'info' ); // prints
     }
+
+    /**
+     * Load type metabox
+     */
+    public function load_appearance_meta_box()
+    {
+        $this->meta_box_content( 'appearance' ); // prints
+    }
+
+
 
     /**
      * Load type metabox
@@ -228,7 +240,7 @@ class DT_Webform_Active_Form_Post_Type
 
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
-            <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
+            <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
                 ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
 
         </textarea>
@@ -253,7 +265,7 @@ class DT_Webform_Active_Form_Post_Type
             $site = dt_webform()->public_uri;
 
             ?>
-            <iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
+            <iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
             ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
             <?php
         }
@@ -423,20 +435,34 @@ class DT_Webform_Active_Form_Post_Type
         'default'     => '',
         'section'     => 'info',
         ];
+        $fields['token'] = [
+        'name'        => __( 'Token', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'display_only',
+        'default'     => DT_Webform_Api_Keys::generate_token( 16 ),
+        'section'     => 'info',
+        ];
 
+        $fields['title'] = [
+        'name'        => __( 'Title', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'text',
+        'default'     => 'Contact Us',
+        'section'     => 'appearance',
+        ];
         $fields['width'] = [
         'name'        => __( 'Width', 'dt_webform' ),
         'description' => 'pixels',
         'type'        => 'text',
         'default'     => '300',
-        'section'     => 'info',
+        'section'     => 'appearance',
         ];
         $fields['height'] = [
         'name'        => __( 'Height', 'dt_webform' ),
         'description' => 'pixels',
         'type'        => 'text',
         'default'     => '300',
-        'section'     => 'info',
+        'section'     => 'appearance',
         ];
         $fields['theme'] = [
             'name'        => __( 'Theme', 'dt_webform' ),
@@ -446,22 +472,16 @@ class DT_Webform_Active_Form_Post_Type
                 'simple' => __( 'Simple', 'dt_webform' ),
                 'heavy'   => __( 'Heavy', 'dt_webform' ),
             ],
-            'section'     => 'info',
+            'section'     => 'appearance',
         ];
         $fields['custom_css'] = [
             'name'        => __( 'Custom CSS', 'dt_webform' ),
             'description' => '',
             'type'        => 'textarea',
             'default'     => '',
-            'section'     => 'info',
+            'section'     => 'appearance',
         ];
-        $fields['token'] = [
-            'name'        => __( 'Token', 'dt_webform' ),
-            'description' => '',
-            'type'        => 'display_only',
-            'default'     => DT_Webform_Api_Keys::generate_token( 16 ),
-            'section'     => 'info',
-        ];
+
 
         return apply_filters( 'dt_custom_fields_settings', $fields );
     } // End get_custom_fields_settings()
@@ -545,6 +565,38 @@ class DT_Webform_Active_Form_Post_Type
         }
         dt_write_log( $results->post->post_title );
         return $results->post->post_title;
+    }
+
+    public static function get_extra_fields( $token ) {
+        return [
+            [
+                'key' => 'field1',
+                'label' => 'Field1',
+                'type' => 'text',
+                'required' => true
+            ],
+            [
+                'key' => 'field2',
+                'label' => 'Field2',
+                'type' => 'text',
+                'required' => false
+            ],
+        ];
+    }
+
+    /**
+     * Load type metabox
+     */
+    public function load_extra_fields_meta_box()
+    {
+        ?>
+        <p>
+            <input type="text" name="key" placeholder="key" /> <input type="text" name="label" placeholder="label" /> <input type="text" name="type" placeholder="type" /> <input type="text" name="required" placeholder="required" />
+        </p>
+        <p>
+            <button type="button" class="button" >Add</button>
+        </p>
+        <?php
     }
 }
 

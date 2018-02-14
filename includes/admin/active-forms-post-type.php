@@ -129,7 +129,6 @@ class DT_Webform_Active_Form_Post_Type
         add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'normal', 'low' );
-//        add_meta_box( $this->post_type . '_new_leads', __( 'New Leads', 'dt_webform' ), [ $this, 'load_new_leads_meta_box' ], $this->post_type, 'normal', 'low' );
 
     }
 
@@ -146,7 +145,20 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function load_appearance_meta_box()
     {
-        $this->meta_box_content( 'appearance' ); // prints
+        global $pagenow;
+
+        if ( 'post-new.php' == $pagenow ) {
+
+            echo 'Leads list will display after you save the new form';
+            echo '<div style="display:none;">';
+            $this->meta_box_content( 'appearance' ); // prints
+            echo '</div>';
+
+        } else {
+
+            $this->meta_box_content( 'appearance' ); // prints
+
+        }
     }
 
 
@@ -451,18 +463,32 @@ class DT_Webform_Active_Form_Post_Type
         'default'     => 'Contact Us',
         'section'     => 'appearance',
         ];
+        $fields['comments_title'] = [
+        'name'        => __( 'Comment Title', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'text',
+        'default'     => 'Comments',
+        'section'     => 'appearance',
+        ];
+        $fields['hidden_input'] = [
+        'name'        => __( 'Hidden Input', 'dt_webform' ),
+        'description' => 'This is a hidden input that will be submitted with the form and stored as a note in the contact. Useful for tags.',
+        'type'        => 'text',
+        'default'     => '',
+        'section'     => 'appearance',
+        ];
         $fields['width'] = [
         'name'        => __( 'Width', 'dt_webform' ),
-        'description' => 'pixels',
+        'description' => 'number of pixels',
         'type'        => 'text',
-        'default'     => '300',
+        'default'     => '250',
         'section'     => 'appearance',
         ];
         $fields['height'] = [
         'name'        => __( 'Height', 'dt_webform' ),
-        'description' => 'pixels',
+        'description' => 'number of pixels',
         'type'        => 'text',
-        'default'     => '300',
+        'default'     => '475',
         'section'     => 'appearance',
         ];
         $fields['theme'] = [
@@ -472,12 +498,23 @@ class DT_Webform_Active_Form_Post_Type
             'default'     => [
                 'simple' => __( 'Simple', 'dt_webform' ),
                 'heavy'   => __( 'Heavy', 'dt_webform' ),
+                'none'   => __( 'None', 'dt_webform' ),
             ],
             'section'     => 'appearance',
         ];
         $fields['custom_css'] = [
             'name'        => __( 'Custom CSS', 'dt_webform' ),
-            'description' => '',
+            'description' => '#contact-form {}
+                    .section {}
+                    #name {}
+                    #phone {}
+                    #email {}
+                    #comments {}
+                    input.input-text {}
+                    button.submit-button {}
+                    p.title {}
+                    label.error {}
+                    .input-label {}',
             'type'        => 'textarea',
             'default'     => '',
             'section'     => 'appearance',
@@ -591,74 +628,143 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function load_extra_fields_meta_box( $post )
     {
-        $unique_key = wp_create_nonce( 'unique_key' );
-        $fields = dt_get_simple_post_meta( $post->ID );
-        $custom_fields = self::filter_for_custom_fields( $fields );
+        global $pagenow;
 
-        if ( !empty( $custom_fields ) ) {
-            foreach ( $custom_fields as $key => $value ) {
-                $value = maybe_unserialize( $value );
-                ?>
-                <p id="<?php echo $key ?>">
-                    <input type="text" name="<?php echo $key ?>[key]" placeholder="key" value="<?php echo $value['key'] ?>" required/>&nbsp;
-                    <input type="text" name="<?php echo $key ?>[label]" placeholder="label" value="<?php echo $value['label'] ?>"  required/>&nbsp;
-                    <input type="text" name="<?php echo $key ?>[type]" placeholder="type" value="<?php echo $value['type'] ?>"  required/>&nbsp;
-                    <input type="text" name="<?php echo $key ?>[required]" placeholder="required" value="<?php echo $value['required'] ?>" />
-                    <button type="submit">Update</button>
-                    <button  name="<?php echo $key ?>" onclick="remove_add_custom_fields(<?php echo $key ?>)" value="" >Delete</button>
-                </p>
-                <?php
+        if ( 'post-new.php' == $pagenow ) {
+
+            echo 'Extra fields will display after you save the new form';
+
+        } else {
+
+            $unique_key = bin2hex( random_bytes( 10 ) );
+            $fields = dt_get_simple_post_meta( $post->ID );
+            $custom_fields = self::filter_for_custom_fields( $fields );
+
+            if ( ! empty( $custom_fields ) ) {
+                foreach ( $custom_fields as $key => $value ) {
+                    $value = maybe_unserialize( $value );
+                    ?>
+                    <p id="<?php echo esc_attr( $key ) ?>">
+                        <input type="text" name="<?php echo esc_attr( $key ) ?>[key]" placeholder="key"
+                               value="<?php echo esc_attr( $value['key'] ) ?>" readonly/>&nbsp;
+                        <input type="text" name="<?php echo esc_attr( $key ) ?>[label]" placeholder="label"
+                               value="<?php echo esc_attr( $value['label'] ) ?>" required/>&nbsp;
+                        <select name="<?php echo esc_attr( $key ) ?>[type]">
+                            <option value="<?php echo esc_attr( $value['type'] ) ?>"><?php echo esc_attr( ucwords( $value['type'] ) ) ?></option>
+                            <option disabled>---</option>
+                            <option value="text">Text</option>
+                            <option value="tel">Phone</option>
+                            <option value="email">Email</option>
+                        </select>&nbsp;
+                        <select name="<?php echo esc_attr( $key ) ?>[required]">
+                            <option value="<?php echo esc_attr( $value['required'] ) ?>"><?php echo esc_attr( ucwords( $value['required'] ) ) ?></option>
+                            <option disabled>---</option>
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                        </select>&nbsp;
+                        <button type="submit">Update</button>
+                        <button name="<?php echo esc_attr( $key ) ?>" onclick="remove_add_custom_fields(<?php echo esc_attr( $key ) ?>)"
+                                value="">Delete
+                        </button>
+                    </p>
+                    <?php
+                }
             }
+            ?>
+
+
+            <div id="new-fields"></div>
+
+            <p>
+                <button type="submit" class="button" onclick="add_new_custom_fields()">Add</button>
+            </p>
+            <script>
+                function add_new_custom_fields() {
+                    jQuery('#new-fields').html('<p>\n' +
+                        '                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[key]" placeholder="key" value="new"/>\n' +
+                        '                <input type="text" name="field_<?php echo esc_attr( $unique_key ) ?>[label]" placeholder="label" required/>&nbsp;\n' +
+                        '                <select name="field_<?php echo esc_attr( $unique_key ) ?>[type]">\n' +
+                        '                        <option value="text">Text</option>\n' +
+                        '                        <option value="tel">Phone</option>\n' +
+                        '                        <option value="email">Email</option>\n' +
+                        '                </select>&nbsp;\n' +
+                        '                <select name="field_<?php echo esc_attr( $unique_key ) ?>[required]">\n' +
+                        '                        <option value="no">No</option>\n' +
+                        '                        <option value="yes">Yes</option>\n' +
+                        '                        <option value="hidden">Hidden</option>\n' +
+                        '                </select>&nbsp;\n' +
+                        '               <button type="submit">Save</button>' +
+                        '               <button onclick="remove_new_custom_fields()">Delete</button>' +
+                        '            </p>')
+                }
+
+                function remove_new_custom_fields() {
+                    jQuery('#new-fields').empty()
+                }
+
+                function remove_add_custom_fields(id) {
+                    jQuery('#' + id).empty().submit()
+                }
+            </script>
+            <?php
         }
-    ?>
-
-
-        <div id="new-fields"></div>
-
-        <p>
-            <button type="submit" class="button" onclick="add_new_custom_fields()" >Add</button>
-        </p>
-        <script>
-            function add_new_custom_fields() {
-                jQuery('#new-fields').html('<p>\n' +
-                    '                <input type="text" name="field_<?php echo $unique_key ?>[key]" placeholder="key" required/>&nbsp;\n' +
-                    '                <input type="text" name="field_<?php echo $unique_key ?>[label]" placeholder="label" required/>&nbsp;\n' +
-                    '                <input type="text" name="field_<?php echo $unique_key ?>[type]" placeholder="type" required/>&nbsp;\n' +
-                    '                <input type="text" name="field_<?php echo $unique_key ?>[required]" placeholder="required" required/>\n' +
-                    '               <button type="submit">Save</button>' +
-                    '               <button onclick="remove_add_custom_fields(new-fields)">Delete</button>' +
-                    '            </p>')
-            }
-            function remove_add_custom_fields( id ) {
-                jQuery('#' + id ).empty().submit()
-
-            }
-        </script>
-    <?php
     }
 
     public function save_extra_fields( $post_id ) {
 
+        // fail process early
+        if ( get_post_type() != $this->post_type ) {
+            return $post_id;
+        }
+        $nonce_key = $this->post_type . '_noonce';
+        if ( isset( $_POST[ $nonce_key ] ) && !wp_verify_nonce( sanitize_key( $_POST[ $nonce_key ] ), 'update_dt_webforms' ) ) {
+            return $post_id;
+        }
+        if ( !current_user_can( 'manage_dt', $post_id ) ) {
+            return $post_id;
+        }
+        if ( isset( $_GET['action'] ) ) {
+            if ( $_GET['action'] == 'trash' || $_GET['action'] == 'untrash' || $_GET['action'] == 'delete' ) {
+                return $post_id;
+            }
+        }
+
         $array = self::filter_for_custom_fields( $_POST );
 
         foreach ( $array as $key => $value ) {
+
             if ( ! get_post_meta( $post_id, $key ) ) {
+
+                if ( !isset( $value['label'] ) || !isset( $value['type'] ) || !isset( $value['required'] ) ) {
+                    break;
+                }
+
+                // create the key from the label
+                $value['label'] = trim( $value['label'] ); // trim string
+                $value['key'] = sanitize_key( str_replace( ' ', '_', $value['label'] ) ); // build key
+
                 add_post_meta( $post_id, $key, $value, true );
             } elseif ( $value == '' ) {
                 delete_post_meta( $post_id, $key, get_post_meta( $post_id, $key, true ) );
             } elseif ( $value != get_post_meta( $post_id, $key, true ) ) {
+
+                if ( ! isset( $value['label'] ) || ! isset( $value['type'] ) || ! isset( $value['required'] ) ) {
+                    break;
+                }
+
+                // update the key if the label is updated
+                $value['label'] = trim( $value['label'] ); // trim string
+                $value['key'] = sanitize_key( str_replace( ' ', '_', $value['label'] ) ); // build key
+
                 update_post_meta( $post_id, $key, $value );
-            } else {
-                dt_write_log( 'No extra field update found' );
             }
         }
-
+        return $post_id;
     }
+
     public static function filter_for_custom_fields( $array ) {
         return array_filter( $array, function( $key) {
             return strpos( $key, 'field_' ) === 0;
         }, ARRAY_FILTER_USE_KEY );
     }
-
 }
-

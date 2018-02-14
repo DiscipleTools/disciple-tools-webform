@@ -3,7 +3,7 @@ if ( ! isset( $_SERVER['DOCUMENT_ROOT'] ) ) {
     die( 'missing server info' );
 }
 // @codingStandardsIgnoreLine
-require( $_SERVER[ 'DOCUMENT_ROOT' ] . '/wp-load.php' );
+require( $_SERVER[ 'DOCUMENT_ROOT' ] . '/wp-load.php' ); // loads the wp framework when called
 
 if ( ! isset( $_GET['token'] ) ) {
     die( 'missing token' );
@@ -28,62 +28,47 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
     // @codingStandardsIgnoreEnd ?>
 
     <style>
-        td {
-            padding: .5em;
-        }
-
-        input.input-text {
-            padding: .5em;
-        }
-
-        button.submit-button {
-            padding: .8em;
-            font-weight: bolder;
-        }
-        p.title {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-        label.error {
-            color: red;
-            font-size: .8em;
-        }
+        #email2 { display:none; }
+        <?php echo esc_attr( DT_Webform_Remote::get_theme( $dt_webform_meta['theme'] ?? '' ) ) ?>
         <?php echo esc_attr( DT_Webform_Remote::get_custom_css( $dt_webform_token ) ) ?>
     </style>
 
 </head>
 <body style="background-color:#ffffff">
 
-<p id="title" class="title"><?php echo esc_attr( isset( $dt_webform_meta['title'] ) ? $dt_webform_meta['title'] : '' ) ?></p>
+<p id="title" class="title"><?php echo esc_attr( $dt_webform_meta['title'] ?? '' ) ?></p>
 
 <form id="contact-form" action="">
 
     <input type="hidden" id="token" name="token" value="<?php echo esc_attr( $dt_webform_token ) ?>"/>
-    <div class="errorTxt"></div>
+    <input type="hidden" id="hidden_input" name="hidden_input" value="<?php echo esc_attr( $dt_webform_meta['hidden_input'] ?? '' ) ?>"/>
 
     <p class="section">
-        <label for="name"><?php esc_attr_e( 'Name', 'dt_webform' ) ?></label><br>
+        <label for="name" class="input-label"><?php esc_attr_e( 'Name', 'dt_webform' ) ?></label><br>
         <input type="text" id="name" name="name" class="input-text" value="" required/><br>
     </p>
     <p class="section">
-        <label for="phone"><?php esc_attr_e( 'Phone', 'dt_webform' ) ?></label><br>
+        <label for="phone" class="input-label"><?php esc_attr_e( 'Phone', 'dt_webform' ) ?></label><br>
         <input type="tel" id="phone" name="phone" class="input-text" value="" required/><br>
     </p>
     <p class="section">
-        <label for="email"><?php esc_attr_e( 'Email', 'dt_webform' ) ?></label><br>
-        <input type="email" id="email" name="email" class="input-text" style="display:none;" value=""/>
-        <input type="email" id="l" name="l" class="input-text" value=""/><br>
+        <label for="email" class="input-label"><?php esc_attr_e( 'Email', 'dt_webform' ) ?></label><br>
+        <input type="email" id="email2" name="email2" class="input-text" value=""/>
+        <input type="email" id="email" name="email" class="input-text" value=""/><br>
     </p>
 
     <?php
-    $fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
-    if ( count( $fields ) > 0 ) {
-        foreach ( $fields as $key => $value ) {
-            $value = maybe_unserialize( $value );
+    /**
+     * Add custom fields to form
+     */
+    $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
+    if ( count( $dt_webform_fields ) > 0 ) {
+        foreach ( $dt_webform_fields as $dt_webform_key => $dt_webform_value ) {
+            $dt_webform_value = maybe_unserialize( $dt_webform_value );
         ?>
             <p>
-                <label for="<?php echo $value['key'] ?>"><?php echo $value['label'] ?></label><br>
-                <input type="<?php echo $value['type'] ?>" id="<?php echo $value['key'] ?>" name="<?php echo $value['key'] ?>" class="input-text" value="" <?php echo $value['required'] == 'yes' ? 'required' : '' ?>/><br>
+                <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" class="input-label"><?php echo esc_attr( $dt_webform_value['label'] ) ?></label><br>
+                <input type="<?php echo esc_attr( $dt_webform_value['type'] ) ?>" id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" class="input-text" value="" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>/><br>
             </p>
         <?php
         }
@@ -91,70 +76,16 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
     ?>
 
     <p class="section">
-        <button type="button" class="submit-button" id="submit-button" onclick="check_form()" disabled>Submit</button>
+        <label for="comments" class="input-label"><?php echo esc_attr( $dt_webform_meta['comments_title'] ?? esc_attr__( 'Comments', 'dt_webform' ) ) ?></label><br>
+        <textarea name="comments" id="comments" class="input-text input-textarea"></textarea><br>
+    </p>
+    <p class="section">
+        <button type="button" class="submit-button" id="submit-button" onclick="check_form()" disabled><?php esc_attr_e( 'Submit', 'dt_webform' ) ?></button>
     </p>
 
 </form>
 
 <div id="report"></div>
-
-<script>
-    let validator = jQuery('#contact-form').validate({
-        errorPlacement: function(error, element) {
-            error.appendTo( element.parent("p") );
-        },
-        rules: {
-            name: {
-                required: true,
-                minlength: 2,
-            },
-            phone: {
-                required: true,
-                minlength: 10
-            },
-            l: {
-                required: false,
-                email: true
-
-            }
-        },
-        messages: {
-            name: {
-                required: "Name required",
-                minlength: jQuery.validator.format("At least {0} characters required!")
-            },
-            phone: {
-                required: "Phone required",
-                minlength: jQuery.validator.format("At least {0} characters required!")
-            }
-        },
-        submitHandler: function(form) {
-            submit_form()
-        }
-
-    });
-    validator.form()
-
-    jQuery(document).ready(function () {
-
-        // This is a form delay to discourage robots
-        let counter = 7;
-        let myInterval = setInterval(function () {
-            let button = jQuery('#submit-button')
-
-            button.html( 'Submit in ' + counter + ' seconds' )
-            --counter;
-
-            if ( counter === 0 ) {
-                clearInterval(myInterval);
-                button.html( 'Submit' ).prop('disabled', false)
-            }
-
-        }, 1000);
-
-
-    })
-</script>
 
 </body>
 </html>

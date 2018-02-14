@@ -51,3 +51,59 @@ function submit_form() {
 function get_url() {
     return window.location.protocol + '//' + window.location.hostname
 }
+
+jQuery(document).ready(function () {
+
+    let validator = jQuery('#contact-form').validate({
+        errorPlacement: function(error, element) {
+            error.appendTo( element.parent("p") );
+        },
+        rules: {
+            name: {
+                required: true,
+                minlength: 2,
+            },
+            phone: {
+                required: true,
+                minlength: 10
+            },
+            l: {
+                required: false,
+                email: true
+
+            }
+        },
+        messages: {
+            name: {
+                required: "Name required",
+                minlength: jQuery.validator.format("At least {0} characters required!")
+            },
+            phone: {
+                required: "Phone required",
+                minlength: jQuery.validator.format("At least {0} characters required!")
+            }
+        },
+        submitHandler: function(form) {
+            submit_form()
+        }
+
+    });
+    validator.form()
+
+    // This is a form delay to discourage robots
+    let counter = 7;
+    let myInterval = setInterval(function () {
+        let button = jQuery('#submit-button')
+
+        button.html( 'Submit in ' + counter + ' seconds' )
+        --counter;
+
+        if ( counter === 0 ) {
+            clearInterval(myInterval);
+            button.html( 'Submit' ).prop('disabled', false)
+        }
+
+    }, 1000);
+
+
+})

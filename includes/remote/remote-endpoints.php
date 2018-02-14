@@ -112,6 +112,8 @@ class DT_Webform_Remote_Endpoints
     }
 
     /**
+     * Form Submit
+     *
      * @param \WP_REST_Request $request
      *
      * @return bool|\WP_Error
@@ -121,8 +123,10 @@ class DT_Webform_Remote_Endpoints
         $params = $request->get_params();
 
         // Honeypot
-        if ( isset( $params['email'] ) && ! empty( $params['email'] ) ) {
-            return new WP_Error( "teapot_failure", "Oops. Busted you robot. Shame, shame.", [ 'status' => 418 ] );
+        if ( isset( $params['email2'] ) && ! empty( $params['email2'] ) ) {
+            return new WP_Error( "teapot_failure", "Oops. Busted you, robot. Shame, shame.", [ 'status' => 418 ] );
+        } else {
+            unset( $params['email2'] );
         }
 
         // Token Validation
@@ -137,8 +141,10 @@ class DT_Webform_Remote_Endpoints
             }
         }
 
+        // Insert new lead
         $status = DT_Webform_New_Leads_Post_Type::insert_post( $params );
 
+        // Handle error and add form title
         if ( is_wp_error( $status ) ) {
             return $status;
         } else {

@@ -194,6 +194,79 @@ class DT_Webform_Remote
         return dt_get_simple_post_meta( $post_id );
     }
 
+    public static function get_theme( string $theme ) {
+
+        switch ( $theme ) {
+            case 'simple':
+                return '
+                    button.submit-button {
+                        padding: .8em;
+                        font-weight: bolder;
+                    }
+                    p.title {
+                        font-size: 1.5em;
+                        font-weight: bold;
+                    }
+                    label.error {
+                        color: red;
+                        font-size: .8em;
+                    }
+                    .input-text {
+                        padding: .7em;
+                        width: 200px;
+                    }
+                    textarea.input-text {
+                        height:70px;
+                        padding: .7em;
+                        border: .5px solid #ccc;
+                    }
+                    ';
+                break;
+            case 'heavy':
+                return '
+                    #contact-form {}
+                    .section {}
+                    #name {}
+                    #phone {}
+                    #email {}
+                    #comments {}
+                    textarea.input-text {}
+                    button.submit-button {
+                        padding: 1em;
+                        font-weight: bolder;
+                    }
+                    p.title {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                    }
+                    label.error {
+                        color: red;
+                        font-size: .8em;
+                    }
+                    .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 250px;
+                    }
+                    textarea.input-text {
+                        height:80px;
+                        padding: .5em;
+                        font-size: 1.2em;
+                        border: .5px solid #ccc;
+                    }
+                    .input-label {
+                        font-size: 1.2em;
+                        font-family: sans-serif;
+                    }
+                    ';
+                break;
+            default:
+                return '';
+                break;
+        }
+    }
+
 
 
 }

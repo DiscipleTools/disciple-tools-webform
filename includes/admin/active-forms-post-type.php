@@ -741,7 +741,7 @@ class DT_Webform_Active_Form_Post_Type
 
                 // create the key from the label
                 $value['label'] = trim( $value['label'] ); // trim string
-                $value['key'] = sanitize_key( str_replace( ' ', '_', $value['label'] ) ); // build key
+                $value['key'] = 'cf_' . sanitize_key( str_replace( ' ', '_', $value['label'] ) ); // build key
 
                 add_post_meta( $post_id, $key, $value, true );
             } elseif ( $value == '' ) {
@@ -754,7 +754,7 @@ class DT_Webform_Active_Form_Post_Type
 
                 // update the key if the label is updated
                 $value['label'] = trim( $value['label'] ); // trim string
-                $value['key'] = sanitize_key( str_replace( ' ', '_', $value['label'] ) ); // build key
+                $value['key'] = 'cf_' . sanitize_key( str_replace( ' ', '_', $value['label'] ) ); // build key
 
                 update_post_meta( $post_id, $key, $value );
             }

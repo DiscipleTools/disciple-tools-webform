@@ -40,8 +40,8 @@ function submit_form() {
         url: url + '/wp-json/dt-public/v1/webform/form_submit',
     })
         .done(function (data) {
-            jQuery('#report').append('Success<br>')
-            jQuery('input').val('')
+            jQuery('#report').append('Success<br>');
+            jQuery('.input-text').val('').empty();
         })
         .fail(function (err) {
             jQuery('#report').html('Failed')

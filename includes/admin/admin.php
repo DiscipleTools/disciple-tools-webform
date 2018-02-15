@@ -224,6 +224,30 @@ class DT_Webform_Admin
         return true;
     }
 
+    /**
+     * @return string
+     */
+    public static function get_real_ip_address()
+    {
+        $ip = '';
+        if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ))   //check ip from share internet
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }
+        elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ))   //to check ip is pass from proxy
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) )
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
+
 }
 
 /**

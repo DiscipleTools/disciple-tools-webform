@@ -144,6 +144,9 @@ class DT_Webform_New_Leads_Post_Type
             $value = sanitize_text_field( wp_unslash( $value ) );
             $args['meta_input'][$key] = $value;
         }
+        // Add the form title to the record.
+        $form_title = DT_Webform_Active_Form_Post_Type::get_form_title_by_token( $params['token'] );
+        $args['form_title'] = $form_title;
 
         // Insert
         $status = wp_insert_post( $args, true );

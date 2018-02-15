@@ -148,9 +148,7 @@ class DT_Webform_Remote_Endpoints
         if ( is_wp_error( $status ) ) {
             return $status;
         } else {
-            // Add the form title to the record.
-            $form_title = DT_Webform_Active_Form_Post_Type::get_form_title_by_token( $params['token'] );
-            update_post_meta( $status, 'form_title', $form_title );
+
             // Increment the lead for for receiving
             DT_Webform_Active_Form_Post_Type::increment_lead_received( $form_id );
             return 1;

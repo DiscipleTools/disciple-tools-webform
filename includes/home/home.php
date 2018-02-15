@@ -94,7 +94,7 @@ class DT_Webform_Home
                 </form><!-- end form -->
             <?php endforeach;  ?>
         <?php else : ?>
-            <p>No stored keys. To add a key use the token generator to create a key.</p>
+            <p><?php echo esc_attr__( 'No stored keys. To add a key use the token generator to create a key.', 'dt_webform' ) ?></p>
         <?php endif; ?>
         <?php
 

@@ -150,8 +150,8 @@ class DT_Webform_Home
         // Build record data
         $fields = [
             'title' => $new_lead_meta['name'],
-            'phone' => $new_lead_meta['phone'] ?? '',
-            'email' => $new_lead_meta['email'] ?? '',
+            'phone' => [ [ "value" => $new_lead_meta['phone'] ?? '' ] ],
+            'email' => [ [ "value" => $new_lead_meta['email'] ?? '' ] ],
             'notes' => $notes
         ];
 

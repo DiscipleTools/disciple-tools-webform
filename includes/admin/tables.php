@@ -76,7 +76,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
                 $token = get_metadata( 'post', $item->ID, 'token', true );
                 $site = dt_webform()->public_uri;
 
-                $code = '<textarea cols="30" rows="7" id="embed-'.$item->ID.'" style="display:none;"><iframe src="'. esc_attr( $site ) .'form.html?token='. esc_attr( $token )
+                $code = '<textarea cols="30" rows="7" id="embed-'.$item->ID.'" style="display:none;"><iframe src="'. esc_attr( $site ) .'form.php?token='. esc_attr( $token )
                 .'" width="'. esc_attr( $width ) .'px" height="'. esc_attr( $height ) .'px"></iframe></textarea></span>';
 
                 return $code;
@@ -210,7 +210,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
                 // list form contents
                 $meta = dt_get_simple_post_meta( $item->ID );
                 foreach ( $meta as $key => $value ) {
-                    if ( 'token' != $key && 'last_modified' != $key ) {
+                    if ( 'name' == $key || 'email' == $key || 'phone' == $key ) {
                         print esc_attr( $key ) . ': ' . esc_attr( $value ) . '<br>';
                     }
                 }
@@ -315,18 +315,24 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
 
             $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
 
+            dt_write_log( $selected_records );
+
             foreach ( $selected_records as $selected_record ) {
+
                 $result = DT_Webform_Home::create_contact_record( $selected_record );
 
                 if ( is_wp_error( $result ) ) {
+                    dt_write_log( 'process_bulk_action()' );
                     dt_write_log( 'failed to create contact ' . $selected_record . ' (' . $result->get_error_message() . ')' ); // @todo do something with a failed record approval
                 }
             }
         }
 
         if ( 'transfer' === $this->current_action() ) {
-            $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
-            DT_Webform_Remote::trigger_transfer_of_new_leads( false, $selected_records );
+            if ( isset( $_GET['form'] ) ) {
+                $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
+                DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
+            }
         }
     }
 

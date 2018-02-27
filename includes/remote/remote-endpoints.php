@@ -79,10 +79,10 @@ class DT_Webform_Remote_Endpoints
             ]
         );
         register_rest_route(
-            $namespace, '/webform/get_collection', [
+            $namespace, '/webform/custom_css', [
                 [
                     'methods'  => WP_REST_Server::READABLE,
-                    'callback' => [ $this, 'get_collection' ],
+                    'callback' => [ $this, 'custom_css' ],
                 ],
             ]
         );
@@ -91,7 +91,6 @@ class DT_Webform_Remote_Endpoints
 
     /**
      * Verify is site is linked
-     * @todo identical function hosted in home-endpoints.php. Reevaluate if this is the DRYest option.
      *
      * @param  WP_REST_Request $request
      *
@@ -113,6 +112,8 @@ class DT_Webform_Remote_Endpoints
     }
 
     /**
+     * Form Submit
+     *
      * @param \WP_REST_Request $request
      *
      * @return bool|\WP_Error
@@ -121,8 +122,15 @@ class DT_Webform_Remote_Endpoints
     {
         $params = $request->get_params();
 
+        // Honeypot
+        if ( isset( $params['email2'] ) && ! empty( $params['email2'] ) ) {
+            return new WP_Error( "teapot_failure", "Oops. Busted you, robot. Shame, shame.", [ 'status' => 418 ] );
+        } else {
+            unset( $params['email2'] );
+        }
+
         // Token Validation
-        if ( ! isset( $params['token'] ) || empty( $params['token'] ) ) { // @todo Need to add actual token checking
+        if ( ! isset( $params['token'] ) || empty( $params['token'] ) ) {
             return new WP_Error( "token_failure", "Token missing.", [ 'status' => 400 ] );
         } else {
             $token = sanitize_text_field( wp_unslash( $params['token'] ) );
@@ -133,63 +141,37 @@ class DT_Webform_Remote_Endpoints
             }
         }
 
-        // Prepare Insert
-        $args = [
-            'post_type' => 'dt_webform_new_leads',
-            'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
-            'comment_status' => 'closed',
-            'ping_status' => 'closed',
-        ];
-        foreach ( $params as $key => $value ) {
-            $key = sanitize_text_field( wp_unslash( $key ) );
-            $value = sanitize_text_field( wp_unslash( $value ) );
-            $args['meta_input'][$key] = $value;
-        }
+        // Insert new lead
+        $status = DT_Webform_New_Leads_Post_Type::insert_post( $params );
 
-        // Insert
-        $status = wp_insert_post( $args, true );
+        // Handle error and add form title
         if ( is_wp_error( $status ) ) {
             return $status;
         } else {
+
+            // Increment the lead for for receiving
             DT_Webform_Active_Form_Post_Type::increment_lead_received( $form_id );
             return 1;
         }
     }
 
-    public function get_collection( WP_REST_Request $request )
+    /**
+     * Verify is site is linked
+     *
+     * @param  WP_REST_Request $request
+     *
+     * @access public
+     * @since  0.1.0
+     * @return string|WP_Error|array The contact on success
+     */
+    public function custom_css( WP_REST_Request $request )
     {
         $params = $request->get_params();
 
-        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
-            // check id
-            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
-            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
-                return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
-            }
-
-            // check token
-            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
-            if ( is_wp_error( $token_result ) || ! $token_result ) {
-                return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
-            } else {
-                // call async process to schedule collection
-                dt_write_log( 'remote collection end point ' );
-
-                if ( isset( $params['get_all'] ) && $params['get_all'] ) {
-                    // get all records and transfer
-                    return [
-                        'posts' => 'all posts',
-                    ];
-                } elseif ( isset( $params['selected_records'] ) && ! empty( $params['selected_records'] ) ) {
-                    return [
-                        'posts' => 'selected posts',
-                    ];
-                } else {
-                    return new WP_Error( "missing_params", "Missing either the `get_all` or the `selected_records` parameters.", [ 'status' => 400 ] );
-                }
-            }
+        if ( isset( $params['token'] ) ) {
+            return DT_Webform_Remote::get_custom_css( $params['token'] );
         } else {
-            return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
+            return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
         }
     }
 }

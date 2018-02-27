@@ -103,14 +103,55 @@ class DT_Webform_New_Leads_Post_Type
 
     }
 
+    /**
+     * Process lead immediately because the options are set to 'auto_approve'
+     * @param $post_id
+     */
     public function auto_accept( $post_id ) {
         $options = get_option( 'dt_webform_options' );
-        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
-            DT_Webform_Home::create_contact_record( $post_id );
+
+        if ( ! DT_Webform_Admin::is_sites_keys_set() ) {
+            DT_Webform_Admin::set_auto_approve_to_false();
+            $options['auto_approve'] = false;
+        }
+        elseif ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) { // if auto approve is set
+            $state = get_option( 'dt_webform_state' );
+            if ( 'remote' == $state ) {
+                $selected_records[] = $post_id;
+                DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
+            } else {
+                DT_Webform_Home::create_contact_record( $post_id );
+            }
         }
     }
 
+    /**
+     * Insert Post
+     *
+     * @return int|\WP_Error
+     */
+    public static function insert_post( $params ) {
 
+        // Prepare Insert
+        $args = [
+            'post_type' => 'dt_webform_new_leads',
+            'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
+            'comment_status' => 'closed',
+            'ping_status' => 'closed',
+        ];
+        foreach ( $params as $key => $value ) {
+            $key = sanitize_text_field( wp_unslash( $key ) );
+            $value = sanitize_text_field( wp_unslash( $value ) );
+            $args['meta_input'][$key] = $value;
+        }
+        // Add the form title to the record.
+        $form_title = DT_Webform_Active_Form_Post_Type::get_form_title_by_token( $params['token'] );
+        $args['form_title'] = $form_title;
+
+        // Insert
+        $status = wp_insert_post( $args, true );
+        return $status;
+    }
 
 }
 

@@ -118,16 +118,23 @@ class DT_Webform_Remote
     /**
      * Trigger transfer of new leads
      *
-     * @param bool  $get_all
      * @param array $selected_records
      *
      * @return bool|\WP_Error
      */
-    public static function trigger_transfer_of_new_leads( $get_all = true, $selected_records = [] ) {
+    public static function trigger_transfer_of_new_leads( $selected_records = [] ) {
+
+        $transfer_records = [];
 
         // get option
         $home = get_option( 'dt_webform_site_api_keys' );
         if ( ! isset( $home ) || empty( $home ) ) {
+            // set auto post to false
+            $options = get_option( 'dt_webform_options' );
+            $options['auto_approve'] = false;
+            update_option( 'dt_webform_options', $options, false );
+
+            // respond with error
             return new WP_Error( 'site_settings_not_set', 'Site keys are empty.' );
         }
         foreach ( $home as $key => $value ) {
@@ -137,42 +144,129 @@ class DT_Webform_Remote
             break;
         }
 
+        // get entire record from selected records
+        foreach ( $selected_records as $record ) {
+            array_push( $transfer_records, dt_get_simple_post_meta( $record ) );
+        }
+
         // Create hash key and url
         $md5_hash_id = DT_Webform_API_Keys::one_hour_encryption( $id );
 
         // Send remote request
         $args = [
-                'method' => 'GET',
-                'body' => [
-                    'id' => $md5_hash_id,
-                    'token' => $token,
-                    'get_all' => $get_all,
-                    'selected_records' => $selected_records,
-                ]
+            'method' => 'GET',
+            'body' => [
+                'id' => $md5_hash_id,
+                'token' => $token,
+                'selected_records' => $transfer_records,
+            ]
         ];
-        $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/trigger_collection', $args );
+        $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/transfer_collection', $args );
+
         if ( is_wp_error( $result ) ) {
-            dt_write_log( $result );
             return new WP_Error( 'failed_remote_get', $result->get_error_message() );
         }
 
+        if ( isset( $result['body'] ) && ! empty( $result['body'] ) && count( $result['body'] ) > 0 ) {
+            $records = json_decode( $result['body'] );
 
-        // if true, then tag all records with 'scheduled for transfer'
-        if ( ! empty( $selected_records ) ) {
-            foreach ( $selected_records as $selected_record) {
-                update_post_meta( $selected_record, 'scheduled_for_transfer', true );
+            foreach ( $records as $record ) {
+                wp_delete_post( $record, true );
             }
-        } else {
-            $all_leads = new WP_Query( [ 'post_type' => 'dt_webform_new_leads' ] );
-            if ( is_wp_error( $all_leads ) ) {
-                return new WP_Error( 'new_leads_query_error', 'Failed query for new leads' );
-            }
-            if ( $all_leads->found_posts > 0 ) {
-                foreach ( $all_leads->posts as $lead ) {
-                    update_post_meta( $lead->ID, 'scheduled_for_transfer', true );
-                }
-            }
+
+            dt_write_log( 'Start deleting process' );
+            dt_write_log( $records );
         }
+
         return true;
     }
+
+    public static function get_custom_css( $token ) {
+        global $wpdb;
+        $css = $wpdb->get_var( $wpdb->prepare( "
+            SELECT meta_value FROM $wpdb->postmeta WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) AND meta_key = 'custom_css' LIMIT 1", $token ) );
+        return $css;
+    }
+
+    public static function get_form_meta( $token ) {
+        global $wpdb;
+        $post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1", $token ) );
+        return dt_get_simple_post_meta( $post_id );
+    }
+
+    public static function get_theme( string $theme ) {
+
+        switch ( $theme ) {
+            case 'simple':
+                return '
+                    button.submit-button {
+                        padding: .8em;
+                        font-weight: bolder;
+                    }
+                    p.title {
+                        font-size: 1.5em;
+                        font-weight: bold;
+                    }
+                    label.error {
+                        color: red;
+                        font-size: .8em;
+                    }
+                    .input-text {
+                        padding: .7em;
+                        width: 200px;
+                    }
+                    textarea.input-text {
+                        height:70px;
+                        padding: .7em;
+                        border: .5px solid #ccc;
+                    }
+                    ';
+                break;
+            case 'heavy':
+                return '
+                    #contact-form {}
+                    .section {}
+                    #name {}
+                    #phone {}
+                    #email {}
+                    #comments {}
+                    textarea.input-text {}
+                    button.submit-button {
+                        padding: 1em;
+                        font-weight: bolder;
+                    }
+                    p.title {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                    }
+                    label.error {
+                        color: red;
+                        font-size: .8em;
+                    }
+                    .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 250px;
+                    }
+                    textarea.input-text {
+                        height:80px;
+                        padding: .5em;
+                        font-size: 1.2em;
+                        border: .5px solid #ccc;
+                    }
+                    .input-label {
+                        font-size: 1.2em;
+                        font-family: sans-serif;
+                    }
+                    ';
+                break;
+            default:
+                return '';
+                break;
+        }
+    }
+
+
+
 }

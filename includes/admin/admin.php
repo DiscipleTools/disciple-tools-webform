@@ -118,6 +118,10 @@ class DT_Webform_Admin
 
         // Get status of auto approve
         $options = get_option( 'dt_webform_options' );
+        if ( ! self::is_sites_keys_set() ) {
+            self::set_auto_approve_to_false();
+            $options['auto_approve'] = false;
+        }
 
         ?>
         <form method="post" action="">
@@ -178,6 +182,72 @@ class DT_Webform_Admin
         ];
     }
 
+    /**
+     * Verify the token and id of a REST request
+     * @param $params
+     *
+     * @return bool|\WP_Error
+     */
+    public static function verify_param_id_and_token( $params ) {
+        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
+            // check id
+            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
+            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
+                return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
+            }
+
+            // check token
+            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
+            if ( is_wp_error( $token_result ) || ! $token_result ) {
+                return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
+            } else {
+                return true;
+            }
+        } else {
+            return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
+        }
+    }
+
+    public static function set_auto_approve_to_false() {
+        $options = get_option( 'dt_webform_options' );
+        $options['auto_approve'] = false;
+        update_option( 'dt_webform_options', $options, false );
+    }
+
+    public static function is_sites_keys_set() {
+        if ( 'remote' == get_option( 'dt_webform_state' ) ) {
+            $site = get_option( 'dt_webform_site_api_keys' );
+            if ( count( $site ) < 1 || ! $site ) { // if no site is connected, then disable auto_approve
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public static function get_real_ip_address()
+    {
+        $ip = '';
+        if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ))   //check ip from share internet
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }
+        elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ))   //to check ip is pass from proxy
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) )
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
+
 }
 
 /**
@@ -186,6 +256,8 @@ class DT_Webform_Admin
  * @return array
  */
 function dt_get_simple_post_meta( $post_id ) {
-    return array_map( function ( $a ) { return $a[0];
-    }, get_post_meta( $post_id ) );
+    $map = array_map( function ( $a ) { return $a[0];
+    }, get_post_meta( $post_id ) ); // map the post meta
+    $map['ID'] = $post_id; // add the id to the array
+    return $map;
 }

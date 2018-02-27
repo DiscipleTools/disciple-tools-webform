@@ -3,7 +3,7 @@
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
- * Version:  0.1.2
+ * Version:  0.1.3
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Requires at least: 4.7.0
@@ -171,15 +171,12 @@ class DT_Webform {
      */
     private function includes() {
 
-        require_once( 'includes/remote/active-forms-post-type.php' );
-        require_once( 'includes/remote/new-leads-post-type.php' ); // post type for the new leads post type
+        require_once( 'includes/admin/active-forms-post-type.php' );
+        require_once( 'includes/admin/new-leads-post-type.php' ); // post type for the new leads post type
         require_once( 'includes/admin/tables.php' );
         require_once( 'includes/admin/api-keys.php' ); // api key service
         require_once( 'includes/admin/admin.php' );
         require_once( 'includes/assets/enqueue-scripts.php' ); // enqueue scripts and styles
-        require_once( 'includes/admin/wp-async-request.php' ); // ascync task manager
-        require_once( 'includes/home/async-collector.php' );
-
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {

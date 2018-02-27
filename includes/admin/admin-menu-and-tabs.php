@@ -119,6 +119,10 @@ class DT_Webform_Menu
                 'label' => __( 'Forms', 'dt_webform' ),
             ],
             [
+                'key' => 'site_links',
+                'label' => __( 'Site Links', 'dt_webform' ),
+            ],
+            [
                 'key' => 'home_settings',
                 'label' => __( 'Settings', 'dt_webform' ),
             ],

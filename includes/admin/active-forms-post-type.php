@@ -54,6 +54,7 @@ class DT_Webform_Active_Form_Post_Type
 
             add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
             add_action( 'save_post', [ $this, 'meta_box_save' ] );
+            add_action( 'save_post', [ $this, 'save_extra_fields' ] );
             add_action( 'admin_head', [ $this, 'scripts' ], 20 );
         }
     }
@@ -123,10 +124,11 @@ class DT_Webform_Active_Form_Post_Type
     public function meta_box_setup()
     {
         add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
-        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'high' );
-        add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_appearance', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'low' );
+        add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'normal', 'low' );
-//        add_meta_box( $this->post_type . '_new_leads', __( 'New Leads', 'dt_webform' ), [ $this, 'load_new_leads_meta_box' ], $this->post_type, 'normal', 'low' );
 
     }
 
@@ -141,13 +143,36 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
+    public function load_appearance_meta_box()
+    {
+        global $pagenow;
+
+        if ( 'post-new.php' == $pagenow ) {
+
+            echo esc_attr__( 'Leads list will display after you save the new form', 'dt_webform' );
+            echo '<div style="display:none;">';
+            $this->meta_box_content( 'appearance' ); // prints
+            echo '</div>';
+
+        } else {
+
+            $this->meta_box_content( 'appearance' ); // prints
+
+        }
+    }
+
+
+
+    /**
+     * Load type metabox
+     */
     public function load_statistics_meta_box( $post )
     {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
 
-            echo 'Leads list will display after you save the new form';
+            echo esc_attr__( 'Leads list will display after you save the new form', 'dt_webform' );
 
         } else {
 
@@ -161,8 +186,8 @@ class DT_Webform_Active_Form_Post_Type
                 $transferred = 0;
                 update_post_meta( $post->ID, 'leads_transferred', $transferred );
             }
-            echo 'Leads Received: ' . esc_attr( $received ) . '<br> ';
-            echo 'Leads Transferred: ' . esc_attr( $transferred ) . '<br> ';
+            echo esc_attr__( 'Leads Received: ', 'dt_webform' ) . esc_attr( $received ) . '<br> ';
+            echo esc_attr__( 'Leads Transferred: ', 'dt_webform' ) . esc_attr( $transferred ) . '<br> ';
 
         }
     }
@@ -175,7 +200,7 @@ class DT_Webform_Active_Form_Post_Type
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
-            echo 'Leads list will display after you save the new form';
+            echo esc_attr__( 'Leads list will display after you save the new form', 'dt_webform' );
         } else {
             // table of waiting leads
             $token = get_post_meta( $post->ID, 'token', true );
@@ -204,7 +229,7 @@ class DT_Webform_Active_Form_Post_Type
                 echo '<p ><a href="">refresh</a></p>';
 
             } else {
-                echo 'No leads found';
+                echo esc_attr__( 'No leads found', 'dt_webform' );
             }
         }
     }
@@ -218,7 +243,7 @@ class DT_Webform_Active_Form_Post_Type
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
-            echo 'Embed code will display after you save the new form';
+            echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
         }
         else {
             $width = get_metadata( 'post', $post->ID, 'width', true );
@@ -228,7 +253,7 @@ class DT_Webform_Active_Form_Post_Type
 
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
-            <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
+            <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
                 ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
 
         </textarea>
@@ -244,7 +269,7 @@ class DT_Webform_Active_Form_Post_Type
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
-            echo 'Embed code will display after you save the new form';
+            echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
         }
         else {
             $width = get_metadata( 'post', $post->ID, 'width', true );
@@ -253,7 +278,7 @@ class DT_Webform_Active_Form_Post_Type
             $site = dt_webform()->public_uri;
 
             ?>
-            <iframe src="<?php echo esc_attr( $site ) ?>form.html?token=<?php echo esc_attr( $token )
+            <iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
             ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
             <?php
         }
@@ -271,7 +296,7 @@ class DT_Webform_Active_Form_Post_Type
         $fields = get_post_custom( $post_id );
         $field_data = $this->get_custom_fields_settings();
 
-        echo '<input type="hidden" name="dt_' . esc_attr( $this->post_type ) . '_noonce" id="dt_' . esc_attr( $this->post_type ) . '_noonce" value="' . esc_attr( wp_create_nonce( 'update_dt_webforms' ) ) . '" />';
+        echo '<input type="hidden" name="' . esc_attr( $this->post_type ) . '_noonce" id="' . esc_attr( $this->post_type ) . '_noonce" value="' . esc_attr( wp_create_nonce( 'update_dt_webforms' ) ) . '" />';
 
         if ( 0 < count( $field_data ) ) {
             echo '<table class="form-table">' . "\n";
@@ -297,7 +322,7 @@ class DT_Webform_Active_Form_Post_Type
                             echo '</td><tr/>' . "\n";
                             break;
                         case 'textarea':
-                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td><textarea name="' . esc_attr( $k ) . '" type="text" id="' . esc_attr( $k ) . '" class="regular-text" />' . esc_attr( $data ) . '</textarea>' . "\n";
+                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td><textarea name="' . esc_attr( $k ) . '" type="text" id="' . esc_attr( $k ) . '" class="regular-text" rows="5" />' . esc_attr( $data ) . '</textarea>' . "\n";
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
                             break;
@@ -361,7 +386,7 @@ class DT_Webform_Active_Form_Post_Type
         if ( get_post_type() != $this->post_type ) {
             return $post_id;
         }
-        $nonce_key = 'dt_' . $this->post_type . '_noonce';
+        $nonce_key = $this->post_type . '_noonce';
         if ( isset( $_POST[ $nonce_key ] ) && !wp_verify_nonce( sanitize_key( $_POST[ $nonce_key ] ), 'update_dt_webforms' ) ) {
             return $post_id;
         }
@@ -423,20 +448,48 @@ class DT_Webform_Active_Form_Post_Type
         'default'     => '',
         'section'     => 'info',
         ];
+        $fields['token'] = [
+        'name'        => __( 'Token', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'display_only',
+        'default'     => DT_Webform_Api_Keys::generate_token( 16 ),
+        'section'     => 'info',
+        ];
 
+        $fields['title'] = [
+        'name'        => __( 'Title', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'text',
+        'default'     => __( 'Contact Us', 'dt_webform' ),
+        'section'     => 'appearance',
+        ];
+        $fields['comments_title'] = [
+        'name'        => __( 'Comment Title', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'text',
+        'default'     => __( 'Comments', 'dt_webform' ),
+        'section'     => 'appearance',
+        ];
+        $fields['hidden_input'] = [
+        'name'        => __( 'Hidden Input', 'dt_webform' ),
+        'description' => __( 'This is a hidden input that will be submitted with the form and stored as a note in the contact. Useful for tags.', 'dt_webform' ),
+        'type'        => 'text',
+        'default'     => '',
+        'section'     => 'appearance',
+        ];
         $fields['width'] = [
         'name'        => __( 'Width', 'dt_webform' ),
-        'description' => 'pixels',
+        'description' => __( 'number of pixels', 'dt_webform' ),
         'type'        => 'text',
-        'default'     => '300',
-        'section'     => 'info',
+        'default'     => '250',
+        'section'     => 'appearance',
         ];
         $fields['height'] = [
         'name'        => __( 'Height', 'dt_webform' ),
-        'description' => 'pixels',
+        'description' => __( 'number of pixels', 'dt_webform' ),
         'type'        => 'text',
-        'default'     => '300',
-        'section'     => 'info',
+        'default'     => '475',
+        'section'     => 'appearance',
         ];
         $fields['theme'] = [
             'name'        => __( 'Theme', 'dt_webform' ),
@@ -445,16 +498,28 @@ class DT_Webform_Active_Form_Post_Type
             'default'     => [
                 'simple' => __( 'Simple', 'dt_webform' ),
                 'heavy'   => __( 'Heavy', 'dt_webform' ),
+                'none'   => __( 'None', 'dt_webform' ),
             ],
-            'section'     => 'info',
+            'section'     => 'appearance',
         ];
-        $fields['token'] = [
-        'name'        => __( 'Token', 'dt_webform' ),
-        'description' => '',
-        'type'        => 'display_only',
-        'default'     => DT_Webform_Api_Keys::generate_token( 16 ),
-        'section'     => 'info',
+        $fields['custom_css'] = [
+            'name'        => __( 'Custom CSS', 'dt_webform' ),
+            'description' => '#contact-form {}
+                    .section {}
+                    #name {}
+                    #phone {}
+                    #email {}
+                    #comments {}
+                    input.input-text {}
+                    button.submit-button {}
+                    p.title {}
+                    label.error {}
+                    .input-label {}',
+            'type'        => 'textarea',
+            'default'     => '',
+            'section'     => 'appearance',
         ];
+
 
         return apply_filters( 'dt_custom_fields_settings', $fields );
     } // End get_custom_fields_settings()
@@ -464,6 +529,8 @@ class DT_Webform_Active_Form_Post_Type
 
         if ( get_current_screen()->post_type == $this->post_type ) {
             $state = get_option( 'dt_webform_state' );
+            $label = esc_attr__( 'Return to List', 'dt_webform' );
+
             switch ( $state ) {
                 case 'home':
                 case 'combined':
@@ -472,7 +539,7 @@ class DT_Webform_Active_Form_Post_Type
                                 
                                 jQuery("#toplevel_page_dt_extensions").addClass("wp-has-current-submenu wp-menu-open");
                                 jQuery("li:contains(\'Webform\')").addClass("current");
-                                $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">Return to List</a>\');
+                                $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">' . esc_attr( $label ) . '</a>\');
                             
                             });
                         </script>';
@@ -482,7 +549,7 @@ class DT_Webform_Active_Form_Post_Type
                             jQuery(document).ready( function($) {
                                 
                                 $("#toplevel_page_dt_webform").addClass("current wp-has-current-submenu wp-menu-open");
-                                $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">Return to List</a>\');
+                                $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">' . esc_attr( $label ) . '</a>\');
                             
                             });
                         </script>';
@@ -519,7 +586,8 @@ class DT_Webform_Active_Form_Post_Type
         $form_object = new WP_Query( [
             'post_type' => 'dt_webform_forms',
             'meta_key' => 'token',
-            'meta_value' => $token
+            'meta_value' => $token,
+            'post_status' => 'draft, publish',
         ] );
         if ( is_wp_error( $form_object ) || $form_object->found_posts < 1 ) {
             return false;
@@ -527,5 +595,182 @@ class DT_Webform_Active_Form_Post_Type
         return $form_object->post->ID;
     }
 
-}
+    public static function get_form_title_by_token( $token ) {
+        $results = new WP_Query( [
+            'post_type' => 'dt_webform_forms',
+            'meta_value' => $token
+        ] );
+        if ( $results->found_posts < 0) {
+            return __( 'Unknown', 'dt_webform' );
+        }
+        return $results->post->post_title;
+    }
 
+    public static function get_form_id_by_token( $token ) {
+        $results = new WP_Query( [
+            'post_type' => 'dt_webform_forms',
+            'meta_value' => $token
+        ] );
+        if ( $results->found_posts < 0) {
+            return __( 'Unknown', 'dt_webform' );
+        }
+        return $results->post->ID;
+    }
+
+    public static function get_extra_fields( $token ) {
+        $post_id = self::get_form_id_by_token( $token );
+        $fields = dt_get_simple_post_meta( $post_id );
+        return self::filter_for_custom_fields( $fields );
+    }
+
+    /**
+     * Load type metabox
+     */
+    public function load_extra_fields_meta_box( $post )
+    {
+        global $pagenow;
+
+        if ( 'post-new.php' == $pagenow ) {
+
+            echo esc_attr__( 'Extra fields will display after you save the new form', 'dt_webform' );
+
+        } else {
+
+            $unique_key = bin2hex( random_bytes( 10 ) );
+            $fields = dt_get_simple_post_meta( $post->ID );
+            $custom_fields = self::filter_for_custom_fields( $fields );
+
+            if ( ! empty( $custom_fields ) ) {
+                echo esc_attr__( 'Fields: Label, Type of Field, Is the Field Required?', 'dt_webform' );
+                foreach ( $custom_fields as $key => $value ) {
+                    $value = maybe_unserialize( $value );
+                    ?>
+                    <p id="<?php echo esc_attr( $key ) ?>">
+                        <input type="hidden" name="<?php echo esc_attr( $key ) ?>[key]" placeholder="key"
+                               value="<?php echo esc_attr( $value['key'] ) ?>" readonly/>&nbsp;
+                        <input type="text" name="<?php echo esc_attr( $key ) ?>[label]" placeholder="label"
+                               value="<?php echo esc_attr( $value['label'] ) ?>" required/>&nbsp;
+                        <select name="<?php echo esc_attr( $key ) ?>[type]">
+                            <option disabled><?php echo esc_attr__( 'Field Type', 'dt_webform' ) ?></option>
+                            <option value="<?php echo esc_attr( $value['type'] ) ?>"><?php echo esc_attr( ucwords( $value['type'] ) ) ?></option>
+                            <option disabled>---</option>
+                            <option value="text"><?php echo esc_attr__( 'Text', 'dt_webform' ) ?></option>
+                            <option value="tel"><?php echo esc_attr__( 'Phone', 'dt_webform' ) ?></option>
+                            <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>
+                        </select>&nbsp;
+                        <select name="<?php echo esc_attr( $key ) ?>[required]">
+                            <option disabled><?php echo esc_attr__( 'Required', 'dt_webform' ) ?></option>
+                            <option value="<?php echo esc_attr( $value['required'] ) ?>"><?php echo esc_attr( ucwords( $value['required'] ) ) ?></option>
+                            <option disabled>---</option>
+                            <option value="no"><?php echo esc_attr__( 'No', 'dt_webform' ) ?></option>
+                            <option value="yes"><?php echo esc_attr__( 'Yes', 'dt_webform' ) ?></option>
+                        </select>&nbsp;
+                        <button type="submit"><?php echo esc_attr__( 'Update', 'dt_webform' ) ?></button>
+                        <button name="<?php echo esc_attr( $key ) ?>" onclick="remove_add_custom_fields(<?php echo esc_attr( $key ) ?>)"
+                                value=""><?php echo esc_attr__( 'Delete', 'dt_webform' ) ?>
+                        </button>
+                    </p>
+                    <?php
+                }
+            }
+            ?>
+
+
+            <div id="new-fields"></div>
+
+            <p>
+                <button type="submit" class="button" onclick="add_new_custom_fields()">Add</button>
+            </p>
+            <script>
+                function add_new_custom_fields() {
+                    jQuery('#new-fields').html('<p><hr>\n' +
+                        '                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[key]" placeholder="key" value="new"/>\n' +
+                        '                <input type="text" name="field_<?php echo esc_attr( $unique_key ) ?>[label]" placeholder="label" required/>&nbsp;\n' +
+                        '                <select name="field_<?php echo esc_attr( $unique_key ) ?>[type]">\n' +
+                        '                        <option value="text"><?php echo esc_attr__( 'Field Type', 'dt_webform' ) ?></option>\n' +
+                        '                        <option readonly>---</option>\n' +
+                        '                        <option value="text"><?php echo esc_attr__( 'Text', 'dt_webform' ) ?></option>\n' +
+                        '                        <option value="tel"><?php echo esc_attr__( 'Phone', 'dt_webform' ) ?></option>\n' +
+                        '                        <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>\n' +
+                        '                </select>&nbsp;\n' +
+                        '                <select name="field_<?php echo esc_attr( $unique_key ) ?>[required]">\n' +
+                        '                        <option value="no"><?php echo esc_attr__( 'Required', 'dt_webform' ) ?></option>\n' +
+                        '                        <option readonly>---</option>\n' +
+                        '                        <option value="no"><?php echo esc_attr__( 'No', 'dt_webform' ) ?></option>\n' +
+                        '                        <option value="yes"><?php echo esc_attr__( 'Yes', 'dt_webform' ) ?></option>\n' +
+                        '                </select>&nbsp;\n' +
+                        '               <button type="submit"><?php echo esc_attr__( 'Save', 'dt_webform' ) ?></button>' +
+                        '               <button onclick="remove_new_custom_fields()"><?php echo esc_attr__( 'Delete', 'dt_webform' ) ?></button>' +
+                        '            </p>')
+                }
+
+                function remove_new_custom_fields() {
+                    jQuery('#new-fields').empty()
+                }
+
+                function remove_add_custom_fields(id) {
+                    jQuery('#' + id).empty().submit()
+                }
+            </script>
+            <?php
+        }
+    }
+
+    public function save_extra_fields( $post_id ) {
+
+        // fail process early
+        if ( get_post_type() != $this->post_type ) {
+            return $post_id;
+        }
+        $nonce_key = $this->post_type . '_noonce';
+        if ( isset( $_POST[ $nonce_key ] ) && !wp_verify_nonce( sanitize_key( $_POST[ $nonce_key ] ), 'update_dt_webforms' ) ) {
+            return $post_id;
+        }
+        if ( !current_user_can( 'manage_dt', $post_id ) ) {
+            return $post_id;
+        }
+        if ( isset( $_GET['action'] ) ) {
+            if ( $_GET['action'] == 'trash' || $_GET['action'] == 'untrash' || $_GET['action'] == 'delete' ) {
+                return $post_id;
+            }
+        }
+
+        $array = self::filter_for_custom_fields( $_POST );
+
+        foreach ( $array as $key => $value ) {
+
+            if ( ! get_post_meta( $post_id, $key ) ) {
+
+                if ( !isset( $value['label'] ) || !isset( $value['type'] ) || !isset( $value['required'] ) ) {
+                    break;
+                }
+
+                // create the key from the label
+                $value['label'] = trim( $value['label'] ); // trim string
+                $value['key'] = 'cf_' . sanitize_key( str_replace( ' ', '_', $value['label'] ) ); // build key
+
+                add_post_meta( $post_id, $key, $value, true );
+            } elseif ( $value == '' ) {
+                delete_post_meta( $post_id, $key, get_post_meta( $post_id, $key, true ) );
+            } elseif ( $value != get_post_meta( $post_id, $key, true ) ) {
+
+                if ( ! isset( $value['label'] ) || ! isset( $value['type'] ) || ! isset( $value['required'] ) ) {
+                    break;
+                }
+
+                // update the key if the label is updated
+                $value['label'] = trim( $value['label'] ); // trim string
+                $value['key'] = 'cf_' . sanitize_key( str_replace( ' ', '_', $value['label'] ) ); // build key
+
+                update_post_meta( $post_id, $key, $value );
+            }
+        }
+        return $post_id;
+    }
+
+    public static function filter_for_custom_fields( $array ) {
+        return array_filter( $array, function( $key) {
+            return strpos( $key, 'field_' ) === 0;
+        }, ARRAY_FILTER_USE_KEY );
+    }
+}

@@ -132,8 +132,8 @@ class DT_Webform_Home
         }
         $fields = [
             'title' => $new_lead_meta['name'],
-            'phone' => ( isset( $new_lead_meta['phone'] ) ) ? $new_lead_meta['phone'] : '',
-            'email' => ( isset( $new_lead_meta['email'] ) ) ? $new_lead_meta['email'] : '',
+            'contact_phone' => ( isset( $new_lead_meta['phone'] ) ) ? [ [ "value" => $new_lead_meta['phone'] ] ] : [],
+            'contact_email' => ( isset( $new_lead_meta['email'] ) ) ? [ [ "value" => $new_lead_meta['email'] ] ] : [],
             'initial_comment' => __( 'Original Source: Webform ' ) . '(' . $form_object->post->post_title . ')',
         ];
 

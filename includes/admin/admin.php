@@ -217,7 +217,7 @@ class DT_Webform_Admin
     public static function is_sites_keys_set() {
         if ( 'remote' == get_option( 'dt_webform_state' ) ) {
             $site = get_option( 'dt_webform_site_api_keys' );
-            if ( count( $site ) < 1 || ! $site ) { // if no site is connected, then disable auto_approve
+            if ( ! $site ) { // if no site is connected, then disable auto_approve
                 return false;
             }
         }

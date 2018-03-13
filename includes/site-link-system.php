@@ -605,7 +605,7 @@ class DT_Site_Link_REST
         $namespace = 'dt-public/v' . $version;
 
         register_rest_route(
-        $namespace, '/webform/site_link_check', [
+            $namespace, '/webform/site_link_check', [
                 [
                     'methods'  => WP_REST_Server::CREATABLE,
                     'callback' => [ $this, 'site_link_check' ],
@@ -630,8 +630,8 @@ class DT_Site_Link_REST
 
         $prefix = DT_Site_Link_System::$token;
 
-        if ( isset( $params[ 'key' ] ) ) {
-            return DT_Api_Keys::check_one_hour_encryption( 'token', $params[ 'key' ] );
+        if ( isset( $params['key'] ) ) {
+            return DT_Api_Keys::check_one_hour_encryption( 'token', $params['key'] );
         } else {
             return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
         }

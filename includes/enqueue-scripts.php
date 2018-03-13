@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Loads scripts and styles for the contacts page.
+ * Loads scripts and styles for the webform admin page.
  */
 function dt_admin_webform_scripts()
 {
@@ -9,12 +9,12 @@ function dt_admin_webform_scripts()
 
     if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) {
 
-        wp_enqueue_script( 'dt_webform_admin_script', dt_webform()->assets_uri . 'js/admin.js', [
+        wp_enqueue_script( 'dt_webform_admin_script', dt_webform()->includes_uri . 'admin.js', [
             'jquery',
             'jquery-ui-core',
-        ], filemtime( dt_webform()->assets_path . 'js/admin.js' ), true );
+        ], filemtime( dt_webform()->includes_path . 'admin.js' ), true );
 
-        wp_register_style( 'dt_webform_admin_css', dt_webform()->assets_uri . 'css/admin.css', [], filemtime( dt_webform()->assets_path . 'css/admin.css' ) );
+        wp_register_style( 'dt_webform_admin_css', dt_webform()->includes_uri . 'admin.css', [], filemtime( dt_webform()->includes_path . 'admin.css' ) );
         wp_enqueue_style( 'dt_webform_admin_css' );
 
     }

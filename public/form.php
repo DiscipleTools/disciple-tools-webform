@@ -42,7 +42,7 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
 
     <input type="hidden" id="token" name="token" value="<?php echo esc_attr( $dt_webform_token ) ?>"/>
     <input type="hidden" id="hidden_input" name="hidden_input" value="<?php echo esc_attr( $dt_webform_meta['hidden_input'] ?? '' ) ?>"/>
-    <input type="hidden" id="ip_address" name="ip_address" value="<?php echo esc_attr( DT_Webform_Admin::get_real_ip_address() ?? '' ) ?>"/>
+    <input type="hidden" id="ip_address" name="ip_address" value="<?php echo esc_attr( DT_Webform_Settings::get_real_ip_address() ?? '' ) ?>"/>
 
     <p class="section">
         <label for="name" class="input-label"><?php esc_attr_e( 'Name', 'dt_webform' ) ?></label><br>

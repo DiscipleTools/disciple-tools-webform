@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Class DT_Webform_Admin
+ * Class DT_Webform_Settings
  */
-class DT_Webform_Admin
+class DT_Webform_Settings
 {
     /**
      * Re-usable form to edit state of the plugin.
@@ -118,7 +118,7 @@ class DT_Webform_Admin
 
         // Get status of auto approve
         $options = get_option( 'dt_webform_options' );
-        if ( ! self::is_sites_keys_set() ) {
+        if ( ! self::sites_keys_set() ) {
             self::set_auto_approve_to_false();
             $options['auto_approve'] = false;
         }
@@ -182,44 +182,15 @@ class DT_Webform_Admin
         ];
     }
 
-    /**
-     * Verify the token and id of a REST request
-     * @param $params
-     *
-     * @return bool|\WP_Error
-     */
-    public static function verify_param_id_and_token( $params ) {
-        if ( isset( $params['id'] ) && isset( $params['token'] ) ) {
-            // check id
-            $id_decrypted = DT_Webform_Api_Keys::check_one_hour_encryption( 'id', $params['id'] );
-            if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
-                return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
-            }
-
-            // check token
-            $token_result = DT_Webform_API_Keys::check_token( $id_decrypted, $params['token'] );
-            if ( is_wp_error( $token_result ) || ! $token_result ) {
-                return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
-            } else {
-                return true;
-            }
-        } else {
-            return new WP_Error( "site_check_error_3", "Malformed request", [ 'status' => 400 ] );
-        }
-    }
-
     public static function set_auto_approve_to_false() {
         $options = get_option( 'dt_webform_options' );
         $options['auto_approve'] = false;
         update_option( 'dt_webform_options', $options, false );
     }
 
-    public static function is_sites_keys_set() {
+    public static function sites_keys_set() {
         if ( 'remote' == get_option( 'dt_webform_state' ) ) {
-            $site = get_option( 'dt_webform_site_api_keys' );
-            if ( ! $site ) { // if no site is connected, then disable auto_approve
-                return false;
-            }
+            DT_Api_Keys::are_sites_keys_set();
         }
         return true;
     }

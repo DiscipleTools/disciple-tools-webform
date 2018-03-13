@@ -263,23 +263,19 @@ class DT_Webform_Menu
             switch ( $active_tab ) {
 
                 case "home_settings":
-                    $object = new DT_Webform_Home_Tab_Settings();
-                    $object->content();
+                    $this->tab_home_settings();
                     break;
                 case 'site_links':
-                    $object = new DT_Webform_Home_Tab_Site_Links();
-                    $object->content();
+                    $this->tab_home_site_links();
                     break;
                 case "remote_settings":
-                    $object = new DT_Webform_Remote_Tab_Settings();
-                    $object->content();
+                    $this->tab_remote_settings();
                     break;
                 case "remote_forms":
-                    $object = new DT_Webform_Remote_Tab_Forms();
-                    $object->content();
+                    $this->tab_remote_forms();
                     break;
                 case "new_leads":
-                    $this->new_leads_tab();
+                    $this->tab_new_leads();
                     break;
                 default:
                     break;
@@ -302,136 +298,85 @@ class DT_Webform_Menu
         <div class="wrap">
             <h2><?php esc_attr_e( 'DISCIPLE TOOLS - WEBFORM', 'dt_webform' ) ?></h2>
 
-            <?php DT_Webform_Page_Template::template( 'begin' ) ?>
+            <?php $this->template( 'begin' ) ?>
 
-            <?php DT_Webform_Admin::initialize_plugin_state_metabox() ?>
+            <?php DT_Webform_Settings::initialize_plugin_state_metabox() ?>
 
-            <?php DT_Webform_Page_Template::template( 'right_column' ) ?>
+            <?php $this->template( 'right_column' ) ?>
 
-            <?php DT_Webform_Page_Template::template( 'end' ) ?>
+            <?php $this->template( 'end' ) ?>
 
         </div>
         <?php
     }
 
-    public function new_leads_tab() {
+    public function tab_new_leads() {
 
         // begin columns template
-        DT_Webform_Page_Template::template( 'begin', 1 );
+        $this->template( 'begin', 1 );
 
         $options = get_option( 'dt_webform_options' );
         if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
-            echo 'Tab no longer valid because you have selected "Auto Approve"';
+            echo esc_attr__( 'Tab no longer valid because you have selected "Auto Approve"', 'dt_webform' );
         } else {
             DT_Webform_New_Leads_List::list_box();
         }
 
         // end columns template
-        DT_Webform_Page_Template::template( 'end', 1 );
+        $this->template( 'end', 1 );
     }
-}
 
-
-/**
- * Class DT_Webform_Tab_Settings
- */
-class DT_Webform_Home_Tab_Settings
-{
-    public function content()
-    {
-
+    public function tab_home_settings() {
         // begin columns template
-        DT_Webform_Page_Template::template( 'begin' );
+        $this->template( 'begin' );
 
-        DT_Webform_Admin::auto_approve_metabox();
-        DT_Webform_Admin::initialize_plugin_state_metabox();
+        DT_Webform_Settings::auto_approve_metabox();
+        DT_Webform_Settings::initialize_plugin_state_metabox();
 
         // begin right column template
-        DT_Webform_Page_Template::template( 'right_column' );
-
-
+        $this->template( 'right_column' );
         // end columns template
-        DT_Webform_Page_Template::template( 'end' );
+        $this->template( 'end' );
     }
 
-}
-
-/**
- * Class DT_Webform_Tab_Settings
- */
-class DT_Webform_Remote_Tab_Settings
-{
-    public function content()
-    {
-
+    public function tab_remote_settings() {
         // begin columns template
-        DT_Webform_Page_Template::template( 'begin' );
+        $this->template( 'begin' );
 
-        DT_Webform_Remote::site_link_metabox();
-        DT_Webform_Admin::auto_approve_metabox();
-        DT_Webform_Admin::initialize_plugin_state_metabox();
+        DT_Site_Link_System::single_link_metabox();
+        DT_Webform_Settings::auto_approve_metabox();
+        DT_Webform_Settings::initialize_plugin_state_metabox();
 
         // begin right column template
-        DT_Webform_Page_Template::template( 'right_column' );
-
-
+        $this->template( 'right_column' );
         // end columns template
-        DT_Webform_Page_Template::template( 'end' );
+        $this->template( 'end' );
     }
-}
 
-/**
- * Class DT_Webform_Tab_General
- *
- * This page generates the private API keys that link two sites together
- */
-class DT_Webform_Home_Tab_Site_Links
-{
-    public function content()
-    {
+    public function tab_home_site_links() {
         // begin columns template
-        DT_Webform_Page_Template::template( 'begin' );
+        $this->template( 'begin' );
 
-        DT_Webform_Home::site_api_link_metabox(); // main column content
+        DT_Site_Link_System::multiple_link_metabox(); // main column content
 
         // begin right column template
-        DT_Webform_Page_Template::template( 'right_column' );
-
-
+        $this->template( 'right_column' );
         // end columns template
-        DT_Webform_Page_Template::template( 'end' );
+        $this->template( 'end' );
     }
-}
 
-/**
- * Class DT_Webform_Tab_General
- */
-class DT_Webform_Remote_Tab_Forms
-{
-    public function content()
-    {
+    public function tab_remote_forms() {
 
         // begin columns template
-        DT_Webform_Page_Template::template( 'begin', 1 );
+        $this->template( 'begin', 1 );
 
         DT_Webform_Forms_List::list_box();
 
         // end columns template
-        DT_Webform_Page_Template::template( 'end', 1 );
+        $this->template( 'end', 1 );
     }
 
-}
-
-/**
- * Class DT_Webform_Page_Template
- */
-class DT_Webform_Page_Template
-{
-    /**
-     * @param $section
-     */
-    public static function template( $section, $columns = 2 )
-    {
+    public function template( $section, $columns = 2 ) {
         switch ( $columns ) {
 
             case '1':

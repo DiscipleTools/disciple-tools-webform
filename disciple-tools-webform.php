@@ -144,8 +144,8 @@ class DT_Webform {
      */
     private function home() {
 
-        require_once( 'includes/home/home-endpoints.php' );
-        require_once( 'includes/home/home.php' );
+        require_once( 'includes/home-endpoints.php' );
+        require_once( 'includes/home.php' );
 
     }
 
@@ -157,8 +157,8 @@ class DT_Webform {
      */
     private function remote() {
 
-        require_once( 'includes/remote/remote-endpoints.php' );
-        require_once( 'includes/remote/remote.php' );
+        require_once( 'includes/remote-endpoints.php' );
+        require_once( 'includes/remote.php' );
 
     }
 
@@ -171,17 +171,18 @@ class DT_Webform {
      */
     private function includes() {
 
-        require_once( 'includes/admin/active-forms-post-type.php' );
-        require_once( 'includes/admin/new-leads-post-type.php' ); // post type for the new leads post type
-        require_once( 'includes/admin/tables.php' );
-        require_once( 'includes/admin/api-keys.php' ); // api key service
-        require_once( 'includes/admin/admin.php' );
-        require_once( 'includes/assets/enqueue-scripts.php' ); // enqueue scripts and styles
+        require_once( 'includes/post-type-active-forms.php' );
+        require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
+        require_once( 'includes/tables.php' );
+        require_once( 'includes/settings.php' );
+        require_once( 'includes/enqueue-scripts.php' ); // enqueue scripts and styles
+        require_once( 'includes/site-link-system.php' ); // site linking system
+
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {
             // Admin and tabs menu
-            require_once( 'includes/admin/admin-menu-and-tabs.php' ); // main wp-admin menu and ui
+            require_once( 'includes/menu-and-tabs.php' ); // main wp-admin menu and ui
         }
     }
 
@@ -206,6 +207,7 @@ class DT_Webform {
         $this->assets_path        = trailingslashit( $this->includes_path . 'assets' );
 
         // Plugin directory URIs.
+        $this->includes_uri = trailingslashit( $this->dir_uri . 'includes' );
         $this->assets_uri   = trailingslashit( $this->dir_uri . 'includes/assets' );
         $this->public_uri   = trailingslashit( $this->dir_uri . 'public' );
         $this->js_uri       = trailingslashit( $this->assets_uri . 'js' );
@@ -226,7 +228,7 @@ class DT_Webform {
 
         // Check for plugin updates system
         if ( ! class_exists( 'Puc_v4_Factory' ) ) {
-            require( $this->includes_path . 'admin/libraries/plugin-update-checker/plugin-update-checker.php' );
+            require( $this->admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' );
         }
         Puc_v4_Factory::buildUpdateChecker(
             'https://raw.githubusercontent.com/DiscipleTools/disciple-tools-version-control/master/disciple-tools-webform-version-control.json',
@@ -275,7 +277,7 @@ class DT_Webform {
         delete_option( 'dt_webform_options' );
         delete_option( 'dt_webform_state' );
         delete_option( 'external_updates-disciple-tools-webform' );
-        delete_option( 'dt_webform_site_api_keys' );
+        DT_Site_Link_System::deactivate();
     }
 
     /**

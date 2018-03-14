@@ -42,14 +42,13 @@ class DT_Webform_Remote
         }
 
         // Create hash key and url
-        $md5_hash_id = DT_API_Keys::one_hour_encryption( $id, $token );
+        $transfer_token = DT_API_Keys::one_hour_encryption( $id, $token );
 
         // Send remote request
         $args = [
             'method' => 'GET',
             'body' => [
-                'id' => $md5_hash_id,
-                'token' => $token,
+                'transfer_token' => $transfer_token,
                 'selected_records' => $transfer_records,
             ]
         ];
@@ -65,9 +64,6 @@ class DT_Webform_Remote
             foreach ( $records as $record ) {
                 wp_delete_post( $record, true );
             }
-
-            dt_write_log( 'Start deleting process' );
-            dt_write_log( $records );
         }
 
         return true;
@@ -76,7 +72,11 @@ class DT_Webform_Remote
     public static function get_custom_css( $token ) {
         global $wpdb;
         $css = $wpdb->get_var( $wpdb->prepare( "
-            SELECT meta_value FROM $wpdb->postmeta WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) AND meta_key = 'custom_css' LIMIT 1", $token ) );
+            SELECT meta_value 
+            FROM $wpdb->postmeta 
+            WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) 
+            AND meta_key = 'custom_css' 
+            LIMIT 1", $token ) );
         return $css;
     }
 

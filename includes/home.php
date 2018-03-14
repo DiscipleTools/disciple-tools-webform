@@ -13,7 +13,6 @@ class DT_Webform_Home
      * @return bool|\WP_Error
      */
     public static function create_contact_record( $new_lead_id ) {
-        dt_write_log( 'Begin create_contact_record' );
 
         $check_permission = false;
 
@@ -66,7 +65,6 @@ class DT_Webform_Home
         ],
         'notes' => $notes
         ];
-        dt_write_log( $fields );
 
         // Post to contact
         if ( ! class_exists( 'Disciple_Tools_Contacts' ) ) {
@@ -75,7 +73,6 @@ class DT_Webform_Home
 
         // Create contact
         $result = Disciple_Tools_Contacts::create_contact( $fields, $check_permission );
-        dt_write_log( $result );
 
         if ( is_wp_error( $result ) ) {
             return new WP_Error( 'failed_to_insert_contact', $result->get_error_message() );

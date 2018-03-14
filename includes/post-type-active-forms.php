@@ -424,7 +424,7 @@ class DT_Webform_Active_Form_Post_Type
                     update_post_meta( $post_id, $f, ${$f} );
                 }
             } else {
-                dt_write_log( "Expected field $f to exist" );
+                dt_write_log( "Expected field $f to exist in " . __METHOD__ );
             }
         }
 

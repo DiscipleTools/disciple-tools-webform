@@ -343,7 +343,7 @@ class DT_Webform_Menu
         // begin columns template
         $this->template( 'begin' );
 
-        DT_Site_Link_System::single_link_metabox();
+        DT_Site_Link_System::metabox_single_link();
         DT_Webform_Settings::auto_approve_metabox();
         DT_Webform_Settings::initialize_plugin_state_metabox();
 
@@ -357,7 +357,7 @@ class DT_Webform_Menu
         // begin columns template
         $this->template( 'begin' );
 
-        DT_Site_Link_System::multiple_link_metabox(); // main column content
+        DT_Site_Link_System::metabox_multiple_link(); // main column content
 
         // begin right column template
         $this->template( 'right_column' );

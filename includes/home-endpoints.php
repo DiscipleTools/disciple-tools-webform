@@ -82,7 +82,7 @@ class DT_Webform_Home_Endpoints
     public function transfer_collection( WP_REST_Request $request ) {
 
         $params = $request->get_params();
-        $test = DT_Api_Keys::verify_param_id_and_token( $params );
+        $test = DT_Api_Keys::verify_param_transfer_token( $params );
 
         if ( ! is_wp_error( $test ) && $test ) {
             if ( isset( $params['selected_records'] ) && ! empty( $params['selected_records'] ) ) {

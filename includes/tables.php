@@ -309,7 +309,6 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
         if ( 'approve' === $this->current_action() ) {
 
             if ( ! isset( $_GET['form'] ) || ! is_array( $_GET['form'] ) ) {
-                dt_write_log( 'Form data and/or array missing' );
                 return new WP_Error( 'failed_bulk_actions', 'Form data and/or array missing' );
             }
 

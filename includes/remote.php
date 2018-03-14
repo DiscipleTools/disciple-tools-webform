@@ -16,10 +16,11 @@ class DT_Webform_Remote
     public static function trigger_transfer_of_new_leads( $selected_records = [] ) {
 
         $transfer_records = [];
-        $prefix = DT_Site_Link_System::$token;
 
         // get option
+        $prefix = DT_Site_Link_System::$token;
         $home = get_option( $prefix . '_api_keys' );
+
         if ( ! isset( $home ) || empty( $home ) ) {
             // set auto post to false
             $options = get_option( 'dt_webform_options' );
@@ -58,7 +59,7 @@ class DT_Webform_Remote
             return new WP_Error( 'failed_remote_get', $result->get_error_message() );
         }
 
-        if ( isset( $result['body'] ) && ! empty( $result['body'] ) && count( $result['body'] ) > 0 ) {
+        if ( isset( $result['body'] ) && ! empty( $result['body'] ) ) {
             $records = json_decode( $result['body'] );
 
             foreach ( $records as $record ) {

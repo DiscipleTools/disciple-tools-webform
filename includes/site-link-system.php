@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-if( ! class_exists( 'DT_Site_Link_System' )  ) {
+if ( ! class_exists( 'DT_Site_Link_System' ) ) {
     /**
      * Class DT_Site_Link_System
      */
@@ -66,7 +66,7 @@ if( ! class_exists( 'DT_Site_Link_System' )  ) {
         public static function metabox_multiple_link() {
 
             $prefix = self::$token;
-            $keys = DT_Api_Keys::update_keys( );
+            $keys = DT_Api_Keys::update_keys();
 
             ?>
             <h3><?php esc_html_e( 'API Keys' ) ?></h3>
@@ -140,7 +140,7 @@ if( ! class_exists( 'DT_Site_Link_System' )  ) {
 
                                 </span>
                                     <p id="<?php echo esc_attr( $key['id'] ); ?>-message" style="text-align:center; display:none;">
-                                        <?php esc_attr_e( sprintf('Your GMT server time is: (%s). This number must be identical on the linked site.', current_time( 'Y-m-dH', 1 ) ) ); ?>
+                                        <?php echo sprintf( esc_attr__( 'Your GMT server time is: (%s). This number must be identical to the one on the linked site. Mismatched server times will cause connection failures.' ), esc_attr( current_time( 'Y-m-dH', 1 ) ) ); ?>
                                     </p>
                                     <script>
                                         jQuery(document).ready(function() {
@@ -230,7 +230,7 @@ if( ! class_exists( 'DT_Site_Link_System' )  ) {
                                 </strong>
                             </span>
                                 <p id="<?php echo esc_attr( $key['id'] ); ?>-message" style="text-align:center; display:none;">
-                                    <?php esc_attr_e( sprintf('Your GMT server time is: (%s). This number must be identical on the linked site.', current_time( 'Y-m-dH', 1 ) ) ); ?>
+                                    <?php echo sprintf( esc_attr__( 'Your GMT server time is: (%s). This number must be identical to the one on the linked site. Mismatched server times will cause connection failures.' ), esc_attr( current_time( 'Y-m-dH', 1 ) ) ); ?>
                                 </p>
                                 <script>
                                     jQuery(document).ready(function() {
@@ -324,12 +324,12 @@ if( ! class_exists( 'DT_Site_Link_System' )  ) {
             $namespace = 'dt-public/v' . $version;
 
             register_rest_route(
-            $namespace, '/webform/site_link_check', [
-            [
-            'methods'  => WP_REST_Server::CREATABLE,
-            'callback' => [ $this, 'site_link_check' ],
-            ],
-            ]
+                $namespace, '/webform/site_link_check', [
+                [
+                'methods'  => WP_REST_Server::CREATABLE,
+                'callback' => [ $this, 'site_link_check' ],
+                ],
+                ]
             );
 
         }
@@ -349,12 +349,11 @@ if( ! class_exists( 'DT_Site_Link_System' )  ) {
 
                 $status = DT_Api_Keys::check_one_hour_encryption( $params['transfer_token'] );
 
-                if( $status ) {
+                if ( $status ) {
                     return true;
                 } else {
                     return false;
                 }
-
             } else {
                 return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
             }
@@ -364,7 +363,7 @@ if( ! class_exists( 'DT_Site_Link_System' )  ) {
 }
 
 
-if( ! class_exists( 'DT_Api_Keys' ) ) {
+if ( ! class_exists( 'DT_Api_Keys' ) ) {
     /**
      * Class DT_Api_Keys
      */
@@ -572,12 +571,6 @@ if( ! class_exists( 'DT_Api_Keys' ) ) {
                 $id_decrypted = self::check_one_hour_encryption( $params['transfer_token'] );
                 if ( is_wp_error( $id_decrypted ) || ! $id_decrypted ) {
                     return new WP_Error( "site_check_error_1", "Malformed request", [ 'status' => 400 ] );
-                }
-
-                // check token
-                $token_result = self::check_token( $id_decrypted, $params['token'] );
-                if ( is_wp_error( $token_result ) || ! $token_result ) {
-                    return new WP_Error( "site_check_error_2", "Malformed request", [ 'status' => 400 ] );
                 } else {
                     return true;
                 }

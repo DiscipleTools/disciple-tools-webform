@@ -82,13 +82,17 @@ class DT_Webform_Home_Endpoints
     public function transfer_collection( WP_REST_Request $request ) {
 
         $params = $request->get_params();
-        $test = DT_Api_Keys::verify_param_transfer_token( $params );
+        $site_key = DT_Api_Keys::verify_param_transfer_token( $params );
 
-        if ( ! is_wp_error( $test ) && $test ) {
+        if ( ! is_wp_error( $site_key ) && $site_key ) {
             if ( isset( $params['selected_records'] ) && ! empty( $params['selected_records'] ) ) {
+
+                dt_write_log( __METHOD__ );
+                dt_write_log( $params );
 
                 $old_records = [];
                 foreach ( $params['selected_records'] as $record ) {
+                    dt_write_log( $record );
                     $result = DT_Webform_New_Leads_Post_Type::insert_post( $record );
 
                     if ( is_wp_error( $result ) || empty( $result ) ) {

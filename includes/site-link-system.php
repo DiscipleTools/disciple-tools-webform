@@ -3,7 +3,7 @@
  * Site Link System and API Keys
  *
  * @class DT_Site_Link_System
- * @class DT_Api_Keys
+ * @class DT_Site_Link_System
  * @version 1.0
  */
 
@@ -34,7 +34,6 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
             if ( is_null( self::$_instance ) ) {
                 self::$_instance = new self();
             }
-
             return self::$_instance;
         } // End instance()
 
@@ -51,76 +50,156 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
         } // End __construct()
 
         /**
-         * Include this deactivation step into any deactivation hook for the plugin / theme
+         * Generate token for api key
          *
-         * @example  DT_Site_Link_System::deactivate()
+         * @param int $length
+         *
+         * @return string
          */
-        public static function deactivate() {
-            $prefix = DT_Site_Link_System::$token;
-            delete_option( $prefix . '_api_keys' );
+        public static function generate_token( $length = 32 ) {
+            return bin2hex( random_bytes( $length ) );
+        }
+
+        /**
+         * This method encrypts with md5 and the GMT date. So every day, this encryption will change. Using this method
+         * requires that both of the servers have their timezone in Settings > General > Timezone correctly set.
+         *
+         * @note Key changes every hour
+         *
+         * @param $id
+         * @param $token
+         *
+         * @return string
+         */
+        public static function one_hour_encryption( $id, $token ) {
+            return md5( $id . $token . current_time( 'Y-m-dH', 1 ) );
+        }
+
+        /**
+         * Tests id or token against options values. Decrypts md5 hash created with one_hour_encryption
+         *
+         * @param $transfer_token
+         *
+         * @return string|\WP_Error
+         */
+        public static function check_one_hour_encryption( $transfer_token ) {
+
+            $keys = get_option( self::$token . '_api_keys' );
+
+            if ( empty( $keys ) ) {
+                return new WP_Error( __METHOD__, 'No sites available' );
+            }
+
+            foreach ( $keys as $key => $array ) {
+                if ( isset( $array['token'] ) && isset( $array['id'] ) && ( md5( $array['id'] . $array['token'] . current_time( 'Y-m-dH', 1 ) ) == $transfer_token
+                || md5( $array['id'] . $array['token'] . current_time( 'Y-m-dH', 1 ) - 3600 ) == $transfer_token ) ) {
+                    return $key;
+                }
+            }
+            return false;
         }
 
         /**
          * Metabox for creating multiple site links
          */
         public static function metabox_multiple_link() {
-
             $prefix = self::$token;
-            $keys = DT_Api_Keys::update_keys();
-
+            $keys = self::update_keys();
             ?>
-            <h3><?php esc_html_e( 'API Keys' ) ?></h3>
-            <p></p>
+            <h1><?php esc_html_e( 'API Keys' ) ?></h1>
+            <!-- Connect to Other Website -->
             <form action="" method="post">
                 <?php wp_nonce_field( $prefix . '_action', $prefix . '_nonce' ); ?>
-                <h2><?php esc_html_e( 'Token Generator' ) ?></h2>
+                <h2><?php esc_html_e( 'Connect to Another Site' ) ?></h2>
                 <table class="widefat striped">
                     <tr>
-                        <td><label for="id"><?php esc_html_e( 'Name' ) ?></label></td>
+                        <td width="100px" colspan="2">
+                            <?php esc_attr_e('Get the ID, Token, and URL from the remote site and insert here.') ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="100px"><label for="id"><?php esc_html_e( 'ID' ) ?></label></td>
+                        <td><input type="text" id="id" name="id" required /> <?php esc_html_e( '(Case Sensitive)' ) ?></td>
+                    </tr>
+                    <tr>
+                        <td><label for="token"><?php esc_html_e( 'Token' ) ?></label></td>
+                        <td><input type="text" id="token" name="token" required /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="url"><?php esc_html_e( 'URL' ) ?></label></td>
+                        <td><input type="text" id="url" name="url" placeholder="https://www.remote.com" required />
+                            <button type="submit" class="button" name="action" value="create"><?php esc_html_e( 'Connect To Site' ) ?></button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <br>
+            <!-- New Site Key Generator-->
+            <form action="" method="post">
+                <?php wp_nonce_field( $prefix . '_action', $prefix . '_nonce' ); ?>
+                <h2><?php esc_html_e( 'Generate New Site Key' ) ?></h2>
+                <table class="widefat striped">
+                    <tr>
+                        <td width="90px"><label for="id"><?php esc_html_e( 'Name' ) ?></label></td>
                         <td><input type="text" id="id" name="id" required> <?php esc_html_e( '(Case Sensitive)' ) ?></td>
                     </tr>
                     <tr>
-                        <td><label for="url"><?php esc_html_e( 'Remote URL' ) ?></label></td>
-                        <td><input type="text" id="url" name="url" placeholder="http://www.website.com" required>
+                        <td><label for="url"><?php esc_html_e( 'URL' ) ?></label></td>
+                        <td><input type="text" id="url" name="url" placeholder="https://www.remote.com" required>
                             <button type="submit" class="button" name="action" value="create"><?php esc_html_e( 'Generate Token' ) ?></button>
                         </td>
                     </tr>
                 </table>
             </form>
             <br>
-            <h2><?php esc_html_e( 'Existing Keys' ) ?></h2>
+            <h2><?php esc_html_e( 'Existing Site Connections' ) ?></h2>
             <?php
             if ( ! empty( $keys ) || ! is_wp_error( $keys ) ) :
                 foreach ( $keys as $key ): ?>
                     <form action="" method="post"><!-- begin form -->
                         <?php wp_nonce_field( $prefix . '_action', $prefix . '_nonce' ); ?>
                         <input type="hidden" name="id" value="<?php echo esc_html( $key['id'] ); ?>" />
-
                         <table class="widefat">
                             <thead>
                             <tr>
-                                <td colspan="2"><?php esc_html_e( 'Setup information for ' ) ?>"<?php echo esc_html( $key['id'] ); ?>"</td>
+                                <td><strong><?php esc_html_e( 'Setup information for ' ) ?>"<?php echo esc_html( $key['id'] ); ?>"</strong></td>
                             </tr>
                             </thead>
                             <tbody>
                             <tr>
-                                <td><?php esc_html_e( 'ID' ) ?></td>
-                                <td><?php echo esc_html( $key['id'] ); ?></td>
+                                <td>
+                                    <strong><?php esc_html_e( 'Connected site' ) ?></strong>
+                                    <table class="widefat">
+                                        <tbody>
+                                        <tr>
+                                            <td><?php echo esc_html( $key['url'] ); ?></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
                             </tr>
                             <tr>
-                                <td><?php esc_html_e( 'Token' ) ?></td>
-                                <td><?php echo esc_html( $key['token'] ); ?></td>
+                                <td>
+                                    <strong><?php esc_html_e( 'Place this information into the connected site' ) ?></strong>
+                                    <table class="widefat">
+                                        <tr>
+                                            <td width="100px"><?php esc_html_e( 'ID' ) ?></td>
+                                            <td><?php echo esc_html( $key['id'] ); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td><?php esc_html_e( 'Token' ) ?></td>
+                                            <td><?php echo esc_html( $key['token'] ); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td><?php esc_html_e( 'URL' ) ?></td>
+                                            <td><?php echo esc_html( home_url() ); ?></td>
+                                        </tr>
+                                    </table>
+                                </td>
                             </tr>
+
                             <tr>
-                                <td><?php esc_html_e( 'Home URL' ) ?></td>
-                                <td><?php echo esc_html( home_url() ); ?></td>
-                            </tr>
-                            <tr>
-                                <td><?php esc_html_e( 'Remote URL' ) ?></td>
-                                <td><?php echo esc_html( $key['url'] ); ?></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
+                                <td>
                                     <button type="button" class="button-like-link" onclick="jQuery('#delete-<?php echo esc_html( $key['id'] ); ?>').show();">
                                         <?php esc_html_e( 'Delete' ) ?>
                                     </button>
@@ -144,7 +223,7 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                                     </p>
                                     <script>
                                         jQuery(document).ready(function() {
-                                            check_link_status( '<?php echo esc_attr( DT_Api_Keys::one_hour_encryption( $key['id'], $key['token'] ) ); ?>', '<?php echo esc_attr( $key['url'] ); ?>', '<?php echo esc_attr( $key['id'] ); ?>' );
+                                            check_link_status( '<?php echo esc_attr( self::one_hour_encryption( $key['id'], $key['token'] ) ); ?>', '<?php echo esc_attr( $key['url'] ); ?>', '<?php echo esc_attr( $key['id'] ); ?>' );
                                         })
                                     </script>
                                 </td>
@@ -166,8 +245,8 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
          */
         public static function metabox_single_link()
         {
-            $prefix = DT_Site_Link_System::$token;
-            $keys = DT_Api_Keys::update_keys();
+            $prefix = self::$token;
+            $keys = self::update_keys();
             $key = self::clean_site_records( $keys );
             ?>
             <form method="post" action="">
@@ -234,7 +313,7 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                                 </p>
                                 <script>
                                     jQuery(document).ready(function() {
-                                        check_link_status( '<?php echo esc_attr( DT_Api_Keys::one_hour_encryption( $key['id'], $key['token'] ) ); ?>', '<?php echo esc_attr( $key['url'] ); ?>', '<?php echo esc_attr( $key['id'] ); ?>' );
+                                        check_link_status( '<?php echo esc_attr( self::one_hour_encryption( $key['id'], $key['token'] ) ); ?>', '<?php echo esc_attr( $key['url'] ); ?>', '<?php echo esc_attr( $key['id'] ); ?>' );
                                     })
                                 </script>
                             </td>
@@ -247,132 +326,9 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
             <?php
         }
 
-        public function scripts() {
-            echo "<script type='text/javascript'>
-                
-            function check_link_status( transfer_token, url, id ) {
-                
-            let linked = '" .  esc_attr__( 'Linked' ) . "';
-            let not_linked = '" .  esc_attr__( 'Not Linked' ) . "';
-            let not_found = '" .  esc_attr__( 'Failed to connect with the URL provided.' ) . "';
-            
-            return jQuery.ajax({
-                type: 'POST',
-                data: JSON.stringify({ \"transfer_token\": transfer_token } ),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                url: url + '/wp-json/dt-public/v1/webform/site_link_check',
-            })
-                .done(function (data) {
-                    if( data ) {
-                        jQuery('#' + id + '-status').html( linked )
-                    } else {
-                        jQuery('#' + id + '-status').html( not_linked );
-                        jQuery('#' + id + '-message').show();
-                    }
-                })
-                .fail(function (err) {
-                    jQuery( document ).ajaxError(function( event, request, settings ) {
-                         if( request.status === 0 ) {
-                            jQuery('#' + id + '-status').html( not_found )
-                          
-                         } else {
-                            jQuery('#' + id + '-status').html( JSON.stringify( request.statusText ) )
-                                
-                         }
-                    });
-                });
-            }
-            </script>";
-        }
-
-        /**
-         * Cleans potentially extra site records from previous configurations of the plugin.
-         *
-         * @param $keys
-         *
-         * @return mixed
-         */
-        private static function clean_site_records( $keys ) {
-            $prefix = DT_Site_Link_System::$token;
-
-            if ( empty( $keys ) ) {
-                return $keys;
-            }
-
-            if ( count( $keys ) > 1 ) {
-
-                foreach ( $keys as $key => $value ) {
-                    $home_link = $value;
-                    $cleaned[ $key ] = $value;
-                    update_option( $prefix . '_api_keys', $cleaned, true );
-                    break;
-                }
-            } else {
-                foreach ( $keys as $key ) {
-                    $home_link = $key;
-                    break;
-                }
-            }
-
-            return $home_link;
-        }
-
-        public function add_api_routes()
-        {
-            $version = '1';
-            $namespace = 'dt-public/v' . $version;
-
-            register_rest_route(
-                $namespace, '/webform/site_link_check', [
-                [
-                'methods'  => WP_REST_Server::CREATABLE,
-                'callback' => [ $this, 'site_link_check' ],
-                ],
-                ]
-            );
-
-        }
-
-        /**
-         * Verify site is linked
-         *
-         * @param  WP_REST_Request $request
-         *
-         * @return string|WP_Error|array The contact on success
-         */
-        public function site_link_check( WP_REST_Request $request )
-        {
-            $params = $request->get_params();
-
-            if ( isset( $params['transfer_token'] ) ) {
-
-                $status = DT_Api_Keys::check_one_hour_encryption( $params['transfer_token'] );
-
-                if ( $status ) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
-            }
-        }
-    }
-    DT_Site_Link_System::instance();
-}
-
-
-if ( ! class_exists( 'DT_Api_Keys' ) ) {
-    /**
-     * Class DT_Api_Keys
-     */
-    class DT_Api_Keys
-    {
         /**
          * Create, Update, and Delete api keys
          *
-         * @param $prefix string
          * @return mixed|\WP_Error
          */
         public static function update_keys() {
@@ -433,9 +389,9 @@ if ( ! class_exists( 'DT_Api_Keys' ) ) {
                         $url    = trim( sanitize_text_field( wp_unslash( $_POST['url'] ) ) );
 
                         $keys[ $id ] = [
-                        'id'    => $id,
-                        'token' => $token,
-                        'url'   => $url,
+                            'id'    => $id,
+                            'token' => $token,
+                            'url'   => $url,
                         ];
 
                         update_option( $prefix . '_api_keys', $keys, false );
@@ -459,79 +415,42 @@ if ( ! class_exists( 'DT_Api_Keys' ) ) {
             return $keys;
         }
 
-        /**
-         * Generate token for api key
-         *
-         * @param int $length
-         *
-         * @return string
-         */
-        public static function generate_token( $length = 32 ) {
-            return bin2hex( random_bytes( $length ) );
-        }
-
-        /**
-         * This method encrypts with md5 and the GMT date. So every day, this encryption will change. Using this method
-         * requires that both of the servers have their timezone in Settings > General > Timezone correctly set.
-         *
-         * @note Key changes every hour
-         *
-         * @param $value
-         *
-         * @return string
-         */
-        public static function one_hour_encryption( $id, $token ) {
-            return md5( $id . $token . current_time( 'Y-m-dH', 1 ) );
-        }
-
-        /**
-         * Tests id or token against options values. Decrypts md5 hash created with one_hour_encryption
-         *
-         * @param $value
-         *
-         * @return string|\WP_Error
-         */
-        public static function check_one_hour_encryption( $transfer_token ) {
-
-            $keys = get_option( DT_Site_Link_System::$token . '_api_keys' );
-
-            if ( empty( $keys ) ) {
-                return new WP_Error( __METHOD__, 'No sites available' );
+        public function scripts() {
+            echo "<script type='text/javascript'>
+                
+            function check_link_status( transfer_token, url, id ) {
+                
+            let linked = '" .  esc_attr__( 'Linked' ) . "';
+            let not_linked = '" .  esc_attr__( 'Not Linked' ) . "';
+            let not_found = '" .  esc_attr__( 'Failed to connect with the URL provided.' ) . "';
+            
+            return jQuery.ajax({
+                type: 'POST',
+                data: JSON.stringify({ \"transfer_token\": transfer_token } ),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                url: url + '/wp-json/dt-public/v1/webform/site_link_check',
+            })
+                .done(function (data) {
+                    if( data ) {
+                        jQuery('#' + id + '-status').html( linked )
+                    } else {
+                        jQuery('#' + id + '-status').html( not_linked );
+                        jQuery('#' + id + '-message').show();
+                    }
+                })
+                .fail(function (err) {
+                    jQuery( document ).ajaxError(function( event, request, settings ) {
+                         if( request.status === 0 ) {
+                            jQuery('#' + id + '-status').html( not_found )
+                         } else {
+                            jQuery('#' + id + '-status').html( JSON.stringify( request.statusText ) )
+                         }
+                    });
+                });
             }
-
-            foreach ( $keys as $key => $array ) {
-                if ( isset( $array['token'] ) && isset( $array['id'] ) && ( md5( $array['id'] . $array['token'] . current_time( 'Y-m-dH', 1 ) ) == $transfer_token
-                || md5( $array['id'] . $array['token'] . current_time( 'Y-m-dH', 1 ) - 3600 ) == $transfer_token ) ) {
-                    return $key;
-                }
-            }
-            return false;
+            </script>";
         }
-
-        public static function check_token( $id, $token )
-        {
-            $prefix = DT_Site_Link_System::$token;
-            $keys = get_option( $prefix . '_api_keys' );
-            return isset( $keys[ $id ] ) && $keys[ $id ]['token'] == $token;
-        }
-
-        /**
-         * Check to see if an api key and token exist @todo remove??
-         *
-         * @param $id
-         * @param $token
-         * @param $prefix
-         *
-         * @return bool
-         */
-//        public static function check_api_key( $id, $token )
-//        {
-//            $prefix = DT_Site_Link_System::$token;
-//
-//            $keys = get_option( $prefix . '_api_keys', [] );
-//
-//            return isset( $keys[ $id ] ) && $keys[ $id ]['token'] == $token;
-//        }
 
         /**
          * Display an admin notice on the page
@@ -549,9 +468,89 @@ if ( ! class_exists( 'DT_Api_Keys' ) ) {
             echo '</p></div>';
         }
 
-        public static function are_sites_keys_set() {
+        /**
+         * Cleans potentially extra site records from previous configurations of the plugin.
+         * Used by the single metabox configuration
+         *
+         * @param $keys
+         *
+         * @return mixed
+         */
+        private static function clean_site_records( $keys ) {
+            $prefix = self::$token;
 
-            $prefix = DT_Site_Link_System::$token;
+            if ( empty( $keys ) ) {
+                return $keys;
+            }
+
+            if ( count( $keys ) > 1 ) {
+
+                foreach ( $keys as $key => $value ) {
+                    $home_link = $value;
+                    $cleaned[ $key ] = $value;
+                    update_option( $prefix . '_api_keys', $cleaned, true );
+                    break;
+                }
+            } else {
+                foreach ( $keys as $key ) {
+                    $home_link = $key;
+                    break;
+                }
+            }
+
+            return $home_link;
+        }
+
+        /**
+         * Add the custom API route for the site link checking.
+         */
+        public function add_api_routes()
+        {
+//            header('Access-Control-Allow-Origin: *');
+            $version = '1';
+            $namespace = 'dt-public/v' . $version;
+
+            register_rest_route(
+                $namespace, '/webform/site_link_check', [
+                [
+                'methods'  => WP_REST_Server::CREATABLE,
+                'callback' => [ $this, 'site_link_check' ],
+                ],
+                ]
+            );
+        }
+
+        /**
+         * Verify site is linked
+         *
+         * @param  WP_REST_Request $request
+         *
+         * @return string|WP_Error|array The contact on success
+         */
+        public function site_link_check( WP_REST_Request $request )
+        {
+            $params = $request->get_params();
+            if ( isset( $params['transfer_token'] ) ) {
+                $status = DT_Site_Link_System::check_one_hour_encryption( $params['transfer_token'] );
+                if ( $status ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return new WP_Error( "site_check_error", "Malformed request", [ 'status' => 400 ] );
+            }
+        }
+
+        public static function check_token( $id, $token )
+        {
+            $prefix = self::$token;
+            $keys = get_option( $prefix . '_api_keys' );
+            return isset( $keys[ $id ] ) && $keys[ $id ]['token'] == $token;
+        }
+
+        public static function are_sites_keys_set() {
+            $prefix = self::$token;
             $site = get_option( $prefix . '_api_keys' );
             if ( ! $site || count( $site ) < 1 ) { // if no site is connected, then disable auto_approve
                 return false;
@@ -579,5 +578,15 @@ if ( ! class_exists( 'DT_Api_Keys' ) ) {
             }
         }
 
+        /**
+         * Add this deactivation step into any deactivation hook for the plugin / theme
+         * @example  DT_Site_Link_System::deactivate()
+         */
+        public static function deactivate() {
+            $prefix = self::$token;
+            delete_option( $prefix . '_api_keys' );
+        }
     }
-}
+    DT_Site_Link_System::instance();
+
+} // end class check

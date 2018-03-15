@@ -277,7 +277,7 @@ class DT_Webform {
         delete_option( 'dt_webform_options' );
         delete_option( 'dt_webform_state' );
         delete_option( 'external_updates-disciple-tools-webform' );
-        DT_Site_Link_System::deactivate();
+        DT_Site_Link_System::deactivate(); // site link system
     }
 
     /**

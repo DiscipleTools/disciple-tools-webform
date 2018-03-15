@@ -133,18 +133,6 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                         <td><input type="text" id="url" name="url" placeholder="<?php esc_html_e( 'www.website.com' ) ?>" required /> <span class="text-small"><em><?php esc_html_e( '(no "https://")' ) ?></em></span></td>
                     </tr>
                     <tr>
-                        <td>
-                            <label for="ip"><?php esc_html_e( 'IP Lock' ) ?></label><br><span class="text-small">(<?php esc_html_e( 'optional' ) ?>)</span>
-                        </td>
-                        <td>
-                            <input type="text" id="ip" name="ip" placeholder="1.1.1.1" value="" /> <a onclick="jQuery('#info-message-on-ip-lock').toggle();"><?php esc_attr_e( 'What is this?' ) ?></a>
-                            <p id="info-message-on-ip-lock" style="display:none;">
-                                <?php esc_attr_e('IP Lock is an additional security layer that requires the requesting site to come from a specific ip address. This security is in addition to the SSL and the token encryption and verification. 
-                                This requires the target site to have a static public ip address.') ?>
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
                         <td colspan="2">
                             <button type="submit" class="button" name="action" value="update"><?php esc_html_e( 'Connect To Site' ) ?></button>
                         </td>
@@ -167,25 +155,8 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                     <tr>
                         <td><label for="url"><?php esc_html_e( 'Target URL' ) ?></label></td>
                         <td>
-                            <input type="text" id="url" name="url" placeholder="www.website.com" required>
+                            <input type="text" id="url" name="url" placeholder="www.website.com" required>  <button type="submit" class="button" name="action" value="create"><?php esc_html_e( 'Generate Token' ) ?></button>
 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="ip"><?php esc_html_e( 'IP Lock' ) ?></label><br><span class="text-small">(<?php esc_html_e( 'optional' ) ?>)</span>
-                        </td>
-                        <td>
-                            <input type="text" id="ip" name="ip" placeholder="1.1.1.1" value="" /> <a onclick="jQuery('#info-message-on-ip-lock').toggle();"><?php esc_attr_e( 'What is this?' ) ?></a>
-                            <p id="info-message-on-ip-lock" style="display:none;">
-                                <?php esc_attr_e('IP Lock is an additional security layer that requires the requesting site to come from a specific ip address. This security is in addition to the SSL and the token encryption and verification. 
-                                This requires the target site to have a static public ip address.') ?>
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <button type="submit" class="button" name="action" value="create"><?php esc_html_e( 'Generate Token' ) ?></button>
                         </td>
                     </tr>
                 </table>
@@ -234,11 +205,7 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                                         </tr>
                                         <tr>
                                             <td><?php esc_html_e( 'URL' ) ?></td>
-                                            <td><?php echo esc_html( str_replace( 'http://', 'https://', home_url() ) ); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><?php esc_html_e( 'IP Lock' ) ?><br><span class="text-small">(<?php esc_html_e( 'optional' ) ?>)</span></td>
-                                            <td><?php echo self::get_local_public_ip_address(); ?></td>
+                                            <td><?php echo esc_html( self::get_current_site_base_url() ); ?></td>
                                         </tr>
                                     </table>
                                 </td>
@@ -298,7 +265,7 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
         <!-- Footer Information -->
             <hr />
             <p class="text-small"><?php esc_attr_e( 'Timestamp for this server') ?>: <span class="info-color"><?php echo esc_attr( current_time( 'Y-m-dH', 1 ) ) ?></span>  <br><em><?php esc_attr_e( 'Compare this number to linked sites. They should be identical.') ?></em></p>
-            <p><?php esc_attr_e( 'URL for this server') ?>: <span class="info-color"><?php echo esc_html( home_url() ); ?></span></p>
+            <p><?php esc_attr_e( 'URL for this server') ?>: <span class="info-color"><?php echo esc_html( self::get_current_site_base_url() ); ?></span></p>
             <?php
         }
 
@@ -317,7 +284,8 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                     <thead>
                     <tr>
                         <td colspan="2">
-                            <?php esc_html_e( 'Link to Remote Site to Home' ) ?>
+                            <strong><?php esc_html_e( 'Link to Home Site' ) ?></strong><br>
+
                         </td>
                     </tr>
                     </thead>
@@ -345,17 +313,8 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                             <label for="url"><?php esc_html_e( 'URL' ) ?></label>
                         </td>
                         <td>
-                            <input type="text" name="url" id="url" placeholder="https://www.website.com"
-                            <?php echo ( isset( $key['url'] ) ) ? 'value="https://' . esc_attr( $key['url'] ) . '" readonly' : '' ?> />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="ip"><?php esc_html_e( 'URL' ) ?></label>
-                        </td>
-                        <td>
-                            <input type="text" name="ip" id="ip" placeholder="255.255.255.255"
-                            <?php echo ( isset( $key['ip'] ) ) ? 'value="'. esc_attr( $key['ip'] ) . '" readonly' : '' ?> />
+                            <input type="text" name="url" id="url" placeholder="www.website.com"
+                            <?php echo ( isset( $key['url'] ) ) ? 'value="'.esc_attr( $key['url'] ) . '" readonly' : '' ?> />
                         </td>
                     </tr>
                     <tr>
@@ -367,11 +326,15 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                             <?php endif; ?>
                         </td>
                     </tr>
-
-                    <?php if ( isset( $key['id'] ) && ! empty( $key ) ) : ?>
                     <tr>
                         <td colspan="2">
-                            <span class="text-small"><?php echo esc_attr( current_time( 'Y-m-dH', 1 ) ) ?></span>
+                            <?php esc_html_e( 'Current site' ) ?>: <span class="info-color"><?php echo esc_attr( self::get_current_site_base_url() ) ?></span><br>
+                            <span class="text-small">Timestamp: <?php echo esc_attr( current_time( 'Y-m-dH', 1 ) ) ?></span>
+
+
+                    <?php if ( isset( $key['id'] ) && ! empty( $key ) ) : ?>
+
+
                             <span style="float:right">
                                     <?php esc_html_e( 'Status: ' ) ?>
                                 <strong>
@@ -399,14 +362,15 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                             <hr />
                             <p class="text-small"><?php esc_attr_e( 'Timestamp for this server') ?>: <span class="info-color"><?php echo esc_attr( current_time( 'Y-m-dH', 1 ) ) ?></span>  <br><em><?php esc_attr_e( 'Compare this number to linked sites. They should be identical.') ?></em></p>
                             <p><?php esc_attr_e( 'URL for this server') ?>: <span class="info-color"><?php echo esc_html( home_url() ); ?></span></p>
+
+                        <script>
+                            jQuery(document).ready(function() {
+                                check_link_status( '<?php echo esc_attr( self::encrypt_transfer_token( $key['id'], $key['token'] ) ); ?>', '<?php echo esc_attr( $key['url'] ); ?>', '<?php echo esc_attr( $key['id'] ); ?>' );
+                            })
+                        </script>
+                    <?php endif; ?>
                         </td>
                     </tr>
-                    <script>
-                        jQuery(document).ready(function() {
-                            check_link_status( '<?php echo esc_attr( self::encrypt_transfer_token( $key['id'], $key['token'] ) ); ?>', '<?php echo esc_attr( $key['url'] ); ?>', '<?php echo esc_attr( $key['id'] ); ?>' );
-                        })
-                    </script>
-                    <?php endif; ?>
                     </tbody>
                 </table>
 
@@ -445,14 +409,12 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                         $url = sanitize_text_field( wp_unslash( $_POST['url'] ) );
                         $url = str_replace('http://', '', $url );
                         $url = trim( str_replace('https://', '', $url ) );
-                        $ip  = trim( sanitize_key( wp_unslash( $_POST['ip'] ) ) );
 
                         if ( ! isset( $keys[ $id ] ) ) {
                             $keys[ $id ] = [
                             'id'    => $id,
                             'token' => $token,
                             'url'   => $url,
-                            'ip'   => $ip,
                             ];
 
                             update_option( $prefix . '_api_keys', $keys, false );
@@ -482,13 +444,11 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                         $url    = sanitize_text_field( wp_unslash( $_POST['url'] ) );
                         $url    = str_replace('http://', '', $url );
                         $url    = trim( str_replace('https://', '', $url ) );
-                        $ip     = trim( sanitize_key( wp_unslash( $_POST['ip'] ) ) );
 
                         $keys[ $id ] = [
                             'id'    => $id,
                             'token' => $token,
                             'url'   => $url,
-                            'ip'   => $ip,
                         ];
 
                         update_option( $prefix . '_api_keys', $keys, false );
@@ -635,13 +595,7 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
             if ( isset( $params['transfer_token'] ) ) {
                 $status = self::verify_transfer_token( $params['transfer_token'] );
                 if ( $status ) {
-//                    $verify_ip = self::verify_referrer_ip( $status );
-//                    if ( ! is_wp_error( $verify_ip ) && $verify_ip ) {
-//                        return true;
-//                    }
-//                    else {
-//                        return false; // either error on key lookup, or failed match on ip address
-//                    }
+                    return true;
                 } else {
                     return false;
                 }
@@ -749,6 +703,12 @@ if ( ! class_exists( 'DT_Site_Link_System' ) ) {
                 return $ip;
             }
             return __( 'Unable to get local IP address' );
+        }
+
+        protected static function get_current_site_base_url() {
+            $url = str_replace( 'http://', '', home_url() );
+            $url = str_replace( 'https://', '', home_url() );
+            return $url;
         }
 
         /**

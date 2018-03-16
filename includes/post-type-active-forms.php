@@ -424,7 +424,7 @@ class DT_Webform_Active_Form_Post_Type
                     update_post_meta( $post_id, $f, ${$f} );
                 }
             } else {
-                dt_write_log( "Expected field $f to exist" );
+                dt_write_log( "Expected field $f to exist in " . __METHOD__ );
             }
         }
 
@@ -452,7 +452,7 @@ class DT_Webform_Active_Form_Post_Type
         'name'        => __( 'Token', 'dt_webform' ),
         'description' => '',
         'type'        => 'display_only',
-        'default'     => DT_Api_Keys::generate_token( 16 ),
+        'default'     => DT_Site_Link_System::generate_token( 16 ),
         'section'     => 'info',
         ];
 
@@ -600,7 +600,10 @@ class DT_Webform_Active_Form_Post_Type
             'post_type' => 'dt_webform_forms',
             'meta_value' => $token
         ] );
-        if ( $results->found_posts < 0) {
+        if ( $results->post_count < 1) {
+            dt_write_log( __METHOD__ );
+            dt_write_log( $results );
+            dt_write_log( $results->post_count );
             return __( 'Unknown', 'dt_webform' );
         }
         return $results->post->post_title;
@@ -611,7 +614,7 @@ class DT_Webform_Active_Form_Post_Type
             'post_type' => 'dt_webform_forms',
             'meta_value' => $token
         ] );
-        if ( $results->found_posts < 0) {
+        if ( $results->post_count < 1) {
             return __( 'Unknown', 'dt_webform' );
         }
         return $results->post->ID;

@@ -16,10 +16,11 @@ class DT_Webform_Remote
     public static function trigger_transfer_of_new_leads( $selected_records = [] ) {
 
         $transfer_records = [];
-        $prefix = DT_Site_Link_System::$token;
 
         // get option
+        $prefix = DT_Site_Link_System::$token;
         $home = get_option( $prefix . '_api_keys' );
+
         if ( ! isset( $home ) || empty( $home ) ) {
             // set auto post to false
             $options = get_option( 'dt_webform_options' );
@@ -42,14 +43,13 @@ class DT_Webform_Remote
         }
 
         // Create hash key and url
-        $md5_hash_id = DT_API_Keys::one_hour_encryption( $id, $token );
+        $transfer_token = DT_API_Keys::one_hour_encryption( $id, $token );
 
         // Send remote request
         $args = [
             'method' => 'GET',
             'body' => [
-                'id' => $md5_hash_id,
-                'token' => $token,
+                'transfer_token' => $transfer_token,
                 'selected_records' => $transfer_records,
             ]
         ];
@@ -59,15 +59,12 @@ class DT_Webform_Remote
             return new WP_Error( 'failed_remote_get', $result->get_error_message() );
         }
 
-        if ( isset( $result['body'] ) && ! empty( $result['body'] ) && count( $result['body'] ) > 0 ) {
+        if ( isset( $result['body'] ) && ! empty( $result['body'] ) ) {
             $records = json_decode( $result['body'] );
 
             foreach ( $records as $record ) {
                 wp_delete_post( $record, true );
             }
-
-            dt_write_log( 'Start deleting process' );
-            dt_write_log( $records );
         }
 
         return true;
@@ -76,7 +73,11 @@ class DT_Webform_Remote
     public static function get_custom_css( $token ) {
         global $wpdb;
         $css = $wpdb->get_var( $wpdb->prepare( "
-            SELECT meta_value FROM $wpdb->postmeta WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) AND meta_key = 'custom_css' LIMIT 1", $token ) );
+            SELECT meta_value 
+            FROM $wpdb->postmeta 
+            WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) 
+            AND meta_key = 'custom_css' 
+            LIMIT 1", $token ) );
         return $css;
     }
 

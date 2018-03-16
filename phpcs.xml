@@ -23,6 +23,7 @@
 
   <file>.</file>
 
+  <exclude-pattern>dt-assets/dependencies/*</exclude-pattern>
   <exclude-pattern>vendor/*</exclude-pattern>
   <exclude-pattern>includes/admin/libraries/plugin-update-checker/*</exclude-pattern>
 

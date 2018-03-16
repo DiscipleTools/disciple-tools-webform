@@ -190,7 +190,7 @@ class DT_Webform_Settings
 
     public static function sites_keys_set() {
         if ( 'remote' == get_option( 'dt_webform_state' ) ) {
-            DT_Api_Keys::are_sites_keys_set();
+            DT_Site_Link_System::verify_sites_keys_are_set();
         }
         return true;
     }

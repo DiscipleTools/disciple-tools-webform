@@ -16,12 +16,12 @@ class DT_Webform_Remote
     public static function trigger_transfer_of_new_leads( $selected_records = [] ) {
 
         $transfer_records = [];
+        $transfer_token = '';
 
-        // get option
-        $prefix = DT_Site_Link_System::$token;
-        $home = get_option( $prefix . '_api_keys' );
+        // get site keys
+        $keys = DT_Site_Link_System::get_site_keys();
 
-        if ( ! isset( $home ) || empty( $home ) ) {
+        if ( empty( $keys ) ) {
             // set auto post to false
             $options = get_option( 'dt_webform_options' );
             $options['auto_approve'] = false;
@@ -30,10 +30,11 @@ class DT_Webform_Remote
             // respond with error
             return new WP_Error( 'site_settings_not_set', 'Site keys are empty.' );
         }
-        foreach ( $home as $key => $value ) {
-            $id = $value['id'];
-            $token = $value['token'];
-            $url = $value['url'];
+
+        // parse site site link info
+        foreach ( $keys as $key => $value ) {
+            $url = DT_Site_Link_System::get_non_local_site( $value['site1'], $value['site2'] );
+            $transfer_token = DT_Site_Link_System::create_transfer_token_for_site( $key );
             break;
         }
 
@@ -41,9 +42,6 @@ class DT_Webform_Remote
         foreach ( $selected_records as $record ) {
             array_push( $transfer_records, dt_get_simple_post_meta( $record ) );
         }
-
-        // Create hash key and url
-        $transfer_token = DT_API_Keys::one_hour_encryption( $id, $token );
 
         // Send remote request
         $args = [
@@ -53,8 +51,7 @@ class DT_Webform_Remote
                 'selected_records' => $transfer_records,
             ]
         ];
-        $result = wp_remote_get( $url . '/wp-json/dt-public/v1/webform/transfer_collection', $args );
-
+        $result = wp_remote_get( 'https://' . $url . '/wp-json/dt-public/v1/webform/transfer_collection', $args );
         if ( is_wp_error( $result ) ) {
             return new WP_Error( 'failed_remote_get', $result->get_error_message() );
         }

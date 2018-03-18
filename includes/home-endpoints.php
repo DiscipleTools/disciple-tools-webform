@@ -89,7 +89,6 @@ class DT_Webform_Home_Endpoints
 
                 $old_records = [];
                 foreach ( $params['selected_records'] as $record ) {
-                    dt_write_log( $record );
                     $result = DT_Webform_New_Leads_Post_Type::insert_post( $record );
 
                     if ( is_wp_error( $result ) || empty( $result ) ) {

@@ -798,12 +798,12 @@ class DT_Site_Link_System
         $namespace = 'dt-public/v' . $version;
 
         register_rest_route(
-        $namespace, '/sites/site_link_check', [
-        [
-        'methods'  => WP_REST_Server::CREATABLE,
-        'callback' => [ $this, 'site_link_check' ],
-        ],
-        ]
+            $namespace, '/sites/site_link_check', [
+            [
+            'methods'  => WP_REST_Server::CREATABLE,
+            'callback' => [ $this, 'site_link_check' ],
+            ],
+            ]
         );
 
         // Enable cross origin resource requests (CORS) for approved sites.

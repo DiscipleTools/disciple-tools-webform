@@ -172,7 +172,7 @@ class DT_Webform {
 
         // Call site link system if Disciple Tools is not the theme, else use this.
         $current_theme = get_option( 'current_theme' );
-        if ( ! 'Disciple Tools' == $current_theme ) {
+        if ( ! 'Disciple Tools' == $current_theme || 'Disciple Tools Child theme of disciple-tools-theme' == $current_theme ) {
             require_once( 'includes/site-link-system.php' ); // site linking system
         }
         require_once( 'includes/post-type-active-forms.php' );

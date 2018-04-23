@@ -32,7 +32,7 @@ function dt_webform() {
     $current_theme = get_option( 'current_theme' );
     $state = get_option( 'dt_webform_state' );
 
-    if ( ( 'combined' == $state || 'home' == $state ) && ! 'Disciple Tools' == $current_theme ) {
+    if ( ( 'combined' == $state || 'home' == $state ) && ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
         add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
         return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active.' );
     }
@@ -169,10 +169,11 @@ class DT_Webform {
      * @return void
      */
     private function includes() {
+        dt_is_child_theme_of_disciple_tools();
 
         // Call site link system if Disciple Tools is not the theme, else use this.
         $current_theme = get_option( 'current_theme' );
-        if ( ! 'Disciple Tools' == $current_theme || 'Disciple Tools Child theme of disciple-tools-theme' == $current_theme ) {
+        if ( ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
             require_once( 'includes/site-link-system.php' ); // site linking system
         }
         require_once( 'includes/post-type-active-forms.php' );
@@ -411,5 +412,22 @@ if ( !function_exists( 'dt_write_log' ) ) {
                 error_log( $log );
             }
         }
+    }
+}
+
+if ( ! function_exists( 'dt_is_child_theme_of_disciple_tools' ) ) {
+    /**
+     * Returns true if this is a child theme of Disciple Tools, and false if it is not.
+     *
+     * @return bool
+     */
+    function dt_is_child_theme_of_disciple_tools() : bool {
+        if ( get_template_directory() !== get_stylesheet_directory() ) {
+            $current_theme = wp_get_theme();
+            if ( 'disciple-tools-theme' == $current_theme->get( 'Template' ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 }

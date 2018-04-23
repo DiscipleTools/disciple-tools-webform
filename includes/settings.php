@@ -24,7 +24,7 @@ class DT_Webform_Settings
 
         // Check if Disciple Tools Theme is present. If not, limit select to remote server.
         $current_theme = get_option( 'current_theme' );
-        if ( !('Disciple Tools' == $current_theme || 'Disciple Tools Child theme of disciple-tools-theme' == $current_theme)) {
+        if ( !( 'Disciple Tools' == $current_theme || 'Disciple Tools Child theme of disciple-tools-theme' == $current_theme )) {
             $options = [
             [
             'key'   => 'remote',

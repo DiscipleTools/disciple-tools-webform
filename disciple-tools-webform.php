@@ -364,7 +364,7 @@ register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
 function dt_webform_no_disciple_tools_theme_found()
 {
     ?>
-    <div class="notice notice-error">
+    <div class="notice notice-error is-dismissible">
         <p><?php esc_html_e( "'Disciple Tools - Webform' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or deactivate 'Disciple Tools - Webform' plugin.", "dt_webform" ); ?></p>
     </div>
     <?php

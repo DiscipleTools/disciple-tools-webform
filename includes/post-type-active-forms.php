@@ -452,7 +452,7 @@ class DT_Webform_Active_Form_Post_Type
         'name'        => __( 'Token', 'dt_webform' ),
         'description' => '',
         'type'        => 'display_only',
-        'default'     => DT_Site_Link_System::generate_token( 16 ),
+        'default'     => Site_Link_System::generate_token( 16 ),
         'section'     => 'info',
         ];
 

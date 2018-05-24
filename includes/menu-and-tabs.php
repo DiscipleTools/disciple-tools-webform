@@ -135,8 +135,11 @@ class DT_Webform_Menu
 
         $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
         if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
-            unset( $tab_bar[0] );
-            $active_tab = $tab_bar[1]['key'];
+            //check if it was just posted
+            if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ), 'dt_webform_auto_approve' ) && isset( $_POST['auto_approve'] ) ) {
+                unset( $tab_bar[0] );
+                $active_tab = $tab_bar[1]['key'];
+            }
         }
 
         if ( isset( $_GET["tab"] ) ) {
@@ -181,8 +184,11 @@ class DT_Webform_Menu
 
         $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
         if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
-            unset( $tab_bar[0] );
-            $active_tab = $tab_bar[1]['key'];
+            //check if it was just posted
+            if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ), 'dt_webform_auto_approve' ) && isset( $_POST['auto_approve'] ) ) {
+                unset( $tab_bar[0] );
+                $active_tab = $tab_bar[1]['key'];
+            }
         }
 
         if ( isset( $_GET["tab"] ) ) {
@@ -227,8 +233,11 @@ class DT_Webform_Menu
 
         $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
         if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
-            unset( $tab_bar[0] );
-            $active_tab = $tab_bar[1]['key'];
+            //check if it was just posted
+            if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ), 'dt_webform_auto_approve' ) && isset( $_POST['auto_approve'] ) ) {
+                unset( $tab_bar[0] );
+                $active_tab = $tab_bar[1]['key'];
+            }
         }
 
         if ( isset( $_GET["tab"] ) ) {

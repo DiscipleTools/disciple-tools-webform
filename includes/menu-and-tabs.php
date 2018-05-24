@@ -245,7 +245,6 @@ class DT_Webform_Menu
             unset( $tab_bar[0] );
             $active_tab = $tab_bar[1]['key'];
         }
-        
         if ( isset( $_GET["tab"] ) ) {
             $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
         }

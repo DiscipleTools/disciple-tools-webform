@@ -11,12 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
+require __DIR__.'/site-link-system.php';
 /**
  * Class DT_Webform_Menu
  */
 DT_Webform_Menu::instance(); // Initialize class
 class DT_Webform_Menu
 {
+
 
     public $token;
 
@@ -357,8 +359,8 @@ class DT_Webform_Menu
         // begin columns template
         $this->template( 'begin' );
 
-        DT_Site_Link_System::metabox_multiple_link(); // main column content
-
+        //DT_Site_Link_System::metabox_multiple_link(); // main column content
+        DT_Site_Link_System::metabox_multiple_link();
         // begin right column template
         $this->template( 'right_column' );
         // end columns template

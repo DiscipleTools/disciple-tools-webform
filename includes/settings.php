@@ -109,7 +109,14 @@ class DT_Webform_Settings
             $options = get_option( 'dt_webform_options' );
             if ( isset( $_POST['auto_approve'] ) ) {
                 $options['auto_approve'] = true;
+                //if the option is true then it will hide the tab "New leads"
+                ?>
+                <script>
+                    jQuery("a:contains('New Leads')").remove();
+                </script>
+                <?php
             } else {
+                //show the tab
                 $options['auto_approve'] = false;
             }
 

@@ -11,12 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
+require __DIR__.'/site-link-system.php';
 /**
  * Class DT_Webform_Menu
  */
 DT_Webform_Menu::instance(); // Initialize class
 class DT_Webform_Menu
 {
+
 
     public $token;
 
@@ -128,11 +130,16 @@ class DT_Webform_Menu
             ],
         ];
 
+        //nonce check
+        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ) ) ) {
+            die( "Nonce Fail" );
+        }
+
         // determine active tabs
         $active_tab = 'new_leads';
 
         $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
-        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
+        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] && !isset( $_POST['dt_webform_auto_approve_nonce'] ) ) {
             unset( $tab_bar[0] );
             $active_tab = $tab_bar[1]['key'];
         }
@@ -174,11 +181,16 @@ class DT_Webform_Menu
             ],
         ];
 
+        //nonce check
+        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ) ) ) {
+            die( "Nonce Fail" );
+        }
+
         // determine active tabs
         $active_tab = 'new_leads';
 
         $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
-        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
+        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] && !isset( $_POST['dt_webform_auto_approve_nonce'] ) ) {
             unset( $tab_bar[0] );
             $active_tab = $tab_bar[1]['key'];
         }
@@ -220,15 +232,19 @@ class DT_Webform_Menu
             ],
         ];
 
+        //nonce check
+        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ) ) ) {
+            die( "Nonce Fail" );
+        }
+
         // determine active tabs
         $active_tab = 'new_leads';
 
         $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
-        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
+        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] && !isset( $_POST['dt_webform_auto_approve_nonce'] ) ) {
             unset( $tab_bar[0] );
             $active_tab = $tab_bar[1]['key'];
         }
-
         if ( isset( $_GET["tab"] ) ) {
             $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
         }
@@ -357,8 +373,8 @@ class DT_Webform_Menu
         // begin columns template
         $this->template( 'begin' );
 
-        DT_Site_Link_System::metabox_multiple_link(); // main column content
-
+        //DT_Site_Link_System::metabox_multiple_link(); // main column content
+        DT_Site_Link_System::metabox_multiple_link();
         // begin right column template
         $this->template( 'right_column' );
         // end columns template

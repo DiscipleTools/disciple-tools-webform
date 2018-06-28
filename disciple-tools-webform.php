@@ -169,11 +169,10 @@ class DT_Webform {
      * @return void
      */
     private function includes() {
-        dt_is_child_theme_of_disciple_tools();
 
         // Call site link system if Disciple Tools is not the theme, else use this.
         $current_theme = get_option( 'current_theme' );
-        if ( ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
+        if ( ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() || 'disciple-tools-theme' == get_stylesheet() ) ) {
             require_once( 'includes/site-link-system.php' ); // site linking system
         }
         require_once( 'includes/post-type-active-forms.php' );
@@ -281,7 +280,6 @@ class DT_Webform {
         delete_option( 'dt_webform_options' );
         delete_option( 'dt_webform_state' );
         delete_option( 'external_updates-disciple-tools-webform' );
-        Site_Link_System::deactivate(); // site link system
     }
 
     /**

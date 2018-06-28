@@ -49,6 +49,7 @@ class DT_Webform_Active_Form_Post_Type
         $this->post_type = 'dt_webform_forms';
 
         add_action( 'init', [ $this, 'register_post_type' ] );
+        add_action( 'init', [ $this, 'load_site_to_site' ] );
 
         if ( is_admin() ) {
 
@@ -56,6 +57,12 @@ class DT_Webform_Active_Form_Post_Type
             add_action( 'save_post', [ $this, 'meta_box_save' ] );
             add_action( 'save_post', [ $this, 'save_extra_fields' ] );
             add_action( 'admin_head', [ $this, 'scripts' ], 20 );
+        }
+    }
+
+    public function load_site_to_site() {
+        if ( class_exists( 'Disciple_Tools' ) ) {
+            require_once( dt_webform()->includes_path . 'site-link-system.php' ); // site linking system
         }
     }
 

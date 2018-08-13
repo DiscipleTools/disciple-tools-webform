@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-require __DIR__.'/site-link-system.php';
+require_once( __DIR__.'/site-link-system.php' );
 /**
  * Class DT_Webform_Menu
  */

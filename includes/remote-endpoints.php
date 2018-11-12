@@ -37,8 +37,7 @@ class DT_Webform_Remote_Endpoints
      * @static
      * @return DT_Webform_Remote_Endpoints instance
      */
-    public static function instance()
-    {
+    public static function instance(){
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
         }
@@ -52,13 +51,11 @@ class DT_Webform_Remote_Endpoints
      * @access  public
      * @since   0.1.0
      */
-    public function __construct()
-    {
+    public function __construct(){
         add_action( 'rest_api_init', [ $this, 'add_api_routes' ] );
     } // End __construct()
 
-    public function add_api_routes()
-    {
+    public function add_api_routes(){
         $version = '1';
         $namespace = 'dt-public/v' . $version;
 
@@ -79,8 +76,7 @@ class DT_Webform_Remote_Endpoints
      *
      * @return bool|\WP_Error
      */
-    public function form_submit( WP_REST_Request $request )
-    {
+    public function form_submit( WP_REST_Request $request ){
         $params = $request->get_params();
 
         // Honeypot

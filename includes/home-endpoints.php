@@ -53,13 +53,11 @@ class DT_Webform_Home_Endpoints
      * @access  public
      * @since   0.1.0
      */
-    public function __construct()
-    {
+    public function __construct(){
         add_action( 'rest_api_init', [ $this, 'add_api_routes' ] );
     } // End __construct()
 
-    public function add_api_routes()
-    {
+    public function add_api_routes(){
         $version = '1';
         $namespace = 'dt-public/v' . $version;
 

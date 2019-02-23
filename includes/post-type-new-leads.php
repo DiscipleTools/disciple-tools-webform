@@ -40,6 +40,7 @@ class DT_Webform_New_Leads_Post_Type
 
     public function __construct()
     {
+
         $this->post_type = 'dt_webform_new_leads';
 
         add_action( 'init', [ $this, 'register_post_type' ] );
@@ -108,19 +109,21 @@ class DT_Webform_New_Leads_Post_Type
      * @param $post_id
      */
     public function auto_accept( $post_id ) {
-        $options = get_option( 'dt_webform_options' );
+        global $post;
+        if ( $post->post_type === $this->post_type ) {
+            $options = get_option( 'dt_webform_options' );
 
-        if ( ! DT_Webform_Settings::sites_keys_set() ) {
-            DT_Webform_Settings::set_auto_approve_to_false();
-            $options['auto_approve'] = false;
-        }
-        elseif ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) { // if auto approve is set
-            $state = get_option( 'dt_webform_state' );
-            if ( 'remote' == $state ) {
-                $selected_records[] = $post_id;
-                DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
-            } else {
-                DT_Webform_Home::create_contact_record( $post_id );
+            if ( ! DT_Webform_Settings::sites_keys_set() ) {
+                DT_Webform_Settings::set_auto_approve_to_false();
+                $options[ 'auto_approve' ] = false;
+            } elseif ( isset( $options[ 'auto_approve' ] ) && $options[ 'auto_approve' ] ) { // if auto approve is set
+                $state = get_option( 'dt_webform_state' );
+                if ( 'remote' == $state ) {
+                    $selected_records[] = $post_id;
+                    DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
+                } else {
+                    DT_Webform_Home::create_contact_record( $post_id );
+                }
             }
         }
     }

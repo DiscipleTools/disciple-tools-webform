@@ -311,7 +311,7 @@ class DT_Webform_Active_Form_Post_Type
 
             foreach ( $field_data as $k => $v ) {
 
-                if ( $v['section'] == $section || $section == 'all' ) {
+                if ( $v['section'] === $section || $section === 'all' ) {
 
                     $data = $v['default'];
 
@@ -390,7 +390,7 @@ class DT_Webform_Active_Form_Post_Type
     {
 
         // Verify
-        if ( get_post_type() != $this->post_type ) {
+        if ( get_post_type() !== $this->post_type ) {
             return $post_id;
         }
         $nonce_key = $this->post_type . '_noonce';
@@ -464,14 +464,36 @@ class DT_Webform_Active_Form_Post_Type
         ];
 
         $fields['title'] = [
-        'name'        => __( 'Title', 'dt_webform' ),
+        'name'        => '"Header" Title',
         'description' => '',
         'type'        => 'text',
-        'default'     => __( 'Contact Us', 'dt_webform' ),
+        'default'     => 'Contact Us',
         'section'     => 'appearance',
         ];
+        $fields['name'] = [
+        'name'        => '"Name" Title',
+        'description' => '',
+        'type'        => 'text',
+        'default'     => 'Name',
+        'section'     => 'appearance',
+        ];
+        $fields['phone'] = [
+        'name'        => '"Phone" Title',
+        'description' => '',
+        'type'        => 'text',
+        'default'     => 'Phone',
+        'section'     => 'appearance',
+        ];
+        $fields['email'] = [
+        'name'        => '"Email" Title',
+        'description' => '',
+        'type'        => 'text',
+        'default'     => __( 'Email', 'dt_webform' ),
+        'section'     => 'appearance',
+        ];
+
         $fields['comments_title'] = [
-        'name'        => __( 'Comment Title', 'dt_webform' ),
+        'name'        => '"Comments" Title',
         'description' => '',
         'type'        => 'text',
         'default'     => __( 'Comments', 'dt_webform' ),
@@ -528,7 +550,7 @@ class DT_Webform_Active_Form_Post_Type
         ];
 
 
-        return apply_filters( 'dt_custom_fields_settings', $fields, 'dt_webform_forms' );
+        return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()
 
     public function scripts() {

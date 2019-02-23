@@ -217,7 +217,7 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '0.1.5';
+        $this->version             = '0.2';
     }
 
     /**

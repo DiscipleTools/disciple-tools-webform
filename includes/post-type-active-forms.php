@@ -261,7 +261,7 @@ class DT_Webform_Active_Form_Post_Type
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
             <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
-                ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
+                ?>" style="width:<?php echo esc_attr( $width ) ?>px;height:<?php echo esc_attr( $height ) ?>px;" frameborder="0"></iframe>
 
         </textarea>
             <?php
@@ -286,7 +286,7 @@ class DT_Webform_Active_Form_Post_Type
 
             ?>
             <iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
-            ?>" width="<?php echo esc_attr( $width ) ?>px" height="<?php echo esc_attr( $height ) ?>px"></iframe>
+            ?>" style="width:<?php echo esc_attr( $width ) ?>px;height:<?php echo esc_attr( $height ) ?>px;" frameborder="0"></iframe>
             <?php
         }
     }

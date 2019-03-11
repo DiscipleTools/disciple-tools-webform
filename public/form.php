@@ -45,15 +45,15 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
     <input type="hidden" id="ip_address" name="ip_address" value="<?php echo esc_attr( DT_Webform_Settings::get_real_ip_address() ?? '' ) ?>"/>
 
     <p class="section">
-        <label for="name" class="input-label"><?php echo isset( $dt_webform_meta['name'] ) ? $dt_webform_meta['name'] : 'Name' ?></label><br>
+        <label for="name" class="input-label"><?php echo isset( $dt_webform_meta['name'] ) ? esc_attr( $dt_webform_meta['name'] ) : 'Name' ?></label><br>
         <input type="text" id="name" name="name" class="input-text" value="" required/><br>
     </p>
     <p class="section">
-        <label for="phone" class="input-label"><?php echo isset( $dt_webform_meta['phone'] ) ? $dt_webform_meta['phone'] : 'Phone' ?></label><br>
+        <label for="phone" class="input-label"><?php echo isset( $dt_webform_meta['phone'] ) ? esc_attr( $dt_webform_meta['phone'] ) : 'Phone' ?></label><br>
         <input type="tel" id="phone" name="phone" class="input-text" value="" required/><br>
     </p>
     <p class="section">
-        <label for="email" class="input-label"><?php echo isset( $dt_webform_meta['email'] ) ? $dt_webform_meta['email'] : 'Email' ?></label><br>
+        <label for="email" class="input-label"><?php echo isset( $dt_webform_meta['email'] ) ? esc_attr( $dt_webform_meta['email'] ) : 'Email' ?></label><br>
         <input type="email" id="email2" name="email2" class="input-text" value=""/>
         <input type="email" id="email" name="email" class="input-text" value=""/><br>
     </p>

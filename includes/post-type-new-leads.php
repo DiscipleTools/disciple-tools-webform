@@ -45,7 +45,7 @@ class DT_Webform_New_Leads_Post_Type
 
         add_action( 'init', [ $this, 'register_post_type' ] );
 
-        add_action( 'save_post', [ $this, 'auto_accept' ] );
+        add_action( 'save_post', [ $this, 'auto_accept' ], 10, 2 );
 
     }
 
@@ -107,9 +107,9 @@ class DT_Webform_New_Leads_Post_Type
     /**
      * Process lead immediately because the options are set to 'auto_approve'
      * @param $post_id
+     * @param $post
      */
-    public function auto_accept( $post_id ) {
-        global $post;
+    public function auto_accept( $post_id, $post ) {
         if ( $post->post_type === $this->post_type ) {
             $options = get_option( 'dt_webform_options' );
 

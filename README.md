@@ -2,3 +2,7 @@
 
 # Disciple Tools Webform Integration
 This plugin is an expansion of the Disciple Tools system.
+
+## Basic Configurations of the Plugin
+
+![Webform Configurations](webform-configurations.jpg)

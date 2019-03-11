@@ -115,8 +115,8 @@ class DT_Webform_New_Leads_Post_Type
 
             if ( ! DT_Webform_Settings::sites_keys_set() ) {
                 DT_Webform_Settings::set_auto_approve_to_false();
-                $options[ 'auto_approve' ] = false;
-            } elseif ( isset( $options[ 'auto_approve' ] ) && $options[ 'auto_approve' ] ) { // if auto approve is set
+                $options['auto_approve'] = false;
+            } elseif ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) { // if auto approve is set
                 $state = get_option( 'dt_webform_state' );
                 if ( 'remote' == $state ) {
                     $selected_records[] = $post_id;

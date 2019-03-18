@@ -136,6 +136,7 @@ class DT_Webform_Active_Form_Post_Type
         add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'normal', 'low' );
+        add_meta_box( $this->post_type . '_localize', __( 'Localize', 'dt_webform' ), [ $this, 'load_localize_meta_box' ], $this->post_type, 'normal', 'low' );
 
     }
 
@@ -145,6 +146,11 @@ class DT_Webform_Active_Form_Post_Type
     public function load_info_meta_box()
     {
         $this->meta_box_content( 'info' ); // prints
+    }
+
+    public function load_localize_meta_box()
+    {
+        $this->meta_box_content( 'localize' ); // prints
     }
 
     /**
@@ -519,6 +525,41 @@ class DT_Webform_Active_Form_Post_Type
         'type'        => 'text',
         'default'     => '475',
         'section'     => 'appearance',
+        ];
+        $fields['js_string_required'] = [
+        'name'        => __( 'Required', 'dt_webform' ),
+        'description' => __( 'translate: "Required"', 'dt_webform' ),
+        'type'        => 'text',
+        'default'     => 'Required',
+        'section'     => 'localize',
+        ];
+        $fields['js_string_char_required'] = [
+        'name'        => __( 'Characters Required', 'dt_webform' ),
+        'description' => __( 'translate: "At least {0} characters required! Note: {0} must be included to be replaced with the number of characters."', 'dt_webform' ),
+        'type'        => 'text',
+        'default'     => 'At least {0} characters required!',
+        'section'     => 'localize',
+        ];
+        $fields['js_string_submit'] = [
+        'name'        => __( 'Submit', 'dt_webform' ),
+        'description' => __( 'translate: "Submit"', 'dt_webform' ),
+        'type'        => 'text',
+        'default'     => 'Submit',
+        'section'     => 'localize',
+        ];
+        $fields['js_string_submit_in'] = [
+        'name'        => __( 'Submit in', 'dt_webform' ),
+        'description' => __( 'translate: "Submit in". Note: The final phrase will be a countdown. i.e. Submit in 5,4,3,2,1', 'dt_webform' ),
+        'type'        => 'text',
+        'default'     => 'Submit in',
+        'section'     => 'localize',
+        ];
+        $fields['js_string_success'] = [
+        'name'        => __( 'Success', 'dt_webform' ),
+        'description' => __( 'translate: "Success"', 'dt_webform' ),
+        'type'        => 'text',
+        'default'     => 'Success',
+        'section'     => 'localize',
         ];
         $fields['theme'] = [
             'name'        => __( 'Theme', 'dt_webform' ),

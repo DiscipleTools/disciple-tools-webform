@@ -24,6 +24,18 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
     <script type="text/javascript" src="jquery-migrate.min.js"></script>
     <script type="text/javascript" src="jquery.validate.min.js"></script>
     <script type="text/javascript" src="public.js"></script>
+    <script>
+        window.TRANSLATION = {
+            'required': '<?php echo $dt_webform_meta['js_string_required'] ?? esc_html__( 'Required', 'dt_webform' ) ?>',
+            'characters_required': '<?php echo $dt_webform_meta['js_string_char_required'] ?? esc_html__( "At least {0} characters required!", 'dt_webform' ) ?>',
+            'submit_in': '<?php echo $dt_webform_meta['js_string_submit_in'] ?? esc_html__( 'Submit in', 'dt_webform' ) ?>',
+            'submit': '<?php echo $dt_webform_meta['js_string_submit'] ?? esc_html__( 'Submit', 'dt_webform' ) ?>',
+            'success': '<?php echo $dt_webform_meta['js_string_success'] ?? esc_html__( 'Success', 'dt_webform' ) ?>',
+        }
+        window.SETTINGS = {
+            'spinner': ' <span class="spinner"><img src="<?php echo plugin_dir_url( __FILE__ ) ?>spinner.svg" width="20px" /></span>',
+        }
+    </script>
     <?php
     // @codingStandardsIgnoreEnd ?>
 
@@ -80,7 +92,7 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
         <label for="comments" class="input-label"><?php echo esc_attr( $dt_webform_meta['comments_title'] ?? esc_attr__( 'Comments', 'dt_webform' ) ) ?></label><br>
         <textarea name="comments" id="comments" class="input-text input-textarea"></textarea><br>
     </p>
-    <p class="section">
+    <p class="section" id="submit-button-container">
         <button type="button" class="submit-button" id="submit-button" onclick="check_form()" disabled><?php esc_attr_e( 'Submit', 'dt_webform' ) ?></button>
     </p>
 

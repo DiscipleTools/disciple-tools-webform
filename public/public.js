@@ -24,6 +24,8 @@ function check_form() {
 }
 
 function submit_form() {
+    jQuery('#submit-button').attr('disabled', 'disabled')
+    jQuery('#submit-button-container').append(window.SETTINGS.spinner)
 
     let url = get_url()
     let $inputs = jQuery(':input');
@@ -40,8 +42,10 @@ function submit_form() {
         url: url + '/wp-json/dt-public/v1/webform/form_submit',
     })
         .done(function (data) {
-            jQuery('#report').append('Success<br>');
+            jQuery('#report').append( window.TRANSLATION.success + '<br>');
             jQuery('.input-text').val('').empty();
+            jQuery('#submit-button').removeAttr('disabled')
+            jQuery('.spinner').remove()
         })
         .fail(function (err) {
             jQuery('#report').html('Failed')
@@ -75,12 +79,12 @@ jQuery(document).ready(function () {
         },
         messages: {
             name: {
-                required: "Name required",
-                minlength: jQuery.validator.format("At least {0} characters required!")
+                required: window.TRANSLATION.required,
+                minlength: jQuery.validator.format(window.TRANSLATION.characters_required)
             },
             phone: {
-                required: "Phone required",
-                minlength: jQuery.validator.format("At least {0} characters required!")
+                required: window.TRANSLATION.required,
+                minlength: jQuery.validator.format(window.TRANSLATION.characters_required)
             }
         },
         submitHandler: function(form) {
@@ -95,12 +99,12 @@ jQuery(document).ready(function () {
     let myInterval = setInterval(function () {
         let button = jQuery('#submit-button')
 
-        button.html( 'Submit in ' + counter + ' seconds' )
+        button.html( window.TRANSLATION.submit_in + ' ' + counter)
         --counter;
 
         if ( counter === 0 ) {
             clearInterval(myInterval);
-            button.html( 'Submit' ).prop('disabled', false)
+            button.html( window.TRANSLATION.submit ).prop('disabled', false)
         }
 
     }, 1000);

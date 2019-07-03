@@ -398,7 +398,7 @@ class DT_Site_Link_System
         <?php
     }
 
-    public static function metabox_select_home_site() {
+    public static function metabox_select_home_site() { // @todo moved to menus php file
         if ( isset( $_POST['select_home_site_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['select_home_site_nonce'] ) ), 'select_home_site' . get_current_user_id() ) ) {
             $post_id = sanitize_text_field( wp_unslash( $_POST['site-link'] ) );
             if ( empty( $post_id ) ) {

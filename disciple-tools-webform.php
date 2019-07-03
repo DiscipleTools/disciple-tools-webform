@@ -177,10 +177,10 @@ class DT_Webform {
     private function includes() {
 
         // Call site link system if Disciple Tools is not the theme, else use this.
-        $current_theme = get_option( 'current_theme' );
-        if ( ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() || 'disciple-tools-theme' == get_stylesheet() ) ) {
-            require_once( 'includes/site-link-system.php' ); // site linking system
-        }
+//        $current_theme = get_option( 'current_theme' );
+//        if ( ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() || 'disciple-tools-theme' == get_stylesheet() ) ) {
+//            require_once( 'includes/site-link-system.php' ); // site linking system
+//        }
         require_once( 'includes/post-type-active-forms.php' );
         require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
         require_once( 'includes/tables.php' );

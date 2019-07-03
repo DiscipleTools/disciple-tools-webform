@@ -121,10 +121,6 @@ class DT_Webform_Menu
                 'label' => __( 'Forms', 'dt_webform' ),
             ],
             [
-                'key' => 'site_links',
-                'label' => __( 'Site Links', 'dt_webform' ),
-            ],
-            [
                 'key' => 'home_settings',
                 'label' => __( 'Settings', 'dt_webform' ),
             ],
@@ -171,10 +167,6 @@ class DT_Webform_Menu
                 'key'   => 'new_leads',
                 'label' => __( 'New Leads', 'dt_webform' ),
             ],
-//            [
-//                'key' => 'site_links',
-//                'label' => __( 'Site Links', 'dt_webform' ),
-//            ],
             [
                 'key' => 'home_settings',
                 'label' => __( 'Settings', 'dt_webform' ),
@@ -345,7 +337,7 @@ class DT_Webform_Menu
     public function tab_home_settings() {
         // begin columns template
         $this->template( 'begin' );
-        DT_Site_Link_System::metabox_select_home_site();
+        $this->metabox_select_home_site();
         DT_Webform_Settings::auto_approve_metabox();
         DT_Webform_Settings::initialize_plugin_state_metabox();
 
@@ -359,7 +351,7 @@ class DT_Webform_Menu
         // begin columns template
         $this->template( 'begin' );
 
-        DT_Site_Link_System::metabox_select_home_site();
+        $this->metabox_select_home_site();
         DT_Webform_Settings::auto_approve_metabox();
         DT_Webform_Settings::initialize_plugin_state_metabox();
 
@@ -372,9 +364,6 @@ class DT_Webform_Menu
     public function tab_home_site_links() {
         // begin columns template
         $this->template( 'begin' );
-
-        //DT_Site_Link_System::metabox_multiple_link(); // main column content
-//        DT_Site_Link_System::metabox_multiple_link();
 
         // begin right column template
         $this->template( 'right_column' );
@@ -391,6 +380,72 @@ class DT_Webform_Menu
 
         // end columns template
         $this->template( 'end', 1 );
+    }
+
+    public function metabox_select_home_site() {
+        if ( isset( $_POST['select_home_site_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['select_home_site_nonce'] ) ), 'select_home_site' . get_current_user_id() ) ) {
+            $post_id = sanitize_text_field( wp_unslash( $_POST['site-link'] ) );
+            if ( empty( $post_id ) ) {
+                delete_option('dt_webform_site_link' );
+            } else {
+                update_option('dt_webform_site_link', $post_id );
+            }
+        }
+
+        $sites = Site_Link_System::get_list_of_sites_by_type( ['Webform'] );
+
+        $selected_site = get_option( 'dt_webform_site_link' );
+
+        ?>
+
+        <form method="post" action="">
+            <?php wp_nonce_field( 'select_home_site' . get_current_user_id(), 'select_home_site_nonce' ); ?>
+            <table class="widefat striped">
+                <thead>
+                <tr>
+                    <td colspan="2">
+                        <strong>Link to Home Site</strong><br>
+                    </td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td width="100px">
+                        <?php
+                        if ( empty( $sites ) ) {
+                            echo 'No site links found for this webform. Go to <a href="'. admin_url() . 'edit.php?post_type=site_link_system'.'">Site Links</a>.';
+                        } else {
+                            ?>
+                            <select class="regular-text" name="site-link">
+                                <?php
+
+                                echo '<option value=""></option>';
+                                foreach ( $sites as $site ) {
+                                    echo '<option value="'.$site['id'].'"';
+                                    if ( $site['id'] === $selected_site ) {
+                                        echo ' selected';
+                                    }
+                                    echo '>';
+                                    echo $site['name'];
+                                    echo '</option>';
+                                }
+
+                                ?>
+                            </select>
+                            <button class="button" type="submit">Save</button>
+
+                        <?php } ?>
+
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </form>
+
+        <br>
+        <?php
     }
 
     public function template( $section, $columns = 2 ) {

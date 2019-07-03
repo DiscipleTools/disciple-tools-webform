@@ -125,7 +125,7 @@ class DT_Webform_Settings
 
         // Get status of auto approve
         $options = get_option( 'dt_webform_options' );
-        if ( ! self::sites_keys_set() ) {
+        if ( ! get_option( 'dt_webform_site_link' ) ) {
             self::set_auto_approve_to_false();
             $options['auto_approve'] = false;
         }
@@ -197,7 +197,7 @@ class DT_Webform_Settings
 
     public static function sites_keys_set() {
         if ( 'remote' == get_option( 'dt_webform_state' ) ) {
-            DT_Site_Link_System::verify_sites_keys_are_set();
+            return ( get_option( 'dt_webform_site_link' ) ) ? true : false;
         }
         return true;
     }

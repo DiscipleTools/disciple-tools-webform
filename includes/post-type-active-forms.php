@@ -465,7 +465,7 @@ class DT_Webform_Active_Form_Post_Type
         'name'        => __( 'Token', 'dt_webform' ),
         'description' => '',
         'type'        => 'display_only',
-        'default'     => Site_Link_System::generate_token( 16 ),
+        'default'     => bin2hex( random_bytes( 16 ) ),
         'section'     => 'info',
         ];
 
@@ -594,6 +594,7 @@ class DT_Webform_Active_Form_Post_Type
 
         return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()
+
 
     public function scripts() {
         global $pagenow;

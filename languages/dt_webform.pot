@@ -552,7 +552,7 @@ msgid "Site 1"
 msgstr ""
 
 #: includes/site-link-system.php:246 includes/site-link-system.php:250
-msgid "www.website.com"
+msgid "website.com"
 msgstr ""
 
 #: includes/site-link-system.php:249 includes/site-link-system.php:277

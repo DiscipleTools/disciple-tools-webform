@@ -146,6 +146,7 @@ class DT_Webform {
 
         require_once( 'includes/home-endpoints.php' );
         require_once( 'includes/home.php' );
+        require_once( 'includes/customize-site-linking.php' );
     }
 
     /**
@@ -158,6 +159,11 @@ class DT_Webform {
 
         require_once( 'includes/remote-endpoints.php' );
         require_once( 'includes/remote.php' );
+        if ( ! class_exists( 'Site_Link_System') ) {
+            require_once( 'includes/site-link-post-type.php' );
+            Site_Link_System::instance( 100, 'dashicons-admin-links' );
+        }
+        require_once( 'includes/customize-site-linking.php' );
 
     }
 
@@ -217,7 +223,7 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '0.2';
+        $this->version             = '1.1';
     }
 
     /**

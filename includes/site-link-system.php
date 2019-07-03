@@ -243,11 +243,11 @@ class DT_Site_Link_System
                 </tr>
                 <tr>
                     <td><label for="site1"><?php esc_html_e( 'Site 1' ) ?></label></td>
-                    <td><input type="text" id="site1" name="site1" placeholder="<?php esc_html_e( 'www.website.com' ) ?>" required /> </td>
+                    <td><input type="text" id="site1" name="site1" placeholder="<?php esc_html_e( 'website.com' ) ?>" required /> </td>
                 </tr>
                 <tr>
                     <td><label for="site2"><?php esc_html_e( 'Site 2' ) ?></label></td>
-                    <td><input type="text" id="site2" name="site2" placeholder="<?php esc_html_e( 'www.website.com' ) ?>" required /> </td>
+                    <td><input type="text" id="site2" name="site2" placeholder="<?php esc_html_e( 'website.com' ) ?>" required /> </td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -270,13 +270,13 @@ class DT_Site_Link_System
                 <tr>
                     <td><label for="site1"><?php esc_html_e( 'Site 1' ) ?></label></td>
                     <td>
-                        <input type="text" id="site1" name="site1" placeholder="www.website.com" value="<?php echo esc_attr( self::get_current_site_base_url() ) ?>" readonly>
+                        <input type="text" id="site1" name="site1" placeholder="website.com" value="<?php echo esc_attr( self::get_current_site_base_url() ) ?>" readonly>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="site2"><?php esc_html_e( 'Site 2' ) ?></label></td>
                     <td>
-                        <input type="text" id="site2" name="site2" placeholder="www.website.com" required>
+                        <input type="text" id="site2" name="site2" placeholder="website.com" required>
                     </td>
                 </tr>
                 <tr colspan="2">
@@ -398,9 +398,75 @@ class DT_Site_Link_System
         <?php
     }
 
+    public static function metabox_select_home_site() {
+        if ( isset( $_POST['select_home_site_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['select_home_site_nonce'] ) ), 'select_home_site' . get_current_user_id() ) ) {
+            $post_id = sanitize_text_field( wp_unslash( $_POST['site-link'] ) );
+            if ( empty( $post_id ) ) {
+                delete_option('dt_webform_site_link' );
+            } else {
+                update_option('dt_webform_site_link', $post_id );
+            }
+        }
+
+        $sites = Site_Link_System::get_list_of_sites_by_type( ['Webform'] );
+
+        $selected_site = get_option( 'dt_webform_site_link' );
+
+        ?>
+
+        <form method="post" action="">
+            <?php wp_nonce_field( 'select_home_site' . get_current_user_id(), 'select_home_site_nonce' ); ?>
+            <table class="widefat striped">
+                <thead>
+                <tr>
+                    <td colspan="2">
+                        <strong>Link to Home Site</strong><br>
+                    </td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td width="100px">
+                        <?php
+                            if ( empty( $sites ) ) {
+                                echo 'No site links found for this webform. Go to <a href="'. admin_url() . 'edit.php?post_type=site_link_system'.'">Site Links</a>.';
+                            } else {
+                            ?>
+                        <select class="regular-text" name="site-link">
+                            <?php
+
+                            echo '<option value=""></option>';
+                            foreach ( $sites as $site ) {
+                                echo '<option value="'.$site['id'].'"';
+                                if ( $site['id'] === $selected_site ) {
+                                    echo ' selected';
+                                }
+                                echo '>';
+                                echo $site['name'];
+                                echo '</option>';
+                            }
+
+                            ?>
+                        </select>
+                        <button class="button" type="submit">Save</button>
+
+                       <?php } ?>
+
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </form>
+
+        <br>
+        <?php
+    }
+
     /**
      * Metabox for creating a single site link.
-     */
+     *
     public static function metabox_single_link()
     {
         $prefix = self::$token;
@@ -444,7 +510,7 @@ class DT_Site_Link_System
                         <label for="site1"><?php esc_html_e( 'Site 1' ) ?></label>
                     </td>
                     <td>
-                        <input type="text" name="site1" id="site1" placeholder="www.website.com"
+                        <input type="text" name="site1" id="site1" placeholder="website.com"
                         <?php echo ( isset( $value['site1'] ) ) ? 'value="'.esc_attr( $value['site1'] ) . '" readonly' : '' ?> />
                     </td>
                 </tr>
@@ -453,7 +519,7 @@ class DT_Site_Link_System
                         <label for="site2"><?php esc_html_e( 'Site 2' ) ?></label>
                     </td>
                     <td>
-                        <input type="text" name="site2" id="site2" placeholder="www.website.com"
+                        <input type="text" name="site2" id="site2" placeholder="website.com"
                         <?php echo ( isset( $value['site2'] ) ) ? 'value="'.esc_attr( $value['site2'] ) . '" readonly' : '' ?> />
                     </td>
                 </tr>
@@ -519,6 +585,7 @@ class DT_Site_Link_System
         <br>
         <?php
     }
+     * /
 
     /**
      * Add necessary scripts to the header for supporting the admin pages.

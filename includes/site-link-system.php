@@ -402,13 +402,13 @@ class DT_Site_Link_System
         if ( isset( $_POST['select_home_site_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['select_home_site_nonce'] ) ), 'select_home_site' . get_current_user_id() ) ) {
             $post_id = sanitize_text_field( wp_unslash( $_POST['site-link'] ) );
             if ( empty( $post_id ) ) {
-                delete_option('dt_webform_site_link' );
+                delete_option( 'dt_webform_site_link' );
             } else {
-                update_option('dt_webform_site_link', $post_id );
+                update_option( 'dt_webform_site_link', $post_id );
             }
         }
 
-        $sites = Site_Link_System::get_list_of_sites_by_type( ['Webform'] );
+        $sites = Site_Link_System::get_list_of_sites_by_type( [ 'Webform' ] );
 
         $selected_site = get_option( 'dt_webform_site_link' );
 
@@ -428,9 +428,9 @@ class DT_Site_Link_System
                 <tr>
                     <td width="100px">
                         <?php
-                            if ( empty( $sites ) ) {
-                                echo 'No site links found for this webform. Go to <a href="'. admin_url() . 'edit.php?post_type=site_link_system'.'">Site Links</a>.';
-                            } else {
+                        if ( empty( $sites ) ) {
+                            echo 'No site links found for this webform. Go to <a href="'. admin_url() . 'edit.php?post_type=site_link_system'.'">Site Links</a>.';
+                        } else {
                             ?>
                         <select class="regular-text" name="site-link">
                             <?php
@@ -450,7 +450,7 @@ class DT_Site_Link_System
                         </select>
                         <button class="button" type="submit">Save</button>
 
-                       <?php } ?>
+                        <?php } ?>
 
                     </td>
                 </tr>

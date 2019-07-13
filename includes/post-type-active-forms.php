@@ -18,6 +18,8 @@ DT_Webform_Active_Form_Post_Type::instance();
 class DT_Webform_Active_Form_Post_Type
 {
     public $post_type;
+    public $form_type;
+    public $post_id;
     /**
      * DT_Webform_Active_Form_Post_Type The single instance of DT_Webform_Active_Form_Post_Type.
      *
@@ -52,6 +54,12 @@ class DT_Webform_Active_Form_Post_Type
         add_action( 'init', [ $this, 'load_site_to_site' ] );
 
         if ( is_admin() ) {
+            if ( isset( $_GET['post'] ) ) {
+                $this->post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) );
+            } else {
+                return;
+            }
+            $this->form_type = get_post_meta( $this->post_id, 'form_type', true );
 
             add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
             add_action( 'save_post', [ $this, 'meta_box_save' ] );
@@ -92,7 +100,7 @@ class DT_Webform_Active_Form_Post_Type
         'set_featured_image'    => __( 'Set featured image', 'dt_webform' ),
         'remove_featured_image' => __( 'Remove featured image', 'dt_webform' ),
         'use_featured_image'    => __( 'Use as featured image', 'dt_webform' ),
-        'insert_into_item'      => __( 'Insert into item', 'dt_webform' ),
+        'insert_into_item'      => __( 'Add item', 'dt_webform' ),
         'uploaded_to_this_item' => __( 'Uploaded to this form', 'dt_webform' ),
         'items_list'            => __( 'Forms list', 'dt_webform' ),
         'items_list_navigation' => __( 'Forms list navigation', 'dt_webform' ),
@@ -468,6 +476,13 @@ class DT_Webform_Active_Form_Post_Type
         'default'     => bin2hex( random_bytes( 16 ) ),
         'section'     => 'info',
         ];
+        $fields['type'] = [
+            'name'        => __( 'Form Type', 'dt_webform' ),
+            'description' => '',
+            'type'        => 'keyselect',
+            'default'     => $this->form_types(),
+            'section'     => 'info',
+        ];
 
         $fields['title'] = [
         'name'        => '"Header" Title',
@@ -595,6 +610,14 @@ class DT_Webform_Active_Form_Post_Type
         return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()
 
+    public function form_types() {
+        $list = [
+            'default_lead' => 'Default Lead',
+        ];
+
+        return apply_filters( 'dt_webform_form_types', $list );
+
+    }
 
     public function scripts() {
         global $pagenow;

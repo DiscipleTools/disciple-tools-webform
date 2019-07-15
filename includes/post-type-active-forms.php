@@ -51,7 +51,6 @@ class DT_Webform_Active_Form_Post_Type
         $this->post_type = 'dt_webform_forms';
 
         add_action( 'init', [ $this, 'register_post_type' ] );
-        add_action( 'init', [ $this, 'load_site_to_site' ] );
 
         if ( is_admin() ) {
             if ( isset( $_GET['post'] ) ) {
@@ -68,11 +67,6 @@ class DT_Webform_Active_Form_Post_Type
         }
     }
 
-    public function load_site_to_site() {
-        if ( class_exists( 'Disciple_Tools' ) ) {
-            require_once( dt_webform()->includes_path . 'site-link-system.php' ); // site linking system
-        }
-    }
 
     // Register Custom Post Type
     public function register_post_type() {

@@ -130,9 +130,9 @@ class DT_Webform {
     private function initialize_plugin_state() {
 
         if ( is_admin() ) {
+            $this->includes();
             $this->home();
             $this->remote();
-            $this->includes();
         }
     }
 
@@ -159,10 +159,6 @@ class DT_Webform {
 
         require_once( 'includes/remote-endpoints.php' );
         require_once( 'includes/remote.php' );
-        if ( ! class_exists( 'Site_Link_System' ) ) {
-            require_once( 'includes/site-link-post-type.php' );
-            Site_Link_System::instance( 100, 'dashicons-admin-links' );
-        }
         require_once( 'includes/customize-site-linking.php' );
 
     }
@@ -176,11 +172,11 @@ class DT_Webform {
      */
     private function includes() {
 
-        // Call site link system if Disciple Tools is not the theme, else use this.
-//        $current_theme = get_option( 'current_theme' );
-//        if ( ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() || 'disciple-tools-theme' == get_stylesheet() ) ) {
-//            require_once( 'includes/site-link-system.php' ); // site linking system
-//        }
+        if ( ! class_exists( 'Site_Link_System' ) ) {
+            require_once( 'includes/site-link-post-type.php' );
+            Site_Link_System::instance( 100, 'dashicons-admin-links' );
+        }
+
         require_once( 'includes/post-type-active-forms.php' );
         require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
         require_once( 'includes/tables.php' );

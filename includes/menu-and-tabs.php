@@ -421,12 +421,16 @@ class DT_Webform_Menu
 
                                 echo '<option value=""></option>';
                                 foreach ( $sites as $site ) {
+
                                     echo '<option value="'. esc_attr( $site['id'] ).'"';
+
                                     if ( $site['id'] === $selected_site ) {
                                         echo ' selected';
                                     }
                                     echo '>';
-                                    echo esc_attr( $site['name'] );
+
+                                    echo esc_html( $site['name'] );
+
                                     echo '</option>';
                                 }
 

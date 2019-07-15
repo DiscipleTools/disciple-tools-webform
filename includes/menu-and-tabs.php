@@ -383,16 +383,16 @@ class DT_Webform_Menu
     }
 
     public function metabox_select_home_site() {
-        if ( isset( $_POST['select_home_site_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['select_home_site_nonce'] ) ), 'select_home_site' . get_current_user_id() ) ) {
+        if ( isset( $_POST['select_home_site_nonce'] ) && isset( $_POST['site-link'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['select_home_site_nonce'] ) ), 'select_home_site' . get_current_user_id() ) ) {
             $post_id = sanitize_text_field( wp_unslash( $_POST['site-link'] ) );
             if ( empty( $post_id ) ) {
-                delete_option('dt_webform_site_link' );
+                delete_option( 'dt_webform_site_link' );
             } else {
-                update_option('dt_webform_site_link', $post_id );
+                update_option( 'dt_webform_site_link', $post_id );
             }
         }
 
-        $sites = Site_Link_System::get_list_of_sites_by_type( ['Webform'] );
+        $sites = Site_Link_System::get_list_of_sites_by_type( [ 'Webform' ] );
 
         $selected_site = get_option( 'dt_webform_site_link' );
 
@@ -413,7 +413,7 @@ class DT_Webform_Menu
                     <td width="100px">
                         <?php
                         if ( empty( $sites ) ) {
-                            echo 'No site links found for this webform. Go to <a href="'. admin_url() . 'edit.php?post_type=site_link_system'.'">Site Links</a>.';
+                            echo 'No site links found for this webform. Go to <a href="'. esc_url( admin_url() ) . 'edit.php?post_type=site_link_system">Site Links</a>.';
                         } else {
                             ?>
                             <select class="regular-text" name="site-link">
@@ -421,12 +421,12 @@ class DT_Webform_Menu
 
                                 echo '<option value=""></option>';
                                 foreach ( $sites as $site ) {
-                                    echo '<option value="'.$site['id'].'"';
+                                    echo '<option value="'. esc_html( $site['id'] ).'"';
                                     if ( $site['id'] === $selected_site ) {
                                         echo ' selected';
                                     }
                                     echo '>';
-                                    echo $site['name'];
+                                    echo esc_html( $site['name'] );
                                     echo '</option>';
                                 }
 

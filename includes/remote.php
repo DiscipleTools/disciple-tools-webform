@@ -20,7 +20,7 @@ class DT_Webform_Remote
 
         $site_transfer_post_id = get_option( 'dt_webform_site_link' );
         if ( empty( $site_transfer_post_id ) ) {
-            return new WP_Error('no_site_transfer_setting', 'No site to site transfer defined.' );
+            return new WP_Error( 'no_site_transfer_setting', 'No site to site transfer defined.' );
         }
         $transfer_vars = Site_Link_System::get_site_connection_vars( $site_transfer_post_id );
 
@@ -39,7 +39,7 @@ class DT_Webform_Remote
         ];
         $result = wp_remote_get( 'https://' . $transfer_vars['url'] . '/wp-json/dt-public/v1/webform/transfer_collection', $args );
         if ( is_wp_error( $result ) ) {
-            dt_write_log($result);
+            dt_write_log( $result );
             return new WP_Error( 'failed_remote_get', $result->get_error_message() );
         }
 

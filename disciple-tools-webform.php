@@ -159,7 +159,7 @@ class DT_Webform {
 
         require_once( 'includes/remote-endpoints.php' );
         require_once( 'includes/remote.php' );
-        if ( ! class_exists( 'Site_Link_System') ) {
+        if ( ! class_exists( 'Site_Link_System' ) ) {
             require_once( 'includes/site-link-post-type.php' );
             Site_Link_System::instance( 100, 'dashicons-admin-links' );
         }
@@ -176,17 +176,11 @@ class DT_Webform {
      */
     private function includes() {
 
-        // Call site link system if Disciple Tools is not the theme, else use this.
-//        $current_theme = get_option( 'current_theme' );
-//        if ( ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() || 'disciple-tools-theme' == get_stylesheet() ) ) {
-//            require_once( 'includes/site-link-system.php' ); // site linking system
-//        }
         require_once( 'includes/post-type-active-forms.php' );
         require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
         require_once( 'includes/tables.php' );
         require_once( 'includes/settings.php' );
         require_once( 'includes/enqueue-scripts.php' ); // enqueue scripts and styles
-
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {

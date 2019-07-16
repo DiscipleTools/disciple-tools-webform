@@ -37,8 +37,7 @@ class DT_Webform_Active_Form_Post_Type
      * @static
      * @return DT_Webform_Active_Form_Post_Type instance
      */
-    public static function instance()
-    {
+    public static function instance() {
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
         }
@@ -46,8 +45,7 @@ class DT_Webform_Active_Form_Post_Type
         return self::$_instance;
     } // End instance()
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->post_type = 'dt_webform_forms';
 
         add_action( 'init', [ $this, 'register_post_type' ] );
@@ -130,8 +128,7 @@ class DT_Webform_Active_Form_Post_Type
      * @since  0.1.0
      * @return void
      */
-    public function meta_box_setup()
-    {
+    public function meta_box_setup() {
         add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_appearance', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
@@ -145,21 +142,18 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_info_meta_box()
-    {
+    public function load_info_meta_box() {
         $this->meta_box_content( 'info' ); // prints
     }
 
-    public function load_localize_meta_box()
-    {
+    public function load_localize_meta_box() {
         $this->meta_box_content( 'localize' ); // prints
     }
 
     /**
      * Load type metabox
      */
-    public function load_appearance_meta_box()
-    {
+    public function load_appearance_meta_box() {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -181,8 +175,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_statistics_meta_box( $post )
-    {
+    public function load_statistics_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -210,8 +203,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_new_leads_meta_box( $post )
-    {
+    public function load_new_leads_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -253,8 +245,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load embed metabox
      */
-    public function load_embed_meta_box( $post )
-    {
+    public function load_embed_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -269,7 +260,7 @@ class DT_Webform_Active_Form_Post_Type
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
             <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
-                ?>" style="width:<?php echo esc_attr( $width ) ?>px;height:<?php echo esc_attr( $height ) ?>px;" frameborder="0"></iframe>
+            ?>" style="width:<?php echo esc_attr( $width ) ?>px;height:<?php echo esc_attr( $height ) ?>px;" frameborder="0"></iframe>
 
         </textarea>
             <?php
@@ -279,8 +270,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load demo metabox
      */
-    public function load_demo_meta_box( $post )
-    {
+    public function load_demo_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -305,8 +295,7 @@ class DT_Webform_Active_Form_Post_Type
      *
      * @param string $section
      */
-    public function meta_box_content( $section = 'info' )
-    {
+    public function meta_box_content( $section = 'info' ) {
         global $post_id;
         $fields = get_post_custom( $post_id );
         $field_data = $this->get_custom_fields_settings();
@@ -394,8 +383,7 @@ class DT_Webform_Active_Form_Post_Type
      * @return int
      * @throws \Exception 'Expected field to exist'.
      */
-    public function meta_box_save( int $post_id )
-    {
+    public function meta_box_save( int $post_id ) {
 
         // Verify
         if ( get_post_type() !== $this->post_type ) {
@@ -451,8 +439,7 @@ class DT_Webform_Active_Form_Post_Type
      *
      * @return mixed
      */
-    public function get_custom_fields_settings()
-    {
+    public function get_custom_fields_settings() {
 
         $fields = [];
 
@@ -718,8 +705,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_extra_fields_meta_box( $post )
-    {
+    public function load_extra_fields_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {

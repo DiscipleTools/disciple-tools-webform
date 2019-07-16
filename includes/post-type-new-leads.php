@@ -29,8 +29,7 @@ class DT_Webform_New_Leads_Post_Type
      * @static
      * @return DT_Webform_New_Leads_Post_Type instance
      */
-    public static function instance()
-    {
+    public static function instance() {
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
         }
@@ -38,8 +37,7 @@ class DT_Webform_New_Leads_Post_Type
         return self::$_instance;
     } // End instance()
 
-    public function __construct()
-    {
+    public function __construct() {
 
         $this->post_type = 'dt_webform_new_leads';
 

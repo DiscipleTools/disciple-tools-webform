@@ -98,12 +98,12 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
     if ( count( $dt_webform_fields ) > 0 ) {
         foreach ( $dt_webform_fields as $dt_webform_key => $dt_webform_value ) {
             $dt_webform_value = maybe_unserialize( $dt_webform_value );
-        ?>
+            ?>
             <p>
                 <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" class="input-label"><?php echo esc_attr( $dt_webform_value['label'] ) ?></label><br>
                 <input type="<?php echo esc_attr( $dt_webform_value['type'] ) ?>" id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" class="input-text" value="" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>/><br>
             </p>
-        <?php
+            <?php
         }
     }
     ?>

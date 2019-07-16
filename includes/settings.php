@@ -8,8 +8,7 @@ class DT_Webform_Settings
     /**
      * Re-usable form to edit state of the plugin.
      */
-    public static function initialize_plugin_state_metabox()
-    {
+    public static function initialize_plugin_state_metabox() {
         // Set selections
         $options = [
         [
@@ -101,8 +100,7 @@ class DT_Webform_Settings
         <?php
     }
 
-    public static function auto_approve_metabox()
-    {
+    public static function auto_approve_metabox() {
         // Check for post
         if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ), 'dt_webform_auto_approve' ) ) {
 
@@ -205,8 +203,7 @@ class DT_Webform_Settings
     /**
      * @return string
      */
-    public static function get_real_ip_address()
-    {
+    public static function get_real_ip_address() {
         $ip = '';
         if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ))   //check ip from share internet
         {

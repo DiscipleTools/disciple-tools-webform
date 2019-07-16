@@ -361,8 +361,7 @@ register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
 /**
  * Admin alert for when Disciple Tools Theme is not available
  */
-function dt_webform_no_disciple_tools_theme_found()
-{
+function dt_webform_no_disciple_tools_theme_found() {
     ?>
     <div class="notice notice-error is-dismissible">
         <p><?php esc_html_e( "'Disciple Tools - Webform' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or deactivate 'Disciple Tools - Webform' plugin.", "dt_webform" ); ?></p>
@@ -403,8 +402,7 @@ if ( !function_exists( 'dt_write_log' ) ) {
      *
      * @param $log
      */
-    function dt_write_log( $log )
-    {
+    function dt_write_log( $log ) {
         if ( true === WP_DEBUG ) {
             if ( is_array( $log ) || is_object( $log ) ) {
                 error_log( print_r( $log, true ) );

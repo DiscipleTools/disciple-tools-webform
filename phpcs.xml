@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="PHP_CodeSniffer">
-  <description>The coding standard for disciple-tools theme</description>
-
-  <!-- This should be the same as for disciple-tools plugin -->
+  <description>The coding standard for disciple-tools plugin</description>
 
   <!-- To check the code for style issues, run:
 
@@ -23,10 +21,9 @@
 
   <file>.</file>
 
-  <exclude-pattern>dt-assets/dependencies/*</exclude-pattern>
   <exclude-pattern>vendor/*</exclude-pattern>
-  <exclude-pattern>includes/admin/libraries/plugin-update-checker/*</exclude-pattern>
-  <exclude-pattern>site-link-post-type.php</exclude-pattern>
+  <exclude-pattern>*/includes/plugin-update-checker/*</exclude-pattern>
+  <exclude-pattern>*/admin/libraries/*</exclude-pattern>
 
   <arg name="extensions" value="php,inc,lib"/>
   <arg value="n"/>
@@ -41,19 +38,10 @@
        the WordPress namespaces. -->
   <rule ref="WordPress">
 
-    <!-- TODO: enable these -->
-    <exclude name="WordPress.VIP.DirectDatabaseQuery.NoCaching" />
+    <!-- TODO: enable these rules: -->
     <exclude name="WordPress.Files.FileName.InvalidClassFileName" />
-    <exclude name="WordPress.VIP.PostsPerPage.posts_per_page_nopaging" />
-    <exclude name="WordPress.VIP.PostsPerPage.posts_per_page_numberposts" />
     <exclude name="WordPress.WP.I18n.MissingTranslatorsComment" />
-    <exclude name="WordPress.VIP.RestrictedFunctions.user_meta_get_user_meta" />
-    <exclude name="WordPress.VIP.RestrictedFunctions.user_meta_add_user_meta" />
-    <exclude name="WordPress.VIP.RestrictedFunctions.user_meta_update_user_meta" />
-    <exclude name="WordPress.VIP.RestrictedFunctions.user_meta_delete_user_meta" />
-    <exclude name="WordPress.VIP.RestrictedVariables.user_meta__wpdb__usermeta" />
     <exclude name="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar" />
-    <exclude name="WordPress.VIP.FileSystemWritesDisallow" />
 
     <!-- We currently don't want these rules that WordPress imports: -->
 
@@ -151,11 +139,6 @@
     <exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceAfterComma" />
     <exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceBeforeComma" />
     <exclude name="WordPress.PHP.YodaConditions.NotYoda" />
-    <exclude name="WordPress.VIP.AdminBarRemoval.RemovalDetected" />
-    <exclude name="WordPress.VIP.DirectDatabaseQuery.SchemaChange" />
-    <exclude name="WordPress.VIP.RestrictedFunctions.custom_role_add_role" />
-    <exclude name="WordPress.VIP.RestrictedFunctions.get_term_by_get_term_by" />
-    <exclude name="WordPress.VIP.RestrictedFunctions.switch_to_blog_switch_to_blog" />
     <!-- <exclude name="WordPress.WhiteSpace.CastStructureSpacing.NoSpaceBeforeOpenParenthesis" /> -->
     <!-- <exclude name="WordPress.WhiteSpace.ControlStructureSpacing.BlankLineAfterEnd" /> -->
     <!-- <exclude name="WordPress.WhiteSpace.ControlStructureSpacing.ExtraSpaceAfterCloseParenthesis" /> -->
@@ -205,7 +188,7 @@
       <property name="requiredSpacesBeforeClose" value="1"/>
     </properties>
   </rule>
-  <rule ref="Squiz.PHP.DiscouragedFunctions"/>
+  <!--<rule ref="Squiz.PHP.DiscouragedFunctions"/>-->
   <rule ref="PEAR.Functions.FunctionCallSignature">
     <properties>
       <property name="requiredSpacesAfterOpen" value="1"/>
@@ -213,14 +196,10 @@
     </properties>
     <exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/>
     <exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/>
+    <exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/>
   </rule>
   <rule ref="Squiz.WhiteSpace.LogicalOperatorSpacing"/>
   <rule ref="PEAR.NamingConventions.ValidClassName"/>
-  <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
-    <properties>
-      <property name="prefixes" type="array" value="dt,Disciple_Tools" />
-    </properties>
-  </rule>
 
   <!-- Maybe these rules will be enabled in the future: -->
   <!-- <rule ref="Generic.Files.LineLength"/> -->

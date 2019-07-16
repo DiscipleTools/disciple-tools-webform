@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-require_once( __DIR__.'/site-link-system.php' );
+
 /**
  * Class DT_Webform_Menu
  */
@@ -32,8 +32,7 @@ class DT_Webform_Menu
      * @static
      * @return DT_Webform_Menu instance
      */
-    public static function instance()
-    {
+    public static function instance() {
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
         }
@@ -47,8 +46,7 @@ class DT_Webform_Menu
      * @access  public
      * @since   0.1.0
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->token = DT_Webform::$token;
 
         add_action( "admin_menu", [ $this, "register_menu" ] );
@@ -59,8 +57,7 @@ class DT_Webform_Menu
      *
      * @since 0.1.0
      */
-    public function register_menu()
-    {
+    public function register_menu() {
 
         // Process state change form
         if ( ( isset( $_POST['initialize_plugin_state'] ) && ! empty( $_POST['initialize_plugin_state'] ) ) && ( isset( $_POST['dt_webform_select_state_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_POST['dt_webform_select_state_nonce'] ) ), 'dt_webform_select_state' ) ) ) {
@@ -94,15 +91,13 @@ class DT_Webform_Menu
     /**
      * Menu stub. Replaced when Disciple Tools Theme fully loads.
      */
-    public function extensions_menu()
-    {
+    public function extensions_menu() {
     }
 
     /**
      * Combined tabs preprocessor
      */
-    public function combined()
-    {
+    public function combined() {
 
         if ( ! current_user_can( 'manage_dt' ) ) {
             wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
@@ -150,8 +145,7 @@ class DT_Webform_Menu
     /**
      * Home tabs preprocessor
      */
-    public function home()
-    {
+    public function home() {
 
         if ( ! current_user_can( 'manage_dt' ) ) {
             wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
@@ -198,8 +192,7 @@ class DT_Webform_Menu
     /**
      * Remote tabs preprocessor
      */
-    public function remote()
-    {
+    public function remote() {
 
         if ( ! current_user_can( 'manage_dt' ) ) {
             wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
@@ -295,8 +288,7 @@ class DT_Webform_Menu
         <?php
     }
 
-    public function initialize_plugin_state()
-    {
+    public function initialize_plugin_state() {
 
         if ( ! current_user_can( 'manage_dt' ) ) {
             wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
@@ -421,12 +413,16 @@ class DT_Webform_Menu
 
                                 echo '<option value=""></option>';
                                 foreach ( $sites as $site ) {
-                                    echo '<option value="'. esc_html( $site['id'] ).'"';
+
+                                    echo '<option value="'. esc_attr( $site['id'] ).'"';
+
                                     if ( $site['id'] === $selected_site ) {
                                         echo ' selected';
                                     }
                                     echo '>';
+
                                     echo esc_html( $site['name'] );
+
                                     echo '</option>';
                                 }
 

@@ -38,12 +38,10 @@ class DT_Webform_Home_Endpoints
      * @static
      * @return DT_Webform_Home_Endpoints instance
      */
-    public static function instance()
-    {
+    public static function instance() {
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
         }
-
         return self::$_instance;
     } // End instance()
 

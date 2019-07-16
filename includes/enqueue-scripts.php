@@ -3,8 +3,7 @@
 /**
  * Loads scripts and styles for the webform admin page.
  */
-function dt_admin_webform_scripts()
-{
+function dt_admin_webform_scripts() {
     global $pagenow;
 
     if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) {

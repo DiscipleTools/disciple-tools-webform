@@ -130,9 +130,9 @@ class DT_Webform {
     private function initialize_plugin_state() {
 
         if ( is_admin() ) {
+            $this->includes();
             $this->home();
             $this->remote();
-            $this->includes();
         }
     }
 
@@ -159,10 +159,6 @@ class DT_Webform {
 
         require_once( 'includes/remote-endpoints.php' );
         require_once( 'includes/remote.php' );
-        if ( ! class_exists( 'Site_Link_System' ) ) {
-            require_once( 'includes/site-link-post-type.php' );
-            Site_Link_System::instance( 100, 'dashicons-admin-links' );
-        }
         require_once( 'includes/customize-site-linking.php' );
 
     }
@@ -175,6 +171,12 @@ class DT_Webform {
      * @return void
      */
     private function includes() {
+
+
+        if ( ! class_exists( 'Site_Link_System' ) ) {
+            require_once( 'includes/site-link-post-type.php' );
+            Site_Link_System::instance( 100, 'dashicons-admin-links' );
+        }
 
         require_once( 'includes/post-type-active-forms.php' );
         require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
@@ -359,8 +361,7 @@ register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
 /**
  * Admin alert for when Disciple Tools Theme is not available
  */
-function dt_webform_no_disciple_tools_theme_found()
-{
+function dt_webform_no_disciple_tools_theme_found() {
     ?>
     <div class="notice notice-error is-dismissible">
         <p><?php esc_html_e( "'Disciple Tools - Webform' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or deactivate 'Disciple Tools - Webform' plugin.", "dt_webform" ); ?></p>
@@ -401,8 +402,7 @@ if ( !function_exists( 'dt_write_log' ) ) {
      *
      * @param $log
      */
-    function dt_write_log( $log )
-    {
+    function dt_write_log( $log ) {
         if ( true === WP_DEBUG ) {
             if ( is_array( $log ) || is_object( $log ) ) {
                 error_log( print_r( $log, true ) );

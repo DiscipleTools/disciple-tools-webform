@@ -18,6 +18,8 @@ DT_Webform_Active_Form_Post_Type::instance();
 class DT_Webform_Active_Form_Post_Type
 {
     public $post_type;
+    public $form_type;
+    public $post_id;
     /**
      * DT_Webform_Active_Form_Post_Type The single instance of DT_Webform_Active_Form_Post_Type.
      *
@@ -35,8 +37,7 @@ class DT_Webform_Active_Form_Post_Type
      * @static
      * @return DT_Webform_Active_Form_Post_Type instance
      */
-    public static function instance()
-    {
+    public static function instance() {
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
         }
@@ -44,14 +45,18 @@ class DT_Webform_Active_Form_Post_Type
         return self::$_instance;
     } // End instance()
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->post_type = 'dt_webform_forms';
 
         add_action( 'init', [ $this, 'register_post_type' ] );
-        add_action( 'init', [ $this, 'load_site_to_site' ] );
 
         if ( is_admin() ) {
+            if ( isset( $_GET['post'] ) ) {
+                $this->post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) );
+            } else {
+                return;
+            }
+            $this->form_type = get_post_meta( $this->post_id, 'form_type', true );
 
             add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
             add_action( 'save_post', [ $this, 'meta_box_save' ] );
@@ -60,11 +65,6 @@ class DT_Webform_Active_Form_Post_Type
         }
     }
 
-    public function load_site_to_site() {
-        if ( class_exists( 'Disciple_Tools' ) ) {
-            require_once( dt_webform()->includes_path . 'site-link-system.php' ); // site linking system
-        }
-    }
 
     // Register Custom Post Type
     public function register_post_type() {
@@ -92,7 +92,7 @@ class DT_Webform_Active_Form_Post_Type
         'set_featured_image'    => __( 'Set featured image', 'dt_webform' ),
         'remove_featured_image' => __( 'Remove featured image', 'dt_webform' ),
         'use_featured_image'    => __( 'Use as featured image', 'dt_webform' ),
-        'insert_into_item'      => __( 'Insert into item', 'dt_webform' ),
+        'insert_into_item'      => __( 'Add item', 'dt_webform' ),
         'uploaded_to_this_item' => __( 'Uploaded to this form', 'dt_webform' ),
         'items_list'            => __( 'Forms list', 'dt_webform' ),
         'items_list_navigation' => __( 'Forms list navigation', 'dt_webform' ),
@@ -128,8 +128,7 @@ class DT_Webform_Active_Form_Post_Type
      * @since  0.1.0
      * @return void
      */
-    public function meta_box_setup()
-    {
+    public function meta_box_setup() {
         add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_appearance', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
@@ -143,21 +142,18 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_info_meta_box()
-    {
+    public function load_info_meta_box() {
         $this->meta_box_content( 'info' ); // prints
     }
 
-    public function load_localize_meta_box()
-    {
+    public function load_localize_meta_box() {
         $this->meta_box_content( 'localize' ); // prints
     }
 
     /**
      * Load type metabox
      */
-    public function load_appearance_meta_box()
-    {
+    public function load_appearance_meta_box() {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -179,8 +175,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_statistics_meta_box( $post )
-    {
+    public function load_statistics_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -208,8 +203,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_new_leads_meta_box( $post )
-    {
+    public function load_new_leads_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -251,8 +245,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load embed metabox
      */
-    public function load_embed_meta_box( $post )
-    {
+    public function load_embed_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -267,7 +260,7 @@ class DT_Webform_Active_Form_Post_Type
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
             <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
-                ?>" style="width:<?php echo esc_attr( $width ) ?>px;height:<?php echo esc_attr( $height ) ?>px;" frameborder="0"></iframe>
+            ?>" style="width:<?php echo esc_attr( $width ) ?>px;height:<?php echo esc_attr( $height ) ?>px;" frameborder="0"></iframe>
 
         </textarea>
             <?php
@@ -277,8 +270,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load demo metabox
      */
-    public function load_demo_meta_box( $post )
-    {
+    public function load_demo_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
@@ -303,8 +295,7 @@ class DT_Webform_Active_Form_Post_Type
      *
      * @param string $section
      */
-    public function meta_box_content( $section = 'info' )
-    {
+    public function meta_box_content( $section = 'info' ) {
         global $post_id;
         $fields = get_post_custom( $post_id );
         $field_data = $this->get_custom_fields_settings();
@@ -392,8 +383,7 @@ class DT_Webform_Active_Form_Post_Type
      * @return int
      * @throws \Exception 'Expected field to exist'.
      */
-    public function meta_box_save( int $post_id )
-    {
+    public function meta_box_save( int $post_id ) {
 
         // Verify
         if ( get_post_type() !== $this->post_type ) {
@@ -449,8 +439,7 @@ class DT_Webform_Active_Form_Post_Type
      *
      * @return mixed
      */
-    public function get_custom_fields_settings()
-    {
+    public function get_custom_fields_settings() {
 
         $fields = [];
 
@@ -467,6 +456,13 @@ class DT_Webform_Active_Form_Post_Type
         'type'        => 'display_only',
         'default'     => bin2hex( random_bytes( 16 ) ),
         'section'     => 'info',
+        ];
+        $fields['type'] = [
+            'name'        => __( 'Form Type', 'dt_webform' ),
+            'description' => '',
+            'type'        => 'keyselect',
+            'default'     => $this->form_types(),
+            'section'     => 'info',
         ];
 
         $fields['title'] = [
@@ -595,6 +591,14 @@ class DT_Webform_Active_Form_Post_Type
         return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()
 
+    public function form_types() {
+        $list = [
+            'default_lead' => 'Default Lead',
+        ];
+
+        return apply_filters( 'dt_webform_form_types', $list );
+
+    }
 
     public function scripts() {
         global $pagenow;
@@ -701,8 +705,7 @@ class DT_Webform_Active_Form_Post_Type
     /**
      * Load type metabox
      */
-    public function load_extra_fields_meta_box( $post )
-    {
+    public function load_extra_fields_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {

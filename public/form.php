@@ -35,7 +35,7 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
         window.SETTINGS = {
             'spinner': ' <span class="spinner"><img src="<?php echo plugin_dir_url( __FILE__ ) ?>spinner.svg" width="20px" /></span>',
         }
-        <?php if ( $dt_webform_meta['theme'] === 'inherit' ) : ?>
+        <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>
             jQuery(document).ready(function() {
                 //pulling all <style></style> css of parent document
                 if (parent) {

@@ -53,8 +53,6 @@ class DT_Webform_Active_Form_Post_Type
         if ( is_admin() ) {
             if ( isset( $_GET['post'] ) ) {
                 $this->post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) );
-            } else {
-                return;
             }
             $this->form_type = get_post_meta( $this->post_id, 'form_type', true );
 
@@ -164,13 +162,9 @@ class DT_Webform_Active_Form_Post_Type
             echo '</div>';
 
         } else {
-
             $this->meta_box_content( 'appearance' ); // prints
-
         }
     }
-
-
 
     /**
      * Load type metabox
@@ -277,7 +271,7 @@ class DT_Webform_Active_Form_Post_Type
             echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
         }
         else {
-            $width = get_metadata( 'post', $post->ID, 'width', true );
+            $width = get_post_meta( $post->ID, 'width', true );
             $height = get_metadata( 'post', $post->ID, 'height', true );
             $token = get_metadata( 'post', $post->ID, 'token', true );
             $site = dt_webform()->public_uri;
@@ -454,16 +448,16 @@ class DT_Webform_Active_Form_Post_Type
         'name'        => __( 'Token', 'dt_webform' ),
         'description' => '',
         'type'        => 'display_only',
-        'default'     => bin2hex( random_bytes( 16 ) ),
+        'default'     =>  bin2hex( random_bytes( 16 ) ),
         'section'     => 'info',
         ];
-        $fields['type'] = [
-            'name'        => __( 'Form Type', 'dt_webform' ),
-            'description' => '',
-            'type'        => 'keyselect',
-            'default'     => $this->form_types(),
-            'section'     => 'info',
-        ];
+//        $fields['type'] = [
+//            'name'        => __( 'Form Type', 'dt_webform' ),
+//            'description' => '',
+//            'type'        => 'keyselect',
+//            'default'     => $this->form_types(),
+//            'section'     => 'info',
+//        ];
 
         $fields['title'] = [
         'name'        => '"Header" Title',

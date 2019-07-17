@@ -231,8 +231,11 @@ class DT_Webform_Settings
  * @return array
  */
 function dt_get_simple_post_meta( $post_id ) {
-    $map = array_map( function ( $a ) { return $a[0];
-    }, get_post_meta( $post_id ) ); // map the post meta
-    $map['ID'] = $post_id; // add the id to the array
+    $map = [];
+    if ( ! empty( $post_id ) ) {
+        $map = array_map( function ( $a ) { return $a[0];
+        }, get_post_meta( $post_id ) ); // map the post meta
+        $map['ID'] = $post_id; // add the id to the array
+    }
     return $map;
 }

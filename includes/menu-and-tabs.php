@@ -19,7 +19,6 @@ DT_Webform_Menu::instance(); // Initialize class
 class DT_Webform_Menu
 {
 
-
     public $token;
 
     private static $_instance = null;

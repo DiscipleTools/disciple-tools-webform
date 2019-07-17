@@ -99,17 +99,17 @@ class DT_Webform {
             $state = get_option( 'dt_webform_state' );
             switch ( $state ) {
                 case 'combined':
+                    $instance->includes();
                     $instance->home();
                     $instance->remote();
-                    $instance->includes();
                     break;
                 case 'home':
-                    $instance->home();
                     $instance->includes();
+                    $instance->home();
                     break;
                 case 'remote':
-                    $instance->remote();
                     $instance->includes();
+                    $instance->remote();
                     break;
                 default: // if no option exists, then the plugin is forced to selection screen.
                     $instance->initialize_plugin_state();
@@ -157,9 +157,9 @@ class DT_Webform {
      */
     private function remote() {
 
+        require_once( 'includes/customize-site-linking.php' );
         require_once( 'includes/remote-endpoints.php' );
         require_once( 'includes/remote.php' );
-        require_once( 'includes/customize-site-linking.php' );
 
     }
 

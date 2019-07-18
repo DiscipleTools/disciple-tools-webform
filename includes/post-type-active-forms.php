@@ -450,7 +450,7 @@ class DT_Webform_Active_Form_Post_Type
         'name'        => __( 'Token', 'dt_webform' ),
         'description' => '',
         'type'        => 'display_only',
-        'default'     =>  bin2hex( random_bytes( 16 ) ),
+        'default'     => bin2hex( random_bytes( 16 ) ),
         'section'     => 'info',
         ];
         $fields['form_type'] = [

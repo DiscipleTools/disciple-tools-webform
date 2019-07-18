@@ -128,6 +128,8 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function meta_box_setup() {
         add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
+
+
         add_meta_box( $this->post_type . '_appearance', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'normal', 'low' );
@@ -451,13 +453,13 @@ class DT_Webform_Active_Form_Post_Type
         'default'     =>  bin2hex( random_bytes( 16 ) ),
         'section'     => 'info',
         ];
-//        $fields['type'] = [
-//            'name'        => __( 'Form Type', 'dt_webform' ),
-//            'description' => '',
-//            'type'        => 'keyselect',
-//            'default'     => $this->form_types(),
-//            'section'     => 'info',
-//        ];
+        $fields['form_type'] = [
+        'name'        => __( 'Form Type', 'dt_webform' ),
+        'description' => '',
+        'type'        => 'key_select',
+        'default'     => $this->form_types(),
+        'section'     => 'info',
+        ];
 
         $fields['title'] = [
         'name'        => '"Header" Title',
@@ -587,11 +589,10 @@ class DT_Webform_Active_Form_Post_Type
 
     public function form_types() {
         $list = [
-            'default_lead' => 'Default Lead',
+            'default_lead' => 'Lead Form',
         ];
 
         return apply_filters( 'dt_webform_form_types', $list );
-
     }
 
     public function scripts() {

@@ -49,6 +49,7 @@ class DT_Webform_Menu
         $this->token = DT_Webform::$token;
 
         add_action( "admin_menu", [ $this, "register_menu" ] );
+        add_action( "admin_enqueue_scripts", [ $this, 'scripts' ] );
     } // End __construct()
 
     /**
@@ -236,6 +237,35 @@ class DT_Webform_Menu
         $this->tab_loader( $title, $active_tab, $tab_bar, $link );
     }
 
+    public function initialize_plugin_state() {
+
+        if ( ! current_user_can( 'manage_dt' ) ) {
+            wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
+        }
+
+        ?>
+        <div class="wrap">
+            <h2><?php esc_attr_e( 'DISCIPLE TOOLS - WEBFORM', 'dt_webform' ) ?></h2>
+
+            <?php $this->template( 'begin' ) ?>
+
+            <?php DT_Webform_Menu::initialize_plugin_state_metabox() ?>
+
+            <?php $this->template( 'right_column' ) ?>
+
+            <?php $this->template( 'end' ) ?>
+
+        </div>
+        <?php
+    }
+
+    public function scripts() {
+        if ( is_admin() ) {
+            wp_enqueue_script( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js', [ 'jquery','lodash' ], '1.1.0', false );
+            wp_enqueue_style( 'mapbox-gl-css', 'https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css', [], '1.1.0' );
+        }
+    }
+
     /**
      * Tab Loader
      *
@@ -287,28 +317,6 @@ class DT_Webform_Menu
         <?php
     }
 
-    public function initialize_plugin_state() {
-
-        if ( ! current_user_can( 'manage_dt' ) ) {
-            wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
-        }
-
-        ?>
-        <div class="wrap">
-            <h2><?php esc_attr_e( 'DISCIPLE TOOLS - WEBFORM', 'dt_webform' ) ?></h2>
-
-            <?php $this->template( 'begin' ) ?>
-
-            <?php DT_Webform_Settings::initialize_plugin_state_metabox() ?>
-
-            <?php $this->template( 'right_column' ) ?>
-
-            <?php $this->template( 'end' ) ?>
-
-        </div>
-        <?php
-    }
-
     public function tab_new_leads() {
 
         // begin columns template
@@ -329,8 +337,9 @@ class DT_Webform_Menu
         // begin columns template
         $this->template( 'begin' );
         $this->metabox_select_home_site();
-        DT_Webform_Settings::auto_approve_metabox();
-        DT_Webform_Settings::initialize_plugin_state_metabox();
+        $this->metabox_auto_approve();
+        $this->initialize_plugin_state_metabox();
+        $this->box_geocoding_source();
 
         // begin right column template
         $this->template( 'right_column' );
@@ -343,8 +352,8 @@ class DT_Webform_Menu
         $this->template( 'begin' );
 
         $this->metabox_select_home_site();
-        DT_Webform_Settings::auto_approve_metabox();
-        DT_Webform_Settings::initialize_plugin_state_metabox();
+        $this->metabox_auto_approve();
+        $this->initialize_plugin_state_metabox();
 
         // begin right column template
         $this->template( 'right_column' );
@@ -443,6 +452,600 @@ class DT_Webform_Menu
         <?php
     }
 
+    public function metabox_auto_approve() {
+        // Check for post
+        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ), 'dt_webform_auto_approve' ) ) {
+
+            $options = get_option( 'dt_webform_options' );
+            if ( isset( $_POST['auto_approve'] ) ) {
+                $options['auto_approve'] = true;
+                //if the option is true then it will hide the tab "New leads"
+                ?>
+                <script>
+                    jQuery("a:contains('New Leads')").remove();
+                </script>
+                <?php
+            } else {
+                //show the tab
+                $options['auto_approve'] = false;
+            }
+
+            update_option( 'dt_webform_options', $options, false );
+        }
+
+        // Get status of auto approve
+        $options = get_option( 'dt_webform_options' );
+        if ( ! get_option( 'dt_webform_site_link' ) ) {
+            DT_Webform::set_auto_approve_to_false();
+            $options['auto_approve'] = false;
+        }
+
+        ?>
+        <form method="post" action="">
+            <?php wp_nonce_field( 'dt_webform_auto_approve', 'dt_webform_auto_approve_nonce', false, true ) ?>
+            <!-- Box -->
+            <table class="widefat striped">
+                <thead>
+                <th>Auto Approve</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <label for="auto_approve">Auto Approve: </label>
+                        <input type="checkbox" id="auto_approve" name="auto_approve" value="1" <?php echo ( $options['auto_approve'] ) ? 'checked' : ''; ?> />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <button class="button" type="submit">Update</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <!-- End Box -->
+        </form>
+        <?php
+    }
+
+    public function box_geocoding_source() {
+        if ( isset( $_POST['mapbox_key'] )
+             && ( isset( $_POST['geocoding_key_nonce'] )
+                  && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['geocoding_key_nonce'] ) ), 'geocoding_key' . get_current_user_id() ) ) ) {
+
+            $key = sanitize_text_field( wp_unslash( $_POST['mapbox_key'] ) );
+            if ( empty( $key ) ) {
+                delete_option( 'dt_mapbox_api_key' );
+            } else {
+                update_option( 'dt_mapbox_api_key', $key, true );
+            }
+        }
+        $key = get_option( 'dt_mapbox_api_key' );
+        $hidden_key = '**************' . substr( $key, -5, 5 );
+
+        set_error_handler( [ $this, "warning_handler" ], E_WARNING );
+        $list = file_get_contents( 'https://api.mapbox.com/geocoding/v5/mapbox.places/Denver.json?access_token=' . $key );
+        restore_error_handler();
+
+        if ( $list ) {
+            $status_class = 'connected';
+            $message = 'Successfully connected to selected source.';
+        } else {
+            $status_class = 'not-connected';
+            $message = 'API NOT AVAILABLE';
+        }
+        ?>
+        <form method="post">
+            <table class="widefat striped">
+                <thead>
+                <tr><th>MapBox.com</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <?php wp_nonce_field( 'geocoding_key' . get_current_user_id(), 'geocoding_key_nonce' ); ?>
+                        Mapbox API Token: <input type="text" class="regular-text" name="mapbox_key" value="<?php echo ( $key ) ? esc_attr( $hidden_key ) : ''; ?>" /> <button type="submit" class="button">Update</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p id="reachable_source" class="<?php echo esc_attr( $status_class ) ?>">
+                            <?php echo esc_html( $message ); ?>
+                        </p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <br>
+
+        <?php if ( empty( get_option( 'dt_mapbox_api_key' ) ) ) : ?>
+            <table class="widefat striped">
+                <thead>
+                <tr><th>MapBox.com Instructions</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <ol>
+                            <li>
+                                Go to <a href="https://www.mapbox.com/">MapBox.com</a>.
+                            </li>
+                            <li>
+                                Register for a new account (<a href="https://account.mapbox.com/auth/signup/">MapBox.com</a>)<br>
+                                <em>(email required, no credit card required)</em>
+                            </li>
+                            <li>
+                                Once registered, go to your account home page. (<a href="https://account.mapbox.com/">Account Page</a>)<br>
+                            </li>
+                            <li>
+                                Inside the section labeled "Access Tokens", either create a new token or use the default token provided. Copy this token.
+                            </li>
+                            <li>
+                                Paste the token into the "Mapbox API Token" field in the box above.
+                            </li>
+                        </ol>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+        <?php endif; ?>
+
+        <?php if ( ! empty( get_option( 'dt_mapbox_api_key' ) ) ) : ?>
+            <table class="widefat striped">
+                <thead>
+                <tr><th>Geocoding Test</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <!-- Geocoder Input Section -->
+                        <?php // @codingStandardsIgnoreStart ?>
+                        <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
+                        <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
+                        <?php // @codingStandardsIgnoreEnd ?>
+                        <style>
+                            .mapboxgl-ctrl-geocoder { min-width:100%; }
+                        </style>
+                        <div id='geocoder' class='geocoder'></div>
+                        <!-- End Geocoder Input Section -->
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <div id='map' style="width:100%; height:400px;"></div>
+                        <div id="list"></div>
+                        <script>
+                            mapboxgl.accessToken = '<?php echo esc_html( get_option( 'dt_mapbox_api_key' ) ) ?>';
+                            var map = new mapboxgl.Map({
+                                container: 'map',
+                                style: 'mapbox://styles/mapbox/streets-v11',
+                                center: [-79.4512, 43.6568],
+                                zoom: 1
+                            });
+
+                            var geocoder = new MapboxGeocoder({
+                                accessToken: mapboxgl.accessToken,
+                                types: 'country region district postcode locality neighborhood address place',
+                                limit: 7,
+                                fuzzyMatch: false,
+                                marker: {
+                                    color: 'red'
+                                },
+                                mapboxgl: mapboxgl
+                            });
+
+                            document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+                            // After Search Result
+                            geocoder.on('result', function(e) { // respond to search
+                                console.log(e)
+
+                                // parse out country code
+                                let country_code = ''
+                                if ( e.result.context !== undefined ) {
+                                    jQuery.each(e.result.context, function(i,v) {
+                                        if (v.id.substring(0,7) === 'country'){
+                                            country_code = v.short_code
+                                        }
+                                    })
+                                }
+
+                                // geocode, load hierarchy, load polygon
+                                jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
+                                    { type: 'geocode', longitude: e.result.center[0], latitude: e.result.center[1], country_code: country_code,
+                                        nonce: '<?php echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>' }, null, 'json' ).done(function(data) {
+                                    console.log(data)
+                                    window.MBresponse = data
+                                    let print = jQuery('#list')
+
+                                    print.empty();
+                                    let grid_id = 0
+                                    if ( data[0] === undefined ) {
+                                        grid_id = data.grid_id
+                                        print.append('<br><strong>Location Grid Hierarchy</strong><br>')
+                                        print.append(data.admin0_name + ' (' + data.admin0_grid_id + ')<br>')
+                                        print.append('-- ' + data.admin1_name  + ' (' + data.admin1_grid_id + ')<br>')
+                                        if ( data.admin2_name !== null ) {
+                                            print.append('-- -- ' +data.admin2_name  + ' (' + data.admin2_grid_id + ')<br>')
+                                        }
+                                        if ( data.admin3_name !== null ) {
+                                            print.append('-- -- -- ' +data.admin3_name  + ' (' + data.admin3_grid_id + ')<br>')
+                                        }
+                                        if ( data.admin4_name !== null ) {
+                                            print.append('-- -- -- -- ' +data.admin4_name  + ' (' + data.admin4_grid_id + ')<br>')
+                                        }
+                                        if ( data.admin5_name !== null ) {
+                                            print.append('-- -- -- -- -- ' +data.admin5_name  + ' (' + data.admin5_grid_id + ')<br>')
+                                        }
+                                        print.append(e.result.place_name + '<br>')
+                                        print.append('<br>')
+                                    } else {
+                                        grid_id = data[0].grid_id
+                                        print.append('<br><strong>Location Grid Hierarchy</strong><br>')
+                                        print.append(data[0].admin0_name + ' (' + data[0].admin0_grid_id + ')<br>')
+                                        print.append('-- ' + data[0].admin1_name  + ' (' + data[0].admin1_grid_id + ')<br>')
+                                        if ( data[0].admin2_name !== null ) {
+                                            print.append('-- -- ' +data[0].admin2_name  + ' (' + data[0].admin2_grid_id + ')<br>')
+                                        }
+                                        if ( data[0].admin3_name !== null ) {
+                                            print.append('-- -- -- ' +data[0].admin3_name  + ' (' + data[0].admin3_grid_id + ')<br>')
+                                        }
+                                        if ( data[0].admin4_name !== null ) {
+                                            print.append('-- -- -- -- ' +data[0].admin4_name  + ' (' + data[0].admin4_grid_id + ')<br>')
+                                        }
+                                        if ( data[0].admin5_name !== null ) {
+                                            print.append('-- -- -- -- -- ' +data[0].admin5_name  + ' (' + data[0].admin5_grid_id + ')<br>')
+                                        }
+                                        print.append(e.result.place_name + '<br>')
+                                        print.append('<br>')
+                                    }
+
+                                    let unique_source = grid_id+ Date.now()
+                                    map.addSource(unique_source, {
+                                        type: 'geojson',
+                                        data: '<?php echo esc_url( dt_get_location_grid_mirror( true ) ) ?>low/' + grid_id + '.geojson'
+                                    });
+                                    map.addLayer({
+                                        "id": grid_id + Date.now() + Math.random(),
+                                        "type": "fill",
+                                        "source": unique_source,
+                                        "paint": {
+                                            "fill-color": "red",
+                                            "fill-opacity": 0.4
+
+                                        },
+                                        "filter": ["==", "$type", "Polygon"]
+                                    });
+                                })
+                            })
+
+                            // Click Map
+                            //map.on('click', function (e) {
+                            //    console.log(e)
+                            //
+                            //    let lng = e.lngLat.lng
+                            //    let lat = e.lngLat.lat
+                            //
+                            //    // add marker
+                            //    new mapboxgl.Marker()
+                            //        .setLngLat(e.lngLat )
+                            //        .addTo(map);
+                            //
+                            //    // add polygon
+                            //    jQuery.get('<?php //echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>//location-grid-list-api.php',
+                            //        {
+                            //            type: 'geocode',
+                            //            longitude: lng,
+                            //            latitude:  lat,
+                            //            nonce: '<?php //echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>//'
+                            //        }, null, 'json' ).done(function(data) {
+                            //
+                            //        console.log(data)
+                            //        if ( data !== undefined ) {
+                            //
+                            //            // print hierarchy
+                            //            window.MBresponse = data
+                            //            let print = jQuery('#list')
+                            //            print.empty();
+                            //            if ( data[0] !== undefined ) {
+                            //                data = data[0]
+                            //            }
+                            //            print.append('<br><strong>Location Grid Hierarchy</strong><br>')
+                            //            print.append(data.admin0_name + ' (' + data.admin0_grid_id + ')<br>')
+                            //            print.append('-- ' + data.admin1_name  + ' (' + data.admin1_grid_id + ')<br>')
+                            //            if ( data.admin2_name !== null ) {
+                            //                print.append('-- -- ' +data.admin2_name  + ' (' + data.admin2_grid_id + ')<br>')
+                            //            }
+                            //            if ( data.admin3_name !== null ) {
+                            //                print.append('-- -- -- ' +data.admin3_name  + ' (' + data.admin3_grid_id + ')<br>')
+                            //            }
+                            //            if ( data.admin4_name !== null ) {
+                            //                print.append('-- -- -- -- ' +data.admin4_name  + ' (' + data.admin4_grid_id + ')<br>')
+                            //            }
+                            //            if ( data.admin5_name !== null ) {
+                            //                print.append('-- -- -- -- -- ' +data.admin5_name  + ' (' + data.admin5_grid_id + ')<br>')
+                            //            }
+                            //            print.append('<br>')
+                            //
+                            //            // add polygon
+                            //            let unique_source = '' + data.grid_id + Date.now()
+                            //            map.addSource(unique_source, {
+                            //                type: 'geojson',
+                            //                data: '<?php //echo esc_url( dt_get_location_grid_mirror( true ) ) ?>//low/' + data.grid_id + '.geojson'
+                            //            });
+                            //            map.addLayer({
+                            //                "id": '' + data.grid_id + Date.now() + Math.random(),
+                            //                "type": "fill",
+                            //                "source": unique_source,
+                            //                "paint": {
+                            //                    "fill-color": "#888888",
+                            //                    "fill-opacity": 0.4
+                            //                },
+                            //                "filter": ["==", "$type", "Polygon"]
+                            //            });
+                            //        }
+                            //    })
+                            //
+                            //});
+
+                            map.on('click', function (e) {
+                                console.log(e)
+
+                                let lng = e.lngLat.lng
+                                let lat = e.lngLat.lat
+
+                                // add marker
+                                new mapboxgl.Marker()
+                                    .setLngLat(e.lngLat )
+                                    .addTo(map);
+
+                                // add polygon
+                                jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
+                                    {
+                                        type: 'possible_matches',
+                                        longitude: lng,
+                                        latitude:  lat,
+                                        nonce: '<?php echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>'
+                                    }, null, 'json' ).done(function(data) {
+
+                                    console.log(data)
+                                    if ( data !== undefined ) {
+                                        console.log(data)
+
+                                        // print hierarchy
+                                        window.MBresponse = data
+                                        let print = jQuery('#list')
+                                        print.empty();
+                                        print.append('<br><strong>Location Grid Hierarchy</strong><br>')
+                                        jQuery.each( data, function(i,v) {
+                                            print.append(v.admin0_name + ' (' + v.admin0_grid_id + ')<br>')
+                                            print.append('-- ' + v.admin1_name  + ' (' + v.admin1_grid_id + ')<br>')
+                                            if ( v.admin2_name !== null ) {
+                                                print.append('-- -- ' + v.admin2_name  + ' (' + v.admin2_grid_id + ')<br>')
+                                            }
+                                            if ( v.admin3_name !== null ) {
+                                                print.append('-- -- -- ' + v.admin3_name  + ' (' + v.admin3_grid_id + ')<br>')
+                                            }
+                                            if ( v.admin4_name !== null ) {
+                                                print.append('-- -- -- -- ' + v.admin4_name  + ' (' + v.admin4_grid_id + ')<br>')
+                                            }
+                                            if ( v.admin5_name !== null ) {
+                                                print.append('-- -- -- -- -- ' + v.admin5_name  + ' (' + v.admin5_grid_id + ')<br>')
+                                            }
+                                            print.append('<br>')
+                                        })
+
+
+                                        // add polygon
+                                        //let unique_source = '' + data.grid_id + Date.now()
+                                        //map.addSource(unique_source, {
+                                        //    type: 'geojson',
+                                        //    data: '<?php //echo esc_url( dt_get_location_grid_mirror( true ) ) ?>//low/' + data.grid_id + '.geojson'
+                                        //});
+                                        //map.addLayer({
+                                        //    "id": '' + data.grid_id + Date.now() + Math.random(),
+                                        //    "type": "fill",
+                                        //    "source": unique_source,
+                                        //    "paint": {
+                                        //        "fill-color": "#888888",
+                                        //        "fill-opacity": 0.4
+                                        //    },
+                                        //    "filter": ["==", "$type", "Polygon"]
+                                        //});
+                                    }
+                                })
+
+                            });
+
+                            // User Personal Geocode Control
+                            let userGeocode = new mapboxgl.GeolocateControl({
+                                positionOptions: {
+                                    enableHighAccuracy: true
+                                },
+                                marker: {
+                                    color: 'orange'
+                                },
+                                trackUserLocation: false
+                            })
+                            map.addControl(userGeocode);
+                            userGeocode.on('geolocate', function(e) { // respond to search
+                                console.log(e)
+                                let lat = e.coords.latitude
+                                let lng = e.coords.longitude
+
+                                // add polygon
+                                jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
+                                    {
+                                        type: 'geocode',
+                                        longitude: lng,
+                                        latitude:  lat,
+                                        nonce: '<?php echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>'
+                                    }, null, 'json' ).done(function(data) {
+                                    console.log(data)
+
+                                    // print hierarchy
+                                    window.MBresponse = data
+                                    let print = jQuery('#list')
+                                    print.empty();
+                                    if ( data[0] !== undefined ) {
+                                        data = data[0]
+                                    }
+                                    print.append('<br><strong>Location Grid Hierarchy</strong><br>')
+                                    print.append(data.admin0_name + ' (' + data.admin0_grid_id + ')<br>')
+                                    print.append('-- ' + data.admin1_name  + ' (' + data.admin1_grid_id + ')<br>')
+                                    if ( data.admin2_name !== null ) {
+                                        print.append('-- -- ' +data.admin2_name  + ' (' + data.admin2_grid_id + ')<br>')
+                                    }
+                                    if ( data.admin3_name !== null ) {
+                                        print.append('-- -- -- ' +data.admin3_name  + ' (' + data.admin3_grid_id + ')<br>')
+                                    }
+                                    if ( data.admin4_name !== null ) {
+                                        print.append('-- -- -- -- ' +data.admin4_name  + ' (' + data.admin4_grid_id + ')<br>')
+                                    }
+                                    if ( data.admin5_name !== null ) {
+                                        print.append('-- -- -- -- -- ' +data.admin5_name  + ' (' + data.admin5_grid_id + ')<br>')
+                                    }
+                                    print.append('<br>')
+
+                                    // add polygon
+                                    let unique_source = data.grid_id + Date.now()
+                                    map.addSource(unique_source, {
+                                        type: 'geojson',
+                                        data: '<?php echo esc_url( dt_get_location_grid_mirror( true ) ) ?>low/' + data.grid_id + '.geojson'
+                                    });
+                                    map.addLayer({
+                                        "id": data.grid_id + Date.now() + Math.random(),
+                                        "type": "fill",
+                                        "source": unique_source,
+                                        "paint": {
+                                            "fill-color": "#888888",
+                                            "fill-opacity": 0.4
+
+                                        },
+                                        "filter": ["==", "$type", "Polygon"]
+                                    });
+                                })
+                            })
+
+
+                        </script>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        <?php endif; ?>
+
+        <?php
+    }
+
+    public function warning_handler( $errno, $errstr ) {
+        ?>
+        <div class="notice notice-error notice-dt-mapping-source" data-notice="dt-demo">
+            <p><?php echo "MIRROR SOURCE NOT AVAILABLE" ?></p>
+            <p><?php echo "Error Message: " . esc_attr( $errstr ) ?></p>
+        </div>
+        <?php
+    }
+
+    /**
+     * Re-usable form to edit state of the plugin.
+     */
+    public static function initialize_plugin_state_metabox() {
+        // Set selections
+        $options = [
+            [
+                'key'   => 'combined',
+                'label' => __( 'Combined', 'dt_webform' ),
+            ],
+            [
+                'key'   => 'home',
+                'label' => __( 'Home', 'dt_webform' ),
+            ],
+        ];
+
+        // Check if Disciple Tools Theme is present. If not, limit select to remote server.
+        $current_theme = get_option( 'current_theme' );
+        if ( !( 'Disciple Tools' == $current_theme || 'Disciple Tools Child theme of disciple-tools-theme' == $current_theme )) {
+            $options = [
+                [
+                    'key'   => 'remote',
+                    'label' => __( 'Remote', 'dt_webform' ),
+                ],
+            ];
+        }
+
+        // Get current selection
+        $state = get_option( 'dt_webform_state' );
+        ?>
+        <form method="post" action="">
+            <?php wp_nonce_field( 'dt_webform_select_state', 'dt_webform_select_state_nonce', true, true ) ?>
+            <!-- Box -->
+            <table class="widefat striped">
+                <thead>
+                <th>Plugin State</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <label for="initialize_plugin_state">Configure the state of the plugin: </label><br>
+                        <select name="initialize_plugin_state" id="initialize_plugin_state">
+                            <option value="">Select</option>
+                            <option value="" disabled>---</option>
+                            <?php
+                            foreach ( $options as $option ) {
+                                echo '<option value="' . esc_attr( $option['key'] ) . '" ';
+                                if ( $option['key'] == $state ) {
+                                    echo 'selected';
+                                }
+                                echo '>' . esc_attr( $option['label'] ) . '</option>';
+                            }
+                            ?>
+                        </select>
+                        <span><button class="button-like-link" type="button" onclick="jQuery('#state-help').toggle();">explain settings</button></span>
+                    </td>
+                </tr>
+                <tr id="state-help" style="display: none;">
+                    <td>
+                        Three different configurations:
+                        <p>
+                            <strong>Home</strong><br>
+                            Home configuration sets up just the half of the plugin that integrates with Disciple Tools.
+                            Choosing this option assumes that you have a remote server running separatedly with the
+                            'remote' setting on the plugin configured.
+                        </p>
+                        <p>
+                            <strong>Remote</strong><br>
+                            The 'Remote' configuration sets up only the remote webform server. Choosing this option
+                            assumes that you have a Disciple Tools server running elsewhere with the Webform plugin
+                            installed and configured as 'home'. If Disciple Tools Theme is not installed, Remote will be
+                            the only installation option.
+                        </p>
+                        <p>
+                            <strong>Combined</strong><br>
+                            The 'Combined' configuration sets up the Webform plugin to run the webform server from the
+                            same system as the Disciple Tools System. Choosing this option assumes that you have a
+                            remote server running separatedly with the 'remote' setting on the plugin configured.
+                        </p>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button class="button" type="submit">Update</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <!-- End Box -->
+        </form>
+        <?php
+    }
+
     public function template( $section, $columns = 2 ) {
         switch ( $columns ) {
 
@@ -481,13 +1084,13 @@ class DT_Webform_Menu
                         <!-- Main Column -->
                         <?php
                         break;
-                    case 'right_column':
-                        ?>
-                        <!-- End Main Column -->
-                        </div><!-- end post-body-content -->
-                        <div id="postbox-container-1" class="postbox-container">
-                        <!-- Right Column -->
-                        <?php
+                case 'right_column':
+                    ?>
+                    <!-- End Main Column -->
+                    </div><!-- end post-body-content -->
+                    <div id="postbox-container-1" class="postbox-container">
+                    <!-- Right Column -->
+                    <?php
                     break;
                     case 'end':
                         ?>

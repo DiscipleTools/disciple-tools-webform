@@ -590,6 +590,7 @@ class DT_Webform_Active_Form_Post_Type
     public function form_types() {
         $list = [
             'default_lead' => 'Lead Form',
+            'location_lead' => 'Lead Form with Location Field',
         ];
 
         return apply_filters( 'dt_webform_form_types', $list );
@@ -846,4 +847,5 @@ class DT_Webform_Active_Form_Post_Type
             return strpos( $key, 'field_' ) === 0;
         }, ARRAY_FILTER_USE_KEY );
     }
+
 }

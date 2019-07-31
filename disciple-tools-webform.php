@@ -181,7 +181,6 @@ class DT_Webform {
         require_once( 'includes/post-type-active-forms.php' );
         require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
         require_once( 'includes/tables.php' );
-        require_once( 'includes/settings.php' );
         require_once( 'includes/enqueue-scripts.php' ); // enqueue scripts and styles
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
@@ -351,6 +350,35 @@ class DT_Webform {
         unset( $method, $args );
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public static function get_real_ip_address() {
+        $ip = '';
+        if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ))   //check ip from share internet
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }
+        elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ))   //to check ip is pass from proxy
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) )
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
+
+    public static function set_auto_approve_to_false() {
+        $options = get_option( 'dt_webform_options' );
+        $options['auto_approve'] = false;
+        update_option( 'dt_webform_options', $options, false );
+    }
 }
 // End of main class
 
@@ -427,5 +455,24 @@ if ( ! function_exists( 'dt_is_child_theme_of_disciple_tools' ) ) {
             }
         }
         return false;
+    }
+}
+
+/**
+ * This returns a simple array versus the multi dimensional array from the get_user_meta function
+ *
+ * @return array
+ */
+if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
+    function dt_get_simple_post_meta( $post_id ) {
+        $map = [];
+        if ( ! empty( $post_id ) ) {
+            $map         = array_map( function( $a ) {
+                return $a[ 0 ];
+            }, get_post_meta( $post_id ) ); // map the post meta
+            $map[ 'ID' ] = $post_id; // add the id to the array
+        }
+
+        return $map;
     }
 }

@@ -112,7 +112,7 @@ class DT_Webform_New_Leads_Post_Type
             $options = get_option( 'dt_webform_options' );
 
             if ( ! get_option( 'dt_webform_site_link' ) ) {
-                DT_Webform_Settings::set_auto_approve_to_false();
+                DT_Webform::set_auto_approve_to_false();
                 $options['auto_approve'] = false;
             } elseif ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) { // if auto approve is set
                 $state = get_option( 'dt_webform_state' );

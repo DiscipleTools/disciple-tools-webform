@@ -335,16 +335,13 @@ class DT_Webform_Menu
 
     public function tab_home_settings() {
         // begin columns template
-        $this->template( 'begin' );
+        $this->template( 'begin', 1 );
         $this->metabox_select_home_site();
         $this->metabox_auto_approve();
         $this->initialize_plugin_state_metabox();
         $this->box_geocoding_source();
 
-        // begin right column template
-        $this->template( 'right_column' );
-        // end columns template
-        $this->template( 'end' );
+        $this->template( 'end', 1 );
     }
 
     public function tab_remote_settings() {
@@ -599,6 +596,7 @@ class DT_Webform_Menu
                 <tr><th>Geocoding Test</th></tr>
                 </thead>
                 <tbody>
+
                 <tr>
                     <td>
                         <!-- Geocoder Input Section -->
@@ -607,34 +605,60 @@ class DT_Webform_Menu
                         <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
                         <?php // @codingStandardsIgnoreEnd ?>
                         <style>
-                            .mapboxgl-ctrl-geocoder { min-width:100%; }
+                            .mapboxgl-ctrl-geocoder {
+                                min-width:100%;
+                            }
+                            #geocoder {
+                                padding-bottom: 10px;
+                            }
+                            #map {
+                                width:66%;
+                                height:400px;
+                                float:left;
+                            }
+                            #list {
+                                width:33%;
+                                float:right;
+                            }
+                            #selected_values {
+                                width:66%;
+                                float:left;
+                            }
+                            .result_box {
+                                padding: 15px 10px;
+                                border: 1px solid lightgray;
+                                margin: 5px 0 0;
+                                font-weight: bold;
+                            }
+                            .add-column {
+                                width:10px;
+                            }
                         </style>
-                        <div id='geocoder' class='geocoder'></div>
-                        <!-- End Geocoder Input Section -->
-                    </td>
-                </tr>
-                <tr>
-                    <td>
 
-                        <div id='map' style="width:100%; height:400px;"></div>
-                        <div id="list"></div>
+                        <!-- Widget -->
+                        <div id='geocoder' class='geocoder'></div>
+                        <div>
+                            <div id='map'></div>
+                            <div id="list"></div>
+                        </div>
+                        <div id="selected_values"></div>
+
+                        <!-- Mapbox script -->
                         <script>
                             mapboxgl.accessToken = '<?php echo esc_html( get_option( 'dt_mapbox_api_key' ) ) ?>';
                             var map = new mapboxgl.Map({
                                 container: 'map',
                                 style: 'mapbox://styles/mapbox/streets-v11',
-                                center: [-79.4512, 43.6568],
+                                center: [-20, 30],
                                 zoom: 1
                             });
 
+                            map.addControl(new mapboxgl.NavigationControl());
+
                             var geocoder = new MapboxGeocoder({
                                 accessToken: mapboxgl.accessToken,
-                                types: 'country region district postcode locality neighborhood address place',
-                                limit: 7,
-                                fuzzyMatch: false,
-                                marker: {
-                                    color: 'red'
-                                },
+                                types: 'country', //'country region district postcode locality neighborhood address place',
+                                marker: {color: 'orange'},
                                 mapboxgl: mapboxgl
                             });
 
@@ -642,166 +666,26 @@ class DT_Webform_Menu
 
                             // After Search Result
                             geocoder.on('result', function(e) { // respond to search
+                                geocoder._removeMarker()
                                 console.log(e)
-
-                                // parse out country code
-                                let country_code = ''
-                                if ( e.result.context !== undefined ) {
-                                    jQuery.each(e.result.context, function(i,v) {
-                                        if (v.id.substring(0,7) === 'country'){
-                                            country_code = v.short_code
-                                        }
-                                    })
-                                }
-
-                                // geocode, load hierarchy, load polygon
-                                jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
-                                    { type: 'geocode', longitude: e.result.center[0], latitude: e.result.center[1], country_code: country_code,
-                                        nonce: '<?php echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>' }, null, 'json' ).done(function(data) {
-                                    console.log(data)
-                                    window.MBresponse = data
-                                    let print = jQuery('#list')
-
-                                    print.empty();
-                                    let grid_id = 0
-                                    if ( data[0] === undefined ) {
-                                        grid_id = data.grid_id
-                                        print.append('<br><strong>Location Grid Hierarchy</strong><br>')
-                                        print.append(data.admin0_name + ' (' + data.admin0_grid_id + ')<br>')
-                                        print.append('-- ' + data.admin1_name  + ' (' + data.admin1_grid_id + ')<br>')
-                                        if ( data.admin2_name !== null ) {
-                                            print.append('-- -- ' +data.admin2_name  + ' (' + data.admin2_grid_id + ')<br>')
-                                        }
-                                        if ( data.admin3_name !== null ) {
-                                            print.append('-- -- -- ' +data.admin3_name  + ' (' + data.admin3_grid_id + ')<br>')
-                                        }
-                                        if ( data.admin4_name !== null ) {
-                                            print.append('-- -- -- -- ' +data.admin4_name  + ' (' + data.admin4_grid_id + ')<br>')
-                                        }
-                                        if ( data.admin5_name !== null ) {
-                                            print.append('-- -- -- -- -- ' +data.admin5_name  + ' (' + data.admin5_grid_id + ')<br>')
-                                        }
-                                        print.append(e.result.place_name + '<br>')
-                                        print.append('<br>')
-                                    } else {
-                                        grid_id = data[0].grid_id
-                                        print.append('<br><strong>Location Grid Hierarchy</strong><br>')
-                                        print.append(data[0].admin0_name + ' (' + data[0].admin0_grid_id + ')<br>')
-                                        print.append('-- ' + data[0].admin1_name  + ' (' + data[0].admin1_grid_id + ')<br>')
-                                        if ( data[0].admin2_name !== null ) {
-                                            print.append('-- -- ' +data[0].admin2_name  + ' (' + data[0].admin2_grid_id + ')<br>')
-                                        }
-                                        if ( data[0].admin3_name !== null ) {
-                                            print.append('-- -- -- ' +data[0].admin3_name  + ' (' + data[0].admin3_grid_id + ')<br>')
-                                        }
-                                        if ( data[0].admin4_name !== null ) {
-                                            print.append('-- -- -- -- ' +data[0].admin4_name  + ' (' + data[0].admin4_grid_id + ')<br>')
-                                        }
-                                        if ( data[0].admin5_name !== null ) {
-                                            print.append('-- -- -- -- -- ' +data[0].admin5_name  + ' (' + data[0].admin5_grid_id + ')<br>')
-                                        }
-                                        print.append(e.result.place_name + '<br>')
-                                        print.append('<br>')
-                                    }
-
-                                    let unique_source = grid_id+ Date.now()
-                                    map.addSource(unique_source, {
-                                        type: 'geojson',
-                                        data: '<?php echo esc_url( dt_get_location_grid_mirror( true ) ) ?>low/' + grid_id + '.geojson'
-                                    });
-                                    map.addLayer({
-                                        "id": grid_id + Date.now() + Math.random(),
-                                        "type": "fill",
-                                        "source": unique_source,
-                                        "paint": {
-                                            "fill-color": "red",
-                                            "fill-opacity": 0.4
-
-                                        },
-                                        "filter": ["==", "$type", "Polygon"]
-                                    });
-                                })
                             })
 
-                            // Click Map
-                            //map.on('click', function (e) {
-                            //    console.log(e)
-                            //
-                            //    let lng = e.lngLat.lng
-                            //    let lat = e.lngLat.lat
-                            //
-                            //    // add marker
-                            //    new mapboxgl.Marker()
-                            //        .setLngLat(e.lngLat )
-                            //        .addTo(map);
-                            //
-                            //    // add polygon
-                            //    jQuery.get('<?php //echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>//location-grid-list-api.php',
-                            //        {
-                            //            type: 'geocode',
-                            //            longitude: lng,
-                            //            latitude:  lat,
-                            //            nonce: '<?php //echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>//'
-                            //        }, null, 'json' ).done(function(data) {
-                            //
-                            //        console.log(data)
-                            //        if ( data !== undefined ) {
-                            //
-                            //            // print hierarchy
-                            //            window.MBresponse = data
-                            //            let print = jQuery('#list')
-                            //            print.empty();
-                            //            if ( data[0] !== undefined ) {
-                            //                data = data[0]
-                            //            }
-                            //            print.append('<br><strong>Location Grid Hierarchy</strong><br>')
-                            //            print.append(data.admin0_name + ' (' + data.admin0_grid_id + ')<br>')
-                            //            print.append('-- ' + data.admin1_name  + ' (' + data.admin1_grid_id + ')<br>')
-                            //            if ( data.admin2_name !== null ) {
-                            //                print.append('-- -- ' +data.admin2_name  + ' (' + data.admin2_grid_id + ')<br>')
-                            //            }
-                            //            if ( data.admin3_name !== null ) {
-                            //                print.append('-- -- -- ' +data.admin3_name  + ' (' + data.admin3_grid_id + ')<br>')
-                            //            }
-                            //            if ( data.admin4_name !== null ) {
-                            //                print.append('-- -- -- -- ' +data.admin4_name  + ' (' + data.admin4_grid_id + ')<br>')
-                            //            }
-                            //            if ( data.admin5_name !== null ) {
-                            //                print.append('-- -- -- -- -- ' +data.admin5_name  + ' (' + data.admin5_grid_id + ')<br>')
-                            //            }
-                            //            print.append('<br>')
-                            //
-                            //            // add polygon
-                            //            let unique_source = '' + data.grid_id + Date.now()
-                            //            map.addSource(unique_source, {
-                            //                type: 'geojson',
-                            //                data: '<?php //echo esc_url( dt_get_location_grid_mirror( true ) ) ?>//low/' + data.grid_id + '.geojson'
-                            //            });
-                            //            map.addLayer({
-                            //                "id": '' + data.grid_id + Date.now() + Math.random(),
-                            //                "type": "fill",
-                            //                "source": unique_source,
-                            //                "paint": {
-                            //                    "fill-color": "#888888",
-                            //                    "fill-opacity": 0.4
-                            //                },
-                            //                "filter": ["==", "$type", "Polygon"]
-                            //            });
-                            //        }
-                            //    })
-                            //
-                            //});
 
                             map.on('click', function (e) {
                                 console.log(e)
 
                                 let lng = e.lngLat.lng
                                 let lat = e.lngLat.lat
+                                window.active_lnglat = [lng,lat]
 
                                 // add marker
-                                new mapboxgl.Marker()
+                                if ( window.active_marker ) {
+                                    window.active_marker.remove()
+                                }
+                                window.active_marker = new mapboxgl.Marker()
                                     .setLngLat(e.lngLat )
                                     .addTo(map);
+                                console.log(active_marker)
 
                                 // add polygon
                                 jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
@@ -814,52 +698,12 @@ class DT_Webform_Menu
 
                                     console.log(data)
                                     if ( data !== undefined ) {
-                                        console.log(data)
-
-                                        // print hierarchy
-                                        window.MBresponse = data
-                                        let print = jQuery('#list')
-                                        print.empty();
-                                        print.append('<br><strong>Location Grid Hierarchy</strong><br>')
-                                        jQuery.each( data, function(i,v) {
-                                            print.append(v.admin0_name + ' (' + v.admin0_grid_id + ')<br>')
-                                            print.append('-- ' + v.admin1_name  + ' (' + v.admin1_grid_id + ')<br>')
-                                            if ( v.admin2_name !== null ) {
-                                                print.append('-- -- ' + v.admin2_name  + ' (' + v.admin2_grid_id + ')<br>')
-                                            }
-                                            if ( v.admin3_name !== null ) {
-                                                print.append('-- -- -- ' + v.admin3_name  + ' (' + v.admin3_grid_id + ')<br>')
-                                            }
-                                            if ( v.admin4_name !== null ) {
-                                                print.append('-- -- -- -- ' + v.admin4_name  + ' (' + v.admin4_grid_id + ')<br>')
-                                            }
-                                            if ( v.admin5_name !== null ) {
-                                                print.append('-- -- -- -- -- ' + v.admin5_name  + ' (' + v.admin5_grid_id + ')<br>')
-                                            }
-                                            print.append('<br>')
-                                        })
-
-
-                                        // add polygon
-                                        //let unique_source = '' + data.grid_id + Date.now()
-                                        //map.addSource(unique_source, {
-                                        //    type: 'geojson',
-                                        //    data: '<?php //echo esc_url( dt_get_location_grid_mirror( true ) ) ?>//low/' + data.grid_id + '.geojson'
-                                        //});
-                                        //map.addLayer({
-                                        //    "id": '' + data.grid_id + Date.now() + Math.random(),
-                                        //    "type": "fill",
-                                        //    "source": unique_source,
-                                        //    "paint": {
-                                        //        "fill-color": "#888888",
-                                        //        "fill-opacity": 0.4
-                                        //    },
-                                        //    "filter": ["==", "$type", "Polygon"]
-                                        //});
+                                        print_click_results( data )
                                     }
-                                })
 
+                                })
                             });
+
 
                             // User Personal Geocode Control
                             let userGeocode = new mapboxgl.GeolocateControl({
@@ -876,60 +720,104 @@ class DT_Webform_Menu
                                 console.log(e)
                                 let lat = e.coords.latitude
                                 let lng = e.coords.longitude
+                                window.active_lnglat = [lng,lat]
 
                                 // add polygon
                                 jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
                                     {
-                                        type: 'geocode',
+                                        type: 'possible_matches',
                                         longitude: lng,
                                         latitude:  lat,
                                         nonce: '<?php echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>'
                                     }, null, 'json' ).done(function(data) {
                                     console.log(data)
 
-                                    // print hierarchy
-                                    window.MBresponse = data
-                                    let print = jQuery('#list')
-                                    print.empty();
-                                    if ( data[0] !== undefined ) {
-                                        data = data[0]
-                                    }
-                                    print.append('<br><strong>Location Grid Hierarchy</strong><br>')
-                                    print.append(data.admin0_name + ' (' + data.admin0_grid_id + ')<br>')
-                                    print.append('-- ' + data.admin1_name  + ' (' + data.admin1_grid_id + ')<br>')
-                                    if ( data.admin2_name !== null ) {
-                                        print.append('-- -- ' +data.admin2_name  + ' (' + data.admin2_grid_id + ')<br>')
-                                    }
-                                    if ( data.admin3_name !== null ) {
-                                        print.append('-- -- -- ' +data.admin3_name  + ' (' + data.admin3_grid_id + ')<br>')
-                                    }
-                                    if ( data.admin4_name !== null ) {
-                                        print.append('-- -- -- -- ' +data.admin4_name  + ' (' + data.admin4_grid_id + ')<br>')
-                                    }
-                                    if ( data.admin5_name !== null ) {
-                                        print.append('-- -- -- -- -- ' +data.admin5_name  + ' (' + data.admin5_grid_id + ')<br>')
-                                    }
-                                    print.append('<br>')
+                                    if ( data !== undefined ) {
 
-                                    // add polygon
-                                    let unique_source = data.grid_id + Date.now()
-                                    map.addSource(unique_source, {
-                                        type: 'geojson',
-                                        data: '<?php echo esc_url( dt_get_location_grid_mirror( true ) ) ?>low/' + data.grid_id + '.geojson'
-                                    });
-                                    map.addLayer({
-                                        "id": data.grid_id + Date.now() + Math.random(),
-                                        "type": "fill",
-                                        "source": unique_source,
-                                        "paint": {
-                                            "fill-color": "#888888",
-                                            "fill-opacity": 0.4
-
-                                        },
-                                        "filter": ["==", "$type", "Polygon"]
-                                    });
+                                        print_click_results(data)
+                                    }
                                 })
                             })
+
+                            jQuery(document).ready(function() {
+                                jQuery('input.mapboxgl-ctrl-geocoder--input').attr("placeholder", "Enter Country")
+                            })
+
+
+                            function print_click_results( data ) {
+                                if ( data !== undefined ) {
+
+                                    // print click results
+                                    window.MBresponse = data
+
+                                    let print = jQuery('#list')
+                                    print.empty();
+                                    print.append('<strong>Click Results</strong><br><hr>')
+                                    let table_body = ''
+                                    jQuery.each( data, function(i,v) {
+                                        let string = '<tr><td class="add-column">'
+                                        string += '<button onclick="add_selection(' + v.grid_id +')">Add</button></td> '
+                                        string += '<td><strong style="font-size:1.2em;">'+v.name+'</strong> <br>'
+                                        if ( v.admin0_name !== v.name ) {
+                                            string += v.admin0_name
+                                        }
+                                        if ( v.admin1_name !== null ) {
+                                            string += ' > ' + v.admin1_name
+                                        }
+                                        if ( v.admin2_name !== null ) {
+                                            string += ' > ' + v.admin2_name
+                                        }
+                                        if ( v.admin3_name !== null ) {
+                                            string += ' > ' + v.admin3_name
+                                        }
+                                        if ( v.admin4_name !== null ) {
+                                            string += ' > ' + v.admin4_name
+                                        }
+                                        if ( v.admin5_name !== null ) {
+                                            string += ' > ' + v.admin5_name
+                                        }
+                                        string += '</td></tr>'
+                                        table_body += string
+                                    })
+                                    print.append('<table>' + table_body + '</table>')
+                                }
+                            }
+
+                            function add_selection( grid_id ) {
+                                console.log(window.MBresponse[grid_id])
+
+                                let div = jQuery('#selected_values')
+                                let response = window.MBresponse[grid_id]
+
+                                if ( window.selected_locations === undefined ) {
+                                    window.selected_locations = []
+                                }
+                                window.selected_locations[grid_id] = new mapboxgl.Marker()
+                                    .setLngLat( window.active_marker._lngLat ) // @todo create this lng lat object from window.active_lnglat
+                                    .addTo(map);
+
+                                let name = ''
+                                name += response.name
+                                if ( response.admin1_name !== undefined && response.level > '1' ) {
+                                    name += ', ' + response.admin1_name
+                                }
+                                if ( response.admin0_name && response.level > '0' ) {
+                                    name += ', ' + response.admin0_name
+                                }
+
+                                div.append('<div class="result_box" id="'+grid_id+'">' +
+                                    '<span>'+name+'</span>' +
+                                    '<span style="float:right;cursor:pointer;" onclick="remove_selection(\''+grid_id+'\')">X</span>' +
+                                    '<input type="hidden" name="selected_grid_id['+grid_id+']" value="' + grid_id + '" />' +
+                                    '<input type="hidden" name="selected_lnglat['+grid_id+']" value="' + window.active_lnglat[0] + ',' + window.active_lnglat[1] + '" />' +
+                                    '</div>')
+
+                            }
+
+                            function remove_selection( grid_id ) {
+                                window.selected_locations[grid_id].remove()
+                                jQuery('#' + grid_id ).remove()
+                            }
 
 
                         </script>

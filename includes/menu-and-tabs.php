@@ -793,7 +793,7 @@ class DT_Webform_Menu
                                     window.selected_locations = []
                                 }
                                 window.selected_locations[grid_id] = new mapboxgl.Marker()
-                                    .setLngLat( window.active_marker._lngLat ) // @todo create this lng lat object from window.active_lnglat
+                                    .setLngLat( [ window.active_lnglat[0], window.active_lnglat[1] ] )
                                     .addTo(map);
 
                                 let name = ''

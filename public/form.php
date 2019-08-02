@@ -47,16 +47,24 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
                 //pulling all external style css(<link href="css.css">) of parent document
                 $("link[rel=stylesheet]",parent.document).each(function(){
                     var cssLink = document.createElement("link")
-                    cssLink.href = "http://"+parent.document.domain+$(this).attr("href");
+                    cssLink.href = "https://"+parent.document.domain+$(this).attr("href");
                     cssLink .rel = "stylesheet";
                     cssLink .type = "text/css";
                     document.body.appendChild(cssLink);
                 });
             });
-
         <?php endif; ?>
     </script>
+
     <?php
+    /* location files */
+    if (  $dt_webform_meta['location_select'] === 'click_map' ) {
+        ?>
+            <script type="text/javascript" src="https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js"></script>
+            <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css" type="text/css" media="all">
+         <?php
+    }
+
     // @codingStandardsIgnoreEnd ?>
 
     <style>
@@ -73,7 +81,6 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
 <form id="contact-form" action="">
 
     <input type="hidden" id="token" name="token" value="<?php echo esc_attr( $dt_webform_token ) ?>"/>
-    <input type="hidden" id="hidden_input" name="hidden_input" value="<?php echo esc_attr( $dt_webform_meta['hidden_input'] ?? '' ) ?>"/>
     <input type="hidden" id="ip_address" name="ip_address" value="<?php echo esc_attr( DT_Webform::get_real_ip_address() ?? '' ) ?>"/>
 
     <p class="section">
@@ -82,15 +89,231 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
     </p>
     <p class="section">
         <label for="phone" class="input-label"><?php echo isset( $dt_webform_meta['phone'] ) ? esc_attr( $dt_webform_meta['phone'] ) : 'Phone' ?></label><br>
-        <input type="tel" id="phone" name="phone" class="input-text" value="" required/><br>
+        <input type="tel" id="phone" name="phone" class="input-text" value="" /><br>
     </p>
     <p class="section">
         <label for="email" class="input-label"><?php echo isset( $dt_webform_meta['email'] ) ? esc_attr( $dt_webform_meta['email'] ) : 'Email' ?></label><br>
         <input type="email" id="email2" name="email2" class="input-text" value=""/>
         <input type="email" id="email" name="email" class="input-text" value=""/><br>
     </p>
-
     <?php
+    /**
+     * Location Click Map
+     */
+    if ( $dt_webform_meta['location_select'] === 'click_map' ) {
+    ?>
+        <p class="section">
+        <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
+        <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
+        <style>
+            .mapboxgl-ctrl-geocoder {
+                min-width:100%;
+            }
+            #geocoder {
+                padding-bottom: 10px;
+            }
+            #map {
+                width:66%;
+                height:400px;
+                float:left;
+            }
+            #list {
+                width:33%;
+                float:right;
+            }
+            #selected_values {
+                width:66%;
+                float:left;
+            }
+            .result_box {
+                padding: 15px 10px;
+                border: 1px solid lightgray;
+                margin: 5px 0 0;
+                font-weight: bold;
+                display: inline-block;
+                float:left;
+                margin:1px;
+            }
+            .add-column {
+                width:10px;
+            }
+        </style>
+
+        <!-- Widget -->
+        <div>Zoom and Click Map to Select Locations</div>
+        <div>
+            <div id='map'></div>
+            <div id="list"></div>
+        </div>
+        <div id="selected_values"></div>
+
+        <!-- Mapbox script -->
+        <script>
+            mapboxgl.accessToken = '<?php echo esc_html( get_option( 'dt_mapbox_api_key' ) ) ?>';
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [-20, 30],
+                zoom: 1
+            });
+
+            map.addControl(new mapboxgl.NavigationControl());
+
+            map.on('click', function (e) {
+                console.log(e)
+
+                let lng = e.lngLat.lng
+                let lat = e.lngLat.lat
+                window.active_lnglat = [lng,lat]
+
+                // add marker
+                if ( window.active_marker ) {
+                    window.active_marker.remove()
+                }
+                window.active_marker = new mapboxgl.Marker()
+                    .setLngLat(e.lngLat )
+                    .addTo(map);
+                console.log(active_marker)
+
+                // add polygon
+                jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
+                    {
+                        type: 'possible_matches',
+                        longitude: lng,
+                        latitude:  lat,
+                        nonce: '<?php echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>'
+                    }, null, 'json' ).done(function(data) {
+
+                    console.log(data)
+                    if ( data !== undefined ) {
+                        print_click_results( data )
+                    }
+
+                })
+            });
+
+
+            // User Personal Geocode Control
+            let userGeocode = new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                marker: {
+                    color: 'orange'
+                },
+                trackUserLocation: false
+            })
+            map.addControl(userGeocode);
+            userGeocode.on('geolocate', function(e) { // respond to search
+                console.log(e)
+                let lat = e.coords.latitude
+                let lng = e.coords.longitude
+                window.active_lnglat = [lng,lat]
+
+                // add polygon
+                jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
+                    {
+                        type: 'possible_matches',
+                        longitude: lng,
+                        latitude:  lat,
+                        nonce: '<?php echo esc_html( wp_create_nonce( 'location_grid' ) ) ?>'
+                    }, null, 'json' ).done(function(data) {
+                    console.log(data)
+
+                    if ( data !== undefined ) {
+
+                        print_click_results(data)
+                    }
+                })
+            })
+
+            function print_click_results( data ) {
+                if ( data !== undefined ) {
+
+                    // print click results
+                    window.MBresponse = data
+
+                    let print = jQuery('#list')
+                    print.empty();
+                    print.append('<strong>Click Results</strong><br><hr>')
+                    let table_body = ''
+                    jQuery.each( data, function(i,v) {
+                        let string = '<tr><td class="add-column">'
+                        string += '<button onclick="add_selection(' + v.grid_id +')">Add</button></td> '
+                        string += '<td><strong style="font-size:1.2em;">'+v.name+'</strong> <br>'
+                        if ( v.admin0_name !== v.name ) {
+                            string += v.admin0_name
+                        }
+                        if ( v.admin1_name !== null ) {
+                            string += ' > ' + v.admin1_name
+                        }
+                        if ( v.admin2_name !== null ) {
+                            string += ' > ' + v.admin2_name
+                        }
+                        if ( v.admin3_name !== null ) {
+                            string += ' > ' + v.admin3_name
+                        }
+                        if ( v.admin4_name !== null ) {
+                            string += ' > ' + v.admin4_name
+                        }
+                        if ( v.admin5_name !== null ) {
+                            string += ' > ' + v.admin5_name
+                        }
+                        string += '</td></tr>'
+                        table_body += string
+                    })
+                    print.append('<table>' + table_body + '</table>')
+                }
+            }
+
+            function add_selection( grid_id ) {
+                console.log(window.MBresponse[grid_id])
+
+                let div = jQuery('#selected_values')
+                let response = window.MBresponse[grid_id]
+
+                if ( window.selected_locations === undefined ) {
+                    window.selected_locations = []
+                }
+                window.selected_locations[grid_id] = new mapboxgl.Marker()
+                    .setLngLat( [ window.active_lnglat[0], window.active_lnglat[1] ] )
+                    .addTo(map);
+
+                let name = ''
+                name += response.name
+                if ( response.admin1_name !== undefined && response.level > '1' ) {
+                    name += ', ' + response.admin1_name
+                }
+                if ( response.admin0_name && response.level > '0' ) {
+                    name += ', ' + response.admin0_name
+                }
+
+                div.append('<div class="result_box" id="'+grid_id+'">' +
+                    '<span>'+name+'</span>' +
+                    '<span style="float:right;cursor:pointer; color:red;padding-left:10px;" onclick="remove_selection(\''+grid_id+'\')">X</span>' +
+                    '<input type="hidden" name="selected_grid_id['+grid_id+']" value="' + grid_id + '" />' +
+                    '<input type="hidden" name="selected_lnglat['+grid_id+']" value="' + window.active_lnglat[0] + ',' + window.active_lnglat[1] + '" />' +
+                    '</div>')
+
+            }
+
+            function remove_selection( grid_id ) {
+                window.selected_locations[grid_id].remove()
+                jQuery('#' + grid_id ).remove()
+            }
+
+
+        </script>
+        </p>
+        <br clear="all" />
+        <?php
+    }
+
+    if ( ! empty( $dt_webform_meta['custom_html'] ) ) {
+        echo $dt_webform_meta['custom_html'];
+    }
+
+
     /**
      * Add custom fields to form
      */

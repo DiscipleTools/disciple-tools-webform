@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * DT_Webform_Menu class for the admin page
  *
@@ -7,9 +8,6 @@
  * @since       0.1.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
 
 
 /**
@@ -249,7 +247,7 @@ class DT_Webform_Menu
 
             <?php $this->template( 'begin' ) ?>
 
-            <?php DT_Webform_Menu::initialize_plugin_state_metabox() ?>
+            <?php self::initialize_plugin_state_metabox() ?>
 
             <?php $this->template( 'right_column' ) ?>
 
@@ -972,13 +970,13 @@ class DT_Webform_Menu
                         <!-- Main Column -->
                         <?php
                         break;
-                case 'right_column':
-                    ?>
+                    case 'right_column':
+                        ?>
                     <!-- End Main Column -->
                     </div><!-- end post-body-content -->
                     <div id="postbox-container-1" class="postbox-container">
                     <!-- Right Column -->
-                    <?php
+                        <?php
                     break;
                     case 'end':
                         ?>

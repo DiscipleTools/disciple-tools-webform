@@ -9,7 +9,7 @@ if ( ! isset( $_GET['token'] ) ) {
     die( 'missing token' );
 }
 $dt_webform_token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
-$dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
+$dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 
 ?>
 <html>
@@ -69,8 +69,8 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
 
     <style>
         #email2 { display:none; }
-        <?php echo esc_attr( DT_Webform_Remote::get_theme( $dt_webform_meta['theme'] ?? '' ) ) ?>
-        <?php echo esc_attr( DT_Webform_Remote::get_custom_css( $dt_webform_token ) ) ?>
+        <?php echo esc_attr( DT_Webform_Utilities::get_theme( $dt_webform_meta['theme'] ?? '' ) ) ?>
+        <?php echo esc_attr( DT_Webform_Utilities::get_custom_css( $dt_webform_token ) ) ?>
     </style>
 
 </head>
@@ -101,7 +101,7 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
      * Location Click Map
      */
     if ( $dt_webform_meta['location_select'] === 'click_map' ) {
-    ?>
+        ?>
         <p class="section">
         <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
         <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />

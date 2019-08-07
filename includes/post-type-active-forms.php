@@ -1,10 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * DT_Webform_Active_Form_Post_Type
- *
- * @todo
- * 1. Store details about different types of forms created and their unique customization, including additional collection fields
- *
  */
 
 /**

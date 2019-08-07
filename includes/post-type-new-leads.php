@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * DT_Webform_New_Leads_Post_Type
  *
@@ -118,9 +119,9 @@ class DT_Webform_New_Leads_Post_Type
                 $state = get_option( 'dt_webform_state' );
                 if ( 'remote' == $state ) {
                     $selected_records[] = $post_id;
-                    DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
+                    DT_Webform_Utilities::trigger_transfer_of_new_leads( $selected_records );
                 } else {
-                    DT_Webform_Home::create_contact_record( $post_id );
+                    DT_Webform_Utilities::create_contact_record( $post_id );
                 }
             }
         }

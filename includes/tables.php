@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * Administrative tables for the plugin
  */
@@ -318,7 +319,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
 
             foreach ( $selected_records as $selected_record ) {
 
-                $result = DT_Webform_Home::create_contact_record( $selected_record );
+                $result = DT_Webform_Utilities::create_contact_record( $selected_record );
 
                 if ( is_wp_error( $result ) ) {
                     dt_write_log( 'process_bulk_action()' );
@@ -330,7 +331,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
         if ( 'transfer' === $this->current_action() ) {
             if ( isset( $_GET['form'] ) ) {
                 $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
-                DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
+                DT_Webform_Utilities::trigger_transfer_of_new_leads( $selected_records );
             }
         }
     }

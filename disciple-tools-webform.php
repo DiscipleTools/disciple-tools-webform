@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
@@ -15,10 +16,6 @@
  * @license GPL-2.0 or later
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
-
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
 
 /**
  * Gets the instance of the `DT_Webform` class.  This function is useful for quickly grabbing data
@@ -145,7 +142,6 @@ class DT_Webform {
     private function home() {
 
         require_once( 'includes/home-endpoints.php' );
-        require_once( 'includes/home.php' );
         require_once( 'includes/customize-site-linking.php' );
     }
 
@@ -159,7 +155,6 @@ class DT_Webform {
 
         require_once( 'includes/customize-site-linking.php' );
         require_once( 'includes/remote-endpoints.php' );
-        require_once( 'includes/remote.php' );
 
     }
 
@@ -178,6 +173,7 @@ class DT_Webform {
             Site_Link_System::instance( 100, 'dashicons-admin-links' );
         }
 
+        require_once( 'includes/utilities.php' );
         require_once( 'includes/post-type-active-forms.php' );
         require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
         require_once( 'includes/tables.php' );
@@ -468,9 +464,9 @@ if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
         $map = [];
         if ( ! empty( $post_id ) ) {
             $map         = array_map( function( $a ) {
-                return $a[ 0 ];
+                return $a[0];
             }, get_post_meta( $post_id ) ); // map the post meta
-            $map[ 'ID' ] = $post_id; // add the id to the array
+            $map['ID'] = $post_id; // add the id to the array
         }
 
         return $map;

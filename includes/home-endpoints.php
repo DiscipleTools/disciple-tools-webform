@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * DT_Webform_Home_Endpoints
  *
@@ -7,9 +8,6 @@
  * @package    DT_Webform
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
 
 /**
  * Initialize instance

@@ -9,7 +9,7 @@ if ( ! isset( $_GET['token'] ) ) {
     die( 'missing token' );
 }
 $dt_webform_token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
-$dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
+$dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 
 ?>
 <html>
@@ -61,8 +61,8 @@ $dt_webform_meta = DT_Webform_Remote::get_form_meta( $dt_webform_token );
 
     <style>
         #email2 { display:none; }
-        <?php echo esc_attr( DT_Webform_Remote::get_theme( $dt_webform_meta['theme'] ?? '' ) ) ?>
-        <?php echo esc_attr( DT_Webform_Remote::get_custom_css( $dt_webform_token ) ) ?>
+        <?php echo esc_attr( DT_Webform_Utilities::get_theme( $dt_webform_meta['theme'] ?? '' ) ) ?>
+        <?php echo esc_attr( DT_Webform_Utilities::get_custom_css( $dt_webform_token ) ) ?>
     </style>
 
 </head>

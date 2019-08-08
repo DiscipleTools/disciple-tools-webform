@@ -554,13 +554,6 @@ class DT_Webform_Active_Form_Post_Type
             'default'     => '',
             'section'     => 'appearance',
         ];
-        $fields['custom_html'] = [
-            'name'        => __( 'Custom HTML', 'dt_webform' ),
-            'description' => 'This section can be used to add custom inputs.',
-            'type'        => 'textarea',
-            'default'     => '',
-            'section'     => 'appearance',
-        ];
 
 
         $fields['title'] = [

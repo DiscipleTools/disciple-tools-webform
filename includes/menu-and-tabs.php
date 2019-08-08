@@ -551,7 +551,7 @@ class DT_Webform_Menu
         $hidden_key = '**************' . substr( $key, -5, 5 );
 
         set_error_handler( [ $this, "warning_handler" ], E_WARNING );
-        $list = file_get_contents( 'https://api.mapbox.com/geocoding/v5/mapbox.places/Denver.json?access_token=' . $key );
+        $list = file_get_contents( dt_get_mapbox_endpoint() . 'Denver.json?access_token=' . $key );
         restore_error_handler();
 
         if ( $list ) {
@@ -751,7 +751,22 @@ class DT_Webform_Menu
                                 let lng = e.coords.longitude
                                 window.active_lnglat = [lng,lat]
 
-                                // add polygon
+                                // add address from reverse geocode
+                                jQuery.get('<?php echo esc_url( trailingslashit( dt_get_mapbox_endpoint() ) ) ?>' + lng + ',' + lat + '.json?access_token=' + mapboxgl.accessToken,
+                                    {}, null, 'json' ).done(function(data) {
+
+                                    console.log(data)
+
+                                    if ( data.features !== undefined ) {
+                                        jQuery.each( data.features, function(i,v) {
+                                            if ( v.id.substring(0,7) === 'address' ) {
+                                                print_address_result( data.features[i])
+                                            }
+                                        })
+                                    }
+                                })
+
+                                // add location grid
                                 jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
                                     {
                                         type: 'possible_matches',
@@ -815,6 +830,7 @@ class DT_Webform_Menu
                             function add_selection( grid_id ) {
                                 console.log(window.MBresponse[grid_id])
 
+                                let unique_id = Math.floor(Math.random() * Math.floor(10000000))
                                 let div = jQuery('#selected_values')
                                 let response = window.MBresponse[grid_id]
 
@@ -834,12 +850,48 @@ class DT_Webform_Menu
                                     name += ', ' + response.admin0_name
                                 }
 
-                                div.append('<div class="result_box" id="'+grid_id+'">' +
+                                div.append('<div class="selection-container" id="'+unique_id+'">' +
                                     '<span>'+name+'</span>' +
-                                    '<span style="float:right;cursor:pointer;" onclick="remove_selection(\''+grid_id+'\')">X</span>' +
-                                    '<input type="hidden" name="selected_grid_id['+grid_id+']" value="' + grid_id + '" />' +
-                                    '<input type="hidden" name="selected_lnglat['+grid_id+']" value="' + window.active_lnglat[0] + ',' + window.active_lnglat[1] + '" />' +
+                                    '<span class="selection-remove" onclick="remove_selection(\''+unique_id+'\')">X</span>' +
+                                    '<input type="hidden" name="location_lnglat_' + unique_id + '" value="' + window.active_lnglat[0] + ',' + window.active_lnglat[1] + ',' + grid_id + '" />' +
                                     '</div>')
+                            }
+
+                            function print_address_result( data ) {
+                                window.mbAddressResponse = data
+
+                                let print = jQuery('#list-address')
+                                print.empty();
+
+                                let table_body = ''
+                                let string = '<tr class="results-row"><td class="results-button-column">'
+                                string += '<a class="results-add-button" href="javascript:void(0)" onclick="add_address_selection(\'' + data.center[0] + ',' + data.center[1] + ',' + data.id +'\')">Add</a></td> '
+                                string += '<td class="results-title-column"><span class="results-title"> '+data.place_name+'</span><br>'
+                                string += '</td></tr>'
+                                table_body += string
+
+                                print.append('<table class="results-table">' + table_body + '</table>')
+                            }
+
+                            function add_address_selection() {
+                                let unique_id = Math.random()
+                                let div = jQuery('#selected_values')
+                                let response = window.mbAddressResponse
+
+                                if ( window.selected_locations === undefined ) {
+                                    window.selected_locations = []
+                                }
+                                window.selected_locations[response.id] = new mapboxgl.Marker()
+                                    .setLngLat( [ response.center[0], response.center[1] ] )
+                                    .addTo(map);
+
+                                div.append('<div class="selection-container" id="'+response.id+'">' +
+                                    '<span>'+response.place_name+'</span>' +
+                                    '<span class="selection-remove" onclick="remove_selection(\''+response.id+'\')">X</span>' +
+                                    '<input type="hidden" name="location_lnglat_' + unique_id+ '" value="' + response.center[0] + ',' + response.center[1] + ',"' + response.place_name + '" />' +
+                                    '</div>')
+
+
 
                             }
 

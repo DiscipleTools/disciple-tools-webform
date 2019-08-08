@@ -9,13 +9,19 @@ class DT_Webform_Utilities {
 
     public static function get_form_meta( $token ) {
 
+        if ( empty( $token ) ) {
+            return false;
+        }
         if ( $meta = wp_cache_get( 'get_form_meta', $token ) ) {
             return $meta;
         }
 
         global $wpdb;
+
         $post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1", $token ) );
         $meta = dt_get_simple_post_meta( $post_id );
+
+        $meta['form_title'] = get_the_title( $post_id );
 
         wp_cache_set( 'get_form_meta', $meta, $token );
 
@@ -23,6 +29,10 @@ class DT_Webform_Utilities {
     }
 
     public static function get_custom_css( $token ) {
+
+        if ( empty( $token ) ) {
+            return false;
+        }
 
         if ( $meta = wp_cache_get( 'get_custom_css', $token ) ) {
             return $meta;
@@ -42,7 +52,7 @@ class DT_Webform_Utilities {
     }
 
 
-    public static function get_theme( string $theme ) {
+    public static function get_theme( string $theme, string $token ) {
 
         // Unique styles
         switch ( $theme ) {
@@ -68,34 +78,6 @@ class DT_Webform_Utilities {
                         height:70px;
                         padding: .7em;
                         border: .5px solid #ccc;
-                    }
-                    .mapboxgl-ctrl-geocoder {
-                        min-width:100%;
-                    }
-                    #geocoder {
-                        padding-bottom: 10px;
-                    }
-                    #map {
-                        width:66%;
-                        height:400px;
-                        float:left;
-                    }
-                    #list {
-                        width:33%;
-                        float:right;
-                    }
-                    #selected_values {
-                        width:66%;
-                        float:left;
-                    }
-                    .result_box {
-                        padding: 15px 10px;
-                        border: 1px solid lightgray;
-                        margin: 5px 0 0;
-                        font-weight: bold;
-                    }
-                    .add-column {
-                        width:10px;
                     }
                     ';
                 break;
@@ -136,9 +118,6 @@ class DT_Webform_Utilities {
                         font-size: 1.2em;
                         font-family: sans-serif;
                     }
-                    .mapboxgl-ctrl-geocoder {
-                        min-width:100%;
-                    }
                     ';
                 break;
             case 'wide-heavy':
@@ -178,37 +157,6 @@ class DT_Webform_Utilities {
                         font-size: 1.2em;
                         font-family: sans-serif;
                     }
-                    .mapboxgl-ctrl-geocoder {
-                        min-width:100%;
-                    }
-                    #geocoder {
-                        padding-bottom: 10px;
-                    }
-                    #map {
-                        width:66%;
-                        height:400px;
-                        float:left;
-                    }
-                    #list {
-                        width:33%;
-                        float:right;
-                    }
-                    #list tr {
-                    
-                    }
-                    #selected_values {
-                        width:66%;
-                        float:left;
-                    }
-                    .result_box {
-                        padding: 15px 10px;
-                        border: 1px solid lightgray;
-                        margin: 5px 0 0;
-                        font-weight: bold;
-                    }
-                    .add-column {
-                        width:10px;
-                    }
                     ';
                 break;
             default:
@@ -218,9 +166,77 @@ class DT_Webform_Utilities {
 
         }
 
-        // common styles
+        $meta = self::get_form_meta( $token );
 
-        return $css;
+        /**
+         * Location Styles
+         */
+        $location_styles = '';
+        if ( isset( $meta['location_select'] ) && $meta['location_select'] === 'click_map') {
+            $location_styles = '
+                #geocoder {
+                    padding-bottom: 10px;
+                }
+                #map {
+                    width:66%;
+                    height:400px;
+                    float:left;
+                }
+                #list {
+                    width:33%;
+                    float:right;
+                }
+                #selected_values {
+                    width:66%;
+                    float:left;
+                }
+                .selection-container {
+                    padding: 15px 10px;
+                    border: 1px solid lightgray;
+                    margin: 5px;
+                    font-weight: bold;
+                    float:left;
+                }
+                .selection-remove {
+                    padding-left:10px;
+                    color: red;
+                    cursor: pointer;
+                }
+                .results-button-column {
+                    width:10px;
+                    padding-right: 10px;
+                    vertical-align: top;
+                }
+                .results-add-button {
+                    
+                }
+                .results-title-column {}
+                .results-title {
+                    font-size:1.2em;
+                    font-weight:bold;
+                }
+                .results-row {
+                    padding-bottom:5px;
+                }
+                .results-table {
+                    
+                }
+                .results-table td {
+                    padding-bottom: 15px;
+                }
+            ';
+        }
+
+        /**
+         * Custom CSS
+         */
+        $custom_css = '';
+        if ( isset( $meta['custom_css'] ) && $meta['custom_css'] === 'click_map') {
+            $custom_css = $meta['custom_css'];
+        }
+
+
+        return $location_styles . $css . $custom_css;
     }
 
     /**
@@ -280,57 +296,115 @@ class DT_Webform_Utilities {
      */
     public static function create_contact_record( $new_lead_id ) {
 
+        // set vars
         $check_permission = false;
-
+        $fields = [];
+        $notes = [];
         $new_lead_meta = dt_get_simple_post_meta( $new_lead_id );
 
-        // Get the id of the form source of the lead
+        // check required fields
         if ( ! isset( $new_lead_meta['token'] ) || empty( $new_lead_meta['token'] ) ) {
             return new WP_Error( 'missing_contact_info', 'Missing token' );
         }
-
-        // Build record
         if ( ! isset( $new_lead_meta['name'] ) || empty( $new_lead_meta['name'] ) ) {
             return new WP_Error( 'missing_contact_info', 'Missing name' );
         }
 
-        // Build extra field data
-        $notes = [];
+        $form_meta = self::get_form_meta( $new_lead_meta['token'] );
+
+        // name
+        $fields['title'] = $new_lead_meta['name'];
+
+        // phone
+        if ( isset( $new_lead_meta['phone'] ) && ! empty( $new_lead_meta['phone'] ) ) {
+            $fields['contact_phone'] = [ [ "value" => $new_lead_meta['phone'] ] ];
+        }
+
+        // email
+        if ( isset( $new_lead_meta['email'] ) && ! empty( $new_lead_meta['email'] ) ) {
+            $fields['contact_email'] = [ [ "value" => $new_lead_meta['email'] ] ];
+        }
+
+        // locations
+        $locations = [ "values" => [] ];
+        $coordinates = [ "values" => [] ];
+        foreach ( $new_lead_meta as $lead_key => $lead_value ) {
+            if ( 'location_lnglat_' === substr( $lead_key, 0, 16 ) ) {
+                $array = explode( ',', $lead_value );
+
+                $longitude = $array[0] ?? '';
+                $latitide = $array[1] ?? '';
+                $grid_id = $array[2] ?? '';
+
+                $locations['values'][] = [
+                    'value' => $grid_id
+                ];
+
+                $coordinates['values'][] = [
+                    'value' => [
+                        'lng' => $longitude,
+                        'lat' => $latitide,
+                        'grid_id' => $grid_id,
+                        'level' => '',
+                        'place_name' => ''
+                    ]
+                ];
+            }
+        }
+        $fields['location_grid'] = $locations;
+        $fields['location_lnglat'] = $coordinates;
+
+
+        // custom fields
         foreach ( $new_lead_meta as $lead_key => $lead_value ) {
             if ( 'cf_' == substr( $lead_key, 0, 3 ) && !empty( $lead_value ) ) {
                 $label = ucfirst( str_replace( '_', ' ', substr( $lead_key, 2 ) ) );
                 $notes[$lead_key] = $label . ": " . $lead_value;
             }
         }
+
+        // source
+        if ( ! empty( $form_meta['source'] ) ) {
+            if ( ! isset( $fields['sources'] ) ) {
+                $fields['sources'] = [ "values" => [] ];
+            }
+            $fields['sources']['values'] = [ [ "value" => $form_meta['source'] ] ];
+        }
+
+        // hidden input
         if ( ! empty( $new_lead_meta['hidden_input'] ) ) {
             $notes['hidden_input'] = __( 'Hidden Input: ', 'dt_webform' ) . $new_lead_meta['hidden_input'];
         }
+
+        // ip address
         if ( ! empty( $new_lead_meta['ip_address'] ) ) {
             $notes['ip_address'] = __( 'IP Address: ', 'dt_webform' ) . $new_lead_meta['ip_address'];
         }
-        if ( ! isset( $new_lead_meta['form_title'] ) || empty( $new_lead_meta['form_title'] ) ) {
+
+        // form source
+        if ( ! isset( $form_meta['form_title'] ) || empty( $form_meta['form_title'] ) ) {
             $notes['source'] = __( 'Source Form: Unknown (token: ', 'dt_webform' ) . $new_lead_meta['token'] . ')';
         } else {
-            $notes['source'] = __( 'Source Form: ', 'dt_webform' )  . $new_lead_meta['form_title'];
+            $notes['source'] = __( 'Source Form: ', 'dt_webform' )  . $form_meta['form_title'];
         }
+
+        // comments
         if ( ! empty( $new_lead_meta['comments'] ) ) {
             $notes['comments'] = __( 'Comments: ', 'dt_webform' ) . $new_lead_meta['comments'];
         }
 
-        $phone = $new_lead_meta['phone'] ?? '';
-        $email = $new_lead_meta['email'] ?? '';
+        $fields['notes'] = $notes;
 
-        // Build record data
-        $fields = [
-            'title' => $new_lead_meta['name'],
-            "contact_phone" => [
-                [ "value" => $phone ], //create
-            ],
-            "contact_email" => [
-                [ "value" => $email ], //create
-            ],
-            'notes' => $notes
-        ];
+//        $fields = [
+//            'title' => $new_lead_meta['name'],
+//            "contact_phone" => [
+//                [ "value" => $phone ], //create
+//            ],
+//            "contact_email" => [
+//                [ "value" => $email ], //create
+//            ],
+//            'notes' => $notes
+//        ];
 
         // Post to contact
         if ( ! class_exists( 'Disciple_Tools_Contacts' ) ) {
@@ -351,5 +425,63 @@ class DT_Webform_Utilities {
         }
 
         return $result;
+    }
+}
+
+/**
+ * This returns a simple array versus the multi dimensional array
+ *
+ * @return array
+ */
+if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
+    function dt_get_simple_post_meta( $post_id ) {
+        $map = [];
+        if ( ! empty( $post_id ) ) {
+            $map         = array_map( function( $a ) {
+                return $a[0];
+            }, get_post_meta( $post_id ) ); // map the post meta
+            $map['ID'] = $post_id; // add the id to the array
+        }
+
+        return $map;
+    }
+}
+
+if ( ! function_exists( 'dt_get_location_grid_mirror' ) ) {
+    /**
+     * Best way to call for the mapping polygon
+     * @return array|string
+     */
+    function dt_get_location_grid_mirror( $url_only = false ) {
+        $mirror = get_option( 'dt_location_grid_mirror' );
+        if ( empty( $mirror ) ) {
+            $array = [
+                'key'   => 'google',
+                'label' => 'Google',
+                'url'   => 'https://storage.googleapis.com/location-grid-mirror/',
+            ];
+            update_option( 'dt_location_grid_mirror', $array, true );
+            $mirror = $array;
+        }
+
+        if ( $url_only ) {
+            return $mirror['url'];
+        }
+
+        return $mirror;
+    }
+}
+
+if ( ! function_exists( 'dt_get_mapbox_endpoint' ) ) {
+    function dt_get_mapbox_endpoint( $type = 'places' ) : string {
+        switch( $type ) {
+            case 'permanent':
+                return 'https://api.mapbox.com/geocoding/v5/mapbox.places-permanent/';
+                break;
+            case 'places':
+            default:
+                return 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
+                break;
+        }
     }
 }

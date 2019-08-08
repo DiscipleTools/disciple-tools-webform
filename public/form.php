@@ -69,8 +69,7 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 
     <style>
         #email2 { display:none; }
-        <?php echo esc_attr( DT_Webform_Utilities::get_theme( $dt_webform_meta['theme'] ?? '' ) ) ?>
-        <?php echo esc_attr( DT_Webform_Utilities::get_custom_css( $dt_webform_token ) ) ?>
+        <?php echo esc_attr( DT_Webform_Utilities::get_theme( $dt_webform_meta['theme'] ?? '', $dt_webform_token ) ) ?>
     </style>
 
 </head>
@@ -110,7 +109,11 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
             <div>Zoom and Click Map to Select Locations</div>
             <div>
                 <div id='map'></div>
-                <div id="list"></div>
+                <div id="list">
+                    <div><span class="input-label">Click Results</span><br><hr></div>
+                    <div id="list-location-grid"></div>
+                    <div id="list-address"></div>
+                </div>
             </div>
             <div id="selected_values"></div>
 
@@ -124,8 +127,34 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                     zoom: 1
                 });
 
-                map.addControl(new mapboxgl.NavigationControl());
+                // Controls
+                let searchGeocoder = new MapboxGeocoder({
+                    accessToken: mapboxgl.accessToken,
+                    types: 'country',
+                    marker: {color: 'orange'},
+                    mapboxgl: mapboxgl
+                });
+                let userGeocoder = new mapboxgl.GeolocateControl({
+                    positionOptions: {
+                        enableHighAccuracy: true
+                    },
+                    marker: {
+                        color: 'orange'
+                    },
+                    trackUserLocation: false
+                })
+                let navigationGeocoder = new mapboxgl.NavigationControl()
+                map.addControl(searchGeocoder);
+                map.addControl(userGeocoder);
+                map.addControl(navigationGeocoder);
 
+                // Search event
+                searchGeocoder.on('result', function(e) { // respond to search
+                    searchGeocoder._removeMarker()
+                    console.log(e)
+                })
+
+                // Click event
                 map.on('click', function (e) {
                     console.log(e)
 
@@ -142,7 +171,8 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                         .addTo(map);
                     console.log(active_marker)
 
-                    // add polygon
+
+                    // add location grid list
                     jQuery.get('<?php echo esc_url( trailingslashit( get_template_directory_uri() ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
                         {
                             type: 'possible_matches',
@@ -159,19 +189,8 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                     })
                 });
 
-
-                // User Personal Geocode Control
-                let userGeocode = new mapboxgl.GeolocateControl({
-                    positionOptions: {
-                        enableHighAccuracy: true
-                    },
-                    marker: {
-                        color: 'orange'
-                    },
-                    trackUserLocation: false
-                })
-                map.addControl(userGeocode);
-                userGeocode.on('geolocate', function(e) { // respond to search
+                // Geolocate event
+                userGeocoder.on('geolocate', function(e) { // respond to search
                     console.log(e)
                     let lat = e.coords.latitude
                     let lng = e.coords.longitude
@@ -188,7 +207,6 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                         console.log(data)
 
                         if ( data !== undefined ) {
-
                             print_click_results(data)
                         }
                     })
@@ -196,18 +214,16 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 
                 function print_click_results( data ) {
                     if ( data !== undefined ) {
-
                         // print click results
                         window.MBresponse = data
 
-                        let print = jQuery('#list')
+                        let print = jQuery('#list-location-grid')
                         print.empty();
-                        print.append('<strong>Click Results</strong><br><hr>')
                         let table_body = ''
                         jQuery.each( data, function(i,v) {
-                            let string = '<tr><td class="add-column">'
-                            string += '<a class="button" style="cursor:pointer;color:red;" onclick="add_selection(' + v.grid_id +')">Add</a></td> '
-                            string += '<td><strong style="font-size:1.2em;">'+v.name+'</strong> <br>'
+                            let string = '<tr class="results-row"><td class="results-button-column">'
+                            string += '<a class="results-add-button" href="javascript:void(0)" onclick="add_selection(' + v.grid_id +')">Add</a></td> '
+                            string += '<td class="results-title-column"><span class="results-title"> '+v.name+'</span><br>'
                             if ( v.admin0_name !== v.name ) {
                                 string += v.admin0_name
                             }
@@ -229,12 +245,23 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                             string += '</td></tr>'
                             table_body += string
                         })
-                        print.append('<table>' + table_body + '</table>')
+                        print.append('<table class="results-table">' + table_body + '</table>')
                     }
                 }
 
+                /**
+                 * Protects against duplicate entries, by using the grid_id as the key.
+                 * @param grid_id
+                 */
                 function add_selection( grid_id ) {
                     console.log(window.MBresponse[grid_id])
+
+                    // test if already added
+                    let already = jQuery('#'+grid_id).html()
+                    if ( already ) {
+                        return;
+                    }
+
 
                     let div = jQuery('#selected_values')
                     let response = window.MBresponse[grid_id]
@@ -255,13 +282,11 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                         name += ', ' + response.admin0_name
                     }
 
-                    div.append('<div class="result_box" id="'+grid_id+'">' +
+                    div.append('<div class="selection-container" id="'+grid_id+'">' +
                         '<span>'+name+'</span>' +
-                        '<span style="float:right;cursor:pointer; color:red;padding-left:10px;" onclick="remove_selection(\''+grid_id+'\')">X</span>' +
-                        '<input type="hidden" name="location_grid" value="' + grid_id + '" />' +
-                        '<input type="hidden" name="location_lnglat" value="' + window.active_lnglat[0] + ',' + window.active_lnglat[1] + ',' + grid_id + '" />' +
+                        '<span class="selection-remove" onclick="remove_selection(\''+grid_id+'\')">X</span>' +
+                        '<input type="hidden" name="location_lnglat_' + grid_id + '" value="' + window.active_lnglat[0] + ',' + window.active_lnglat[1] + ',' + grid_id + '" />' +
                         '</div>')
-
                 }
 
                 function remove_selection( grid_id ) {
@@ -291,7 +316,12 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
             ?>
             <p>
                 <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" class="input-label"><?php echo esc_attr( $dt_webform_value['label'] ) ?></label><br>
-                <input type="<?php echo esc_attr( $dt_webform_value['type'] ) ?>" id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" class="input-text" value="" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>/><br>
+                <input type="<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
+                       id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                       name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                       class="input-text"
+                       value="" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>/>
+                <br>
             </p>
             <?php
         }

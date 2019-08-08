@@ -453,21 +453,4 @@ if ( ! function_exists( 'dt_is_child_theme_of_disciple_tools' ) ) {
     }
 }
 
-/**
- * This returns a simple array versus the multi dimensional array from the get_user_meta function
- *
- * @return array
- */
-if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
-    function dt_get_simple_post_meta( $post_id ) {
-        $map = [];
-        if ( ! empty( $post_id ) ) {
-            $map         = array_map( function( $a ) {
-                return $a[0];
-            }, get_post_meta( $post_id ) ); // map the post meta
-            $map['ID'] = $post_id; // add the id to the array
-        }
 
-        return $map;
-    }
-}

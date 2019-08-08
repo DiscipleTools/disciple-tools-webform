@@ -531,6 +531,7 @@ class DT_Webform_Active_Form_Post_Type
             'default'     => [
                 'simple' => __( 'Simple', 'dt_webform' ),
                 'heavy'   => __( 'Heavy', 'dt_webform' ),
+                'wide-heavy'   => __( 'Wide Heavy', 'dt_webform' ),
                 'none'   => __( 'None', 'dt_webform' ),
                 'inherit'   => __( 'Inherit', 'dt_webform' ),
             ],

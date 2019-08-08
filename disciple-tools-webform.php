@@ -141,8 +141,8 @@ class DT_Webform {
      */
     private function home() {
 
-        require_once( 'includes/home-endpoints.php' );
-        require_once( 'includes/customize-site-linking.php' );
+        require_once( 'includes/endpoints-home.php' );
+
     }
 
     /**
@@ -153,8 +153,7 @@ class DT_Webform {
      */
     private function remote() {
 
-        require_once( 'includes/customize-site-linking.php' );
-        require_once( 'includes/remote-endpoints.php' );
+        require_once( 'includes/endpoints-remote.php' );
 
     }
 
@@ -172,12 +171,12 @@ class DT_Webform {
             require_once( 'includes/site-link-post-type.php' );
             Site_Link_System::instance( 100, 'dashicons-admin-links' );
         }
+        require_once( 'includes/site-link-customize.php' );
 
         require_once( 'includes/utilities.php' );
         require_once( 'includes/post-type-active-forms.php' );
         require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
         require_once( 'includes/tables.php' );
-        require_once( 'includes/enqueue-scripts.php' ); // enqueue scripts and styles
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {

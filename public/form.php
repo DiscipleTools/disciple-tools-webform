@@ -58,7 +58,7 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 
     <?php
     /* location files */
-    if (  $dt_webform_meta['location_select'] === 'click_map' ) {
+    if ( isset( $dt_webform_meta['location_select'] ) &&  $dt_webform_meta['location_select'] === 'click_map' ) {
         ?>
             <script type="text/javascript" src="https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js"></script>
             <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css" type="text/css" media="all">
@@ -100,7 +100,7 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
     /**
      * Location Click Map
      */
-    if ( $dt_webform_meta['location_select'] === 'click_map' ) {
+    if ( isset( $dt_webform_meta['location_select'] ) &&  $dt_webform_meta['location_select'] === 'click_map' ) {
         ?>
         <p class="section">
         <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>

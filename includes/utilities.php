@@ -51,6 +51,34 @@ class DT_Webform_Utilities {
                         padding: .7em;
                         border: .5px solid #ccc;
                     }
+                    .mapboxgl-ctrl-geocoder {
+                        min-width:100%;
+                    }
+                    #geocoder {
+                        padding-bottom: 10px;
+                    }
+                    #map {
+                        width:66%;
+                        height:400px;
+                        float:left;
+                    }
+                    #list {
+                        width:33%;
+                        float:right;
+                    }
+                    #selected_values {
+                        width:66%;
+                        float:left;
+                    }
+                    .result_box {
+                        padding: 15px 10px;
+                        border: 1px solid lightgray;
+                        margin: 5px 0 0;
+                        font-weight: bold;
+                    }
+                    .add-column {
+                        width:10px;
+                    }
                     ';
                 break;
             case 'heavy':
@@ -89,6 +117,104 @@ class DT_Webform_Utilities {
                     .input-label {
                         font-size: 1.2em;
                         font-family: sans-serif;
+                    }
+                    .mapboxgl-ctrl-geocoder {
+                        min-width:100%;
+                    }
+                    #geocoder {
+                        padding-bottom: 10px;
+                    }
+                    #map {
+                        width:66%;
+                        height:400px;
+                        float:left;
+                    }
+                    #list {
+                        width:33%;
+                        float:right;
+                    }
+                    #selected_values {
+                        width:66%;
+                        float:left;
+                    }
+                    .result_box {
+                        padding: 15px 10px;
+                        border: 1px solid lightgray;
+                        margin: 5px 0 0;
+                        font-weight: bold;
+                    }
+                    .add-column {
+                        width:10px;
+                    }
+                    ';
+                break;
+            case 'wide-heavy':
+                return '
+                    #contact-form {}
+                    .section {}
+                    #name {}
+                    #phone {}
+                    #email {}
+                    #comments {}
+                    textarea.input-text {}
+                    button.submit-button {
+                        padding: 1em;
+                        font-weight: bolder;
+                    }
+                    p.title {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                    }
+                    label.error {
+                        color: red;
+                        font-size: .8em;
+                    }
+                    .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    textarea.input-text {
+                        height:80px;
+                        padding: .5em;
+                        font-size: 1.2em;
+                        border: .5px solid #ccc;
+                    }
+                    .input-label {
+                        font-size: 1.2em;
+                        font-family: sans-serif;
+                    }
+                    .mapboxgl-ctrl-geocoder {
+                        min-width:100%;
+                    }
+                    #geocoder {
+                        padding-bottom: 10px;
+                    }
+                    #map {
+                        width:66%;
+                        height:400px;
+                        float:left;
+                    }
+                    #list {
+                        width:33%;
+                        float:right;
+                    }
+                    #list tr {
+                    
+                    }
+                    #selected_values {
+                        width:66%;
+                        float:left;
+                    }
+                    .result_box {
+                        padding: 15px 10px;
+                        border: 1px solid lightgray;
+                        margin: 5px 0 0;
+                        font-weight: bold;
+                    }
+                    .add-column {
+                        width:10px;
                     }
                     ';
                 break;

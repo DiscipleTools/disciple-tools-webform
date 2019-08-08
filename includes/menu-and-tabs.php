@@ -9,7 +9,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  */
 
 
-
 /**
  * Class DT_Webform_Menu
  */
@@ -261,6 +260,9 @@ class DT_Webform_Menu
         if ( is_admin() ) {
             wp_enqueue_script( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js', [ 'jquery','lodash' ], '1.1.0', false );
             wp_enqueue_style( 'mapbox-gl-css', 'https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css', [], '1.1.0' );
+
+            wp_register_style( 'dt_webform_admin_css', dt_webform()->includes_uri . 'admin.css', [], filemtime( dt_webform()->includes_path . 'admin.css' ) );
+            wp_enqueue_style( 'dt_webform_admin_css' );
         }
     }
 

@@ -8,12 +8,26 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 class DT_Webform_Utilities {
 
     public static function get_form_meta( $token ) {
+
+        if ( $meta = wp_cache_get( 'get_form_meta', $token ) ) {
+            return $meta;
+        }
+
         global $wpdb;
         $post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1", $token ) );
-        return dt_get_simple_post_meta( $post_id );
+        $meta = dt_get_simple_post_meta( $post_id );
+
+        wp_cache_set( 'get_form_meta', $meta, $token );
+
+        return $meta;
     }
 
     public static function get_custom_css( $token ) {
+
+        if ( $meta = wp_cache_get( 'get_custom_css', $token ) ) {
+            return $meta;
+        }
+
         global $wpdb;
         $css = $wpdb->get_var( $wpdb->prepare( "
             SELECT meta_value 
@@ -21,15 +35,19 @@ class DT_Webform_Utilities {
             WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) 
             AND meta_key = 'custom_css' 
             LIMIT 1", $token ) );
+
+        wp_cache_set( 'get_custom_css', $css, $token );
+
         return $css;
     }
 
 
     public static function get_theme( string $theme ) {
 
+        // Unique styles
         switch ( $theme ) {
             case 'simple':
-                return '
+                $css =   '
                     button.submit-button {
                         padding: .8em;
                         font-weight: bolder;
@@ -82,7 +100,7 @@ class DT_Webform_Utilities {
                     ';
                 break;
             case 'heavy':
-                return '
+                $css =   '
                     #contact-form {}
                     .section {}
                     #name {}
@@ -121,35 +139,10 @@ class DT_Webform_Utilities {
                     .mapboxgl-ctrl-geocoder {
                         min-width:100%;
                     }
-                    #geocoder {
-                        padding-bottom: 10px;
-                    }
-                    #map {
-                        width:66%;
-                        height:400px;
-                        float:left;
-                    }
-                    #list {
-                        width:33%;
-                        float:right;
-                    }
-                    #selected_values {
-                        width:66%;
-                        float:left;
-                    }
-                    .result_box {
-                        padding: 15px 10px;
-                        border: 1px solid lightgray;
-                        margin: 5px 0 0;
-                        font-weight: bold;
-                    }
-                    .add-column {
-                        width:10px;
-                    }
                     ';
                 break;
             case 'wide-heavy':
-                return '
+                $css =  '
                     #contact-form {}
                     .section {}
                     #name {}
@@ -221,7 +214,13 @@ class DT_Webform_Utilities {
             default:
                 return '';
                 break;
+
+
         }
+
+        // common styles
+
+        return $css;
     }
 
     /**

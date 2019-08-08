@@ -47,6 +47,7 @@ class DT_Webform_Menu
 
         add_action( "admin_menu", [ $this, "register_menu" ] );
         add_action( "admin_enqueue_scripts", [ $this, 'scripts' ] );
+        add_action( 'admin_head', [ $this, 'custom_admin_head' ] );
     } // End __construct()
 
     /**
@@ -257,12 +258,40 @@ class DT_Webform_Menu
     }
 
     public function scripts() {
-        if ( is_admin() ) {
+        global $pagenow;
+
+        if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) && is_admin() ) {
+
             wp_enqueue_script( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js', [ 'jquery','lodash' ], '1.1.0', false );
             wp_enqueue_style( 'mapbox-gl-css', 'https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css', [], '1.1.0' );
 
-            wp_register_style( 'dt_webform_admin_css', dt_webform()->includes_uri . 'admin.css', [], filemtime( dt_webform()->includes_path . 'admin.css' ) );
-            wp_enqueue_style( 'dt_webform_admin_css' );
+        }
+    }
+
+    public function custom_admin_head() {
+        global $pagenow;
+
+        if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) && is_admin() ) {
+
+            /**
+             * Add custom css styles for the dt_webform admin page
+             */
+            ?>
+            <style type="text/css">
+                .float-right {
+                    float: right;
+                }
+                button.button-like-link {
+                    background: none !important;
+                    color: blue;
+                    border: none;
+                    padding: 0 !important;
+                    font: inherit;
+                    /*border is optional*/
+                    cursor: pointer;
+                }
+            </style>
+            <?php
         }
     }
 

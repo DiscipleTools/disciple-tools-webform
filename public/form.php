@@ -82,26 +82,27 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
     <input type="hidden" id="token" name="token" value="<?php echo esc_attr( $dt_webform_token ) ?>"/>
     <input type="hidden" id="ip_address" name="ip_address" value="<?php echo esc_attr( DT_Webform::get_real_ip_address() ?? '' ) ?>"/>
 
-    <p class="section">
+    <div class="section">
         <label for="name" class="input-label"><?php echo isset( $dt_webform_meta['name'] ) ? esc_attr( $dt_webform_meta['name'] ) : 'Name' ?></label><br>
         <input type="text" id="name" name="name" class="input-text" value="" required/><br>
-    </p>
-    <p class="section">
+    </div>
+    <div class="section">
         <label for="phone" class="input-label"><?php echo isset( $dt_webform_meta['phone'] ) ? esc_attr( $dt_webform_meta['phone'] ) : 'Phone' ?></label><br>
         <input type="tel" id="phone" name="phone" class="input-text" value="" /><br>
-    </p>
-    <p class="section">
+    </div>
+    <div class="section">
         <label for="email" class="input-label"><?php echo isset( $dt_webform_meta['email'] ) ? esc_attr( $dt_webform_meta['email'] ) : 'Email' ?></label><br>
         <input type="email" id="email2" name="email2" class="input-text" value=""/>
         <input type="email" id="email" name="email" class="input-text" value=""/><br>
-    </p>
+    </div>
+
     <?php
     /**
      * Location Click Map
      */
     if ( isset( $dt_webform_meta['location_select'] ) &&  $dt_webform_meta['location_select'] === 'click_map' ) {
         ?>
-        <p class="section">
+        <div class="section">
             <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
             <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
 
@@ -296,15 +297,10 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 
 
             </script>
-        </p>
+        </div>
         <br clear="all" />
         <?php
     }
-
-    if ( ! empty( $dt_webform_meta['custom_html'] ) ) {
-        echo $dt_webform_meta['custom_html'];
-    }
-
 
     /**
      * Add custom fields to form
@@ -312,29 +308,89 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
     $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
     if ( count( $dt_webform_fields ) > 0 ) {
         foreach ( $dt_webform_fields as $dt_webform_key => $dt_webform_value ) {
-            $dt_webform_value = maybe_unserialize( $dt_webform_value );
-            ?>
-            <p>
-                <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" class="input-label"><?php echo esc_attr( $dt_webform_value['label'] ) ?></label><br>
-                <input type="<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
-                       id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
-                       name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
-                       class="input-text"
-                       value="" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>/>
-                <br>
-            </p>
-            <?php
+
+            if ( isset( $dt_webform_value['type'] ) && 'multi_check' === $dt_webform_value['type'] ) {
+                $list = explode( PHP_EOL, $dt_webform_value['multi_check'] );
+                if ( count($list) > 0 ) {
+
+                    ?>
+                    <div class="section">
+                        <fieldset>
+                            <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                                   class="input-label"><?php echo esc_attr( $dt_webform_value[ 'label' ] ) ?></label><br>
+                            <?php
+                            foreach ( $list as $item ) {
+                                $pair = explode( '|', $item );
+                                if ( isset( $pair[0] ) && isset( $pair[1] ) ) {
+                                    echo '<input type="checkbox" name="' . esc_attr( $pair[0] ) . '" value="' . esc_attr( $pair[0] ) . '">' . $pair[1] . '<br>';
+                                }
+                            }
+                            ?>
+                        </fieldset>
+                    </div>
+                    <?php
+                }
+            }
+            else if ( isset( $dt_webform_value['type'] ) && 'multi_radio' === $dt_webform_value['type'] ) {
+                // radio
+                $list = explode( PHP_EOL, $dt_webform_value['multi_radio'] );
+                if ( count($list) > 0 ) {
+                    ?>
+                    <div class="section">
+                        <fieldset>
+                            <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                                   class="input-label"><?php echo esc_attr( $dt_webform_value[ 'label' ] ) ?></label><br>
+                            <?php
+                            foreach( $list as $item ) {
+                                echo '<input type="radio" name="'. esc_attr( $dt_webform_value[ 'key' ] ) .'" value="Cats">'. esc_html( $item ).'<br>';
+                            }
+                            ?>
+                        </fieldset>
+                    </div>
+                    <?php
+                }
+            }
+            else if ( isset( $dt_webform_value['type'] ) && 'checkbox' === $dt_webform_value['type'] ) {
+                // text box
+                ?>
+                <div class="section">
+                    <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="input-label">
+                    <input type="checkbox"
+                           id="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                           name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                           class="input-check"
+                           value="" <?php echo esc_attr( $dt_webform_value[ 'required' ] == 'yes' ? 'required' : '' ) ?>
+                    />
+                    <?php echo esc_html( $dt_webform_value[ 'label' ] ) ?></label>
+                </div>
+                <?php
+            }
+            else {
+                // text box
+                ?>
+                <div class="section">
+                    <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                           class="input-label"><?php echo esc_attr( $dt_webform_value[ 'label' ] ) ?></label><br>
+                    <input type="<?php echo esc_attr( $dt_webform_value[ 'type' ] ) ?>"
+                           id="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                           name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                           class="input-text"
+                           value="" <?php echo esc_attr( $dt_webform_value[ 'required' ] == 'yes' ? 'required' : '' ) ?>/>
+                </div>
+                <?php
+            }
+
         }
     }
     ?>
 
-    <p class="section">
+    <div class="section">
         <label for="comments" class="input-label"><?php echo esc_attr( $dt_webform_meta['comments_title'] ?? esc_attr__( 'Comments', 'dt_webform' ) ) ?></label><br>
         <textarea name="comments" id="comments" class="input-text input-textarea"></textarea><br>
-    </p>
-    <p class="section" id="submit-button-container">
+    </div>
+    <div class="section" id="submit-button-container">
         <button type="button" class="submit-button" id="submit-button" onclick="check_form()" disabled><?php esc_attr_e( 'Submit', 'dt_webform' ) ?></button>
-    </p>
+    </div>
 
 </form>
 

@@ -45,6 +45,7 @@ function submit_form() {
             jQuery('#report').append( window.TRANSLATION.success + '<br>');
             jQuery('.input-text').val('').empty();
             jQuery('#submit-button').removeAttr('disabled')
+            jQuery('#selected_values').empty()
             jQuery('.spinner').remove()
         })
         .fail(function (err) {

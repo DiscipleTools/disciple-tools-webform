@@ -51,6 +51,31 @@ class DT_Webform_Utilities {
         return $css;
     }
 
+    public static function order_custom_field_array( $custom_fields ) {
+        // reorder
+        $order = [];
+        foreach ( $custom_fields as $value ) {
+            $value = maybe_unserialize( $value );
+            if ( $value['order'] === 0 ){
+                $value['order'] = 1;
+            }
+            if ( ! isset( $order[$value['order']] ) ) {
+                $order[$value['order']] = [];
+            }
+            $order[$value['order']][$value['key']] = $value;
+        }
+        ksort($order);
+
+        $ordered_fields = [];
+        foreach ( $order as $value ) {
+            foreach( $value as $k => $v ) {
+                $ordered_fields[$k] = $v;
+            }
+        }
+
+        return $ordered_fields;
+    }
+
 
     public static function get_theme( string $theme, string $token ) {
 
@@ -58,6 +83,9 @@ class DT_Webform_Utilities {
         switch ( $theme ) {
             case 'simple':
                 $css =   '
+                    .section {
+                        padding-bottom:5px;
+                    }
                     button.submit-button {
                         padding: .8em;
                         font-weight: bolder;
@@ -84,7 +112,9 @@ class DT_Webform_Utilities {
             case 'heavy':
                 $css =   '
                     #contact-form {}
-                    .section {}
+                    .section {
+                        padding-bottom:10px;
+                    }
                     #name {}
                     #phone {}
                     #email {}
@@ -123,7 +153,13 @@ class DT_Webform_Utilities {
             case 'wide-heavy':
                 $css =  '
                     #contact-form {}
-                    .section {}
+                    .section {
+                        padding:10px 0;
+                        width: 100%;
+                    }
+                    fieldset {
+                        border: 0px solid white;
+                    }
                     #name {}
                     #phone {}
                     #email {}
@@ -146,6 +182,10 @@ class DT_Webform_Utilities {
                         padding: .5em;
                         font-size: 1em;
                         width: 100%;
+                    }
+                    .input-check {
+                        padding: .5em;
+                        font-size: 1em;
                     }
                     textarea.input-text {
                         height:80px;
@@ -371,10 +411,6 @@ class DT_Webform_Utilities {
             $fields['sources']['values'] = [ [ "value" => $form_meta['source'] ] ];
         }
 
-        // hidden input
-        if ( ! empty( $new_lead_meta['hidden_input'] ) ) {
-            $notes['hidden_input'] = __( 'Hidden Input: ', 'dt_webform' ) . $new_lead_meta['hidden_input'];
-        }
 
         // ip address
         if ( ! empty( $new_lead_meta['ip_address'] ) ) {
@@ -395,16 +431,12 @@ class DT_Webform_Utilities {
 
         $fields['notes'] = $notes;
 
-//        $fields = [
-//            'title' => $new_lead_meta['name'],
-//            "contact_phone" => [
-//                [ "value" => $phone ], //create
-//            ],
-//            "contact_email" => [
-//                [ "value" => $email ], //create
-//            ],
-//            'notes' => $notes
-//        ];
+        // assign user
+        if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) ) {
+            $fields['assigned_to'] = $form_meta['assigned_to'];
+            $fields['overall_status'] = 'assigned';
+        }
+
 
         // Post to contact
         if ( ! class_exists( 'Disciple_Tools_Contacts' ) ) {

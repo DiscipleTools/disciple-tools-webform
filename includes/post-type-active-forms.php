@@ -141,7 +141,7 @@ class DT_Webform_Active_Form_Post_Type
     public function load_info_meta_box( $post ) {
         $this->meta_box_content( 'info' ); // prints
 
-        if (  get_post_meta( $post->ID, 'location_select', true ) === 'click_map' && get_option( 'dt_mapbox_api_key' ) ) {
+        if (  get_post_meta( $post->ID, 'location_select', true ) === 'click_map' && ! get_option( 'dt_mapbox_api_key' ) ) {
             echo '<div style="color:red;">You need to establish you Mapbox.com key. <a href="'.admin_url() .'admin.php?page=dt_mapping_module&tab=geocoding">Go to MapBox settings</a></div>';
             update_post_meta( $post->ID, 'location_select', 'none' );
         }

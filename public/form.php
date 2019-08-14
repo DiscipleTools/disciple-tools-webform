@@ -309,20 +309,20 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
     if ( count( $dt_webform_fields ) > 0 ) {
         foreach ( $dt_webform_fields as $dt_webform_key => $dt_webform_value ) {
 
-            if ( isset( $dt_webform_value['type'] ) && 'multi_check' === $dt_webform_value['type'] ) {
-                $list = explode( PHP_EOL, $dt_webform_value['multi_check'] );
-                if ( count($list) > 0 ) {
+            if ( isset( $dt_webform_value['type'] ) && 'multi_check' === $dt_webform_value['type'] && isset( $dt_webform_value['keys'] ) && isset( $dt_webform_value['values'] ) ) {
 
+                $list = DT_Webform_Active_Form_Post_Type::match_keys_with_values( $dt_webform_value['keys'], $dt_webform_value['values'] );
+                if ( count($list) > 0 ) {
                     ?>
                     <div class="section">
                         <fieldset>
                             <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                                    class="input-label"><?php echo esc_attr( $dt_webform_value[ 'label' ] ) ?></label><br>
                             <?php
+                            $i = 0;
                             foreach ( $list as $item ) {
-                                $pair = explode( '|', $item );
-                                if ( isset( $pair[0] ) && isset( $pair[1] ) ) {
-                                    echo '<input type="checkbox" name="' . esc_attr( $pair[0] ) . '" value="' . esc_attr( $pair[0] ) . '">' . $pair[1] . '<br>';
+                                if ( isset( $item['key'] ) && isset( $item['value'] ) ) {
+                                    echo '<span><input type="checkbox" class="input-check" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['key'] ) . '">' . esc_html( $item['value'] ) . '</span>';
                                 }
                             }
                             ?>
@@ -332,8 +332,7 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                 }
             }
             else if ( isset( $dt_webform_value['type'] ) && 'multi_radio' === $dt_webform_value['type'] ) {
-                // radio
-                $list = explode( PHP_EOL, $dt_webform_value['multi_radio'] );
+                $list = DT_Webform_Active_Form_Post_Type::match_keys_with_values( $dt_webform_value['keys'], $dt_webform_value['values'] );
                 if ( count($list) > 0 ) {
                     ?>
                     <div class="section">
@@ -341,8 +340,11 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                             <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                                    class="input-label"><?php echo esc_attr( $dt_webform_value[ 'label' ] ) ?></label><br>
                             <?php
-                            foreach( $list as $item ) {
-                                echo '<input type="radio" name="'. esc_attr( $dt_webform_value[ 'key' ] ) .'" value="Cats">'. esc_html( $item ).'<br>';
+                            $i = 0;
+                            foreach ( $list as $item ) {
+                                if ( isset( $item['key'] ) && isset( $item['value'] ) ) {
+                                    echo '<span><input type="checkbox" class="input-check" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['key'] ) . '">' . esc_html( $item['value'] ) . '</span>';
+                                }
                             }
                             ?>
                         </fieldset>

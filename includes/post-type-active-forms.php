@@ -743,6 +743,19 @@ class DT_Webform_Active_Form_Post_Type
         return $custom_fields;
     }
 
+    public function get_extra_fields_by_post_id( $post_id ) {
+        $meta = dt_get_simple_post_meta( $post_id );
+        $fields = self::filter_for_custom_fields( $meta );
+        $custom_fields = [];
+        if ( ! empty( $fields) ) {
+            foreach ( $fields as $key => $value ) {
+                $custom_fields[$key] = maybe_unserialize( $value );
+            }
+            $custom_fields =  DT_Webform_Utilities::order_custom_field_array( $custom_fields );
+        }
+        return $custom_fields;
+    }
+
     /**
      * Load type metabox
      */
@@ -797,18 +810,30 @@ class DT_Webform_Active_Form_Post_Type
                             <td id="values-cell-<?php echo esc_attr( $key ) ?>">
                                 <?php if ( isset( $value['type'] ) && 'multi_radio' === $value['type'] ) { ?>
                                     <textarea type="text"
-                                              id="new_multi_radio_<?php echo esc_attr( $key ) ?>"
+                                              id="new_keys_<?php echo esc_attr( $key ) ?>"
                                               style="width:100%;"
                                               rows="5"
-                                              name="<?php echo esc_attr( $key ) ?>[multi_radio]"
-                                              placeholder="One line per item" /><?php echo esc_attr( $value['multi_radio'] ?? '' ) ?></textarea>
+                                              name="<?php echo esc_attr( $key ) ?>[keys]"
+                                              placeholder="One line per item" /><?php echo esc_attr( $value['keys'] ?? '' ) ?></textarea>
+                                    <textarea type="text"
+                                              id="new_values_<?php echo esc_attr( $key ) ?>"
+                                              style="width:100%;"
+                                              rows="5"
+                                              name="<?php echo esc_attr( $key ) ?>[values]"
+                                              placeholder="One line per item" /><?php echo esc_attr( $value['values'] ?? '' ) ?></textarea>
                                 <?php } else if ( isset( $value['type'] ) && 'multi_check' === $value['type'] ) { ?>
-                                <textarea type="text"
-                                          id="new_multi_check_<?php echo esc_attr( $key ) ?>"
-                                          style="width:100%;"
-                                          rows="5"
-                                          name="<?php echo esc_attr( $key ) ?>[multi_check]"
-                                          placeholder="One line per item" /><?php echo esc_attr( $value['multi_check'] ?? '' ) ?></textarea>
+                                    <textarea type="text"
+                                              id="new_keys_<?php echo esc_attr( $key ) ?>"
+                                              style="width:100%;"
+                                              rows="5"
+                                              name="<?php echo esc_attr( $key ) ?>[keys]"
+                                              placeholder="One line per item" /><?php echo esc_attr( $value['keys'] ?? '' ) ?></textarea>
+                                    <textarea type="text"
+                                              id="new_values_<?php echo esc_attr( $key ) ?>"
+                                              style="width:100%;"
+                                              rows="5"
+                                              name="<?php echo esc_attr( $key ) ?>[values]"
+                                              placeholder="One line per item" /><?php echo esc_attr( $value['values'] ?? '' ) ?></textarea>
 
                                 <?php } else if ( isset( $value['type'] ) && 'checkbox' === $value['type'] ) { ?>
                                     <input type="text"
@@ -898,24 +923,24 @@ class DT_Webform_Active_Form_Post_Type
                                         name="field_<?php echo esc_attr( $unique_key ) ?>[default_value]"
                                         placeholder="Default Value (optional)" />
 
-                                    <input type="text"
+                                    <input type="text" style="display:none;"
                                         id="new_group_name_<?php echo esc_attr( $unique_key ) ?>"
                                         name="field_<?php echo esc_attr( $unique_key ) ?>[group_name]"
                                         placeholder="Group Name (optional)" />
 
                                     <textarea type="text" style="display:none;"
-                                        id="new_multi_radio_<?php echo esc_attr( $unique_key ) ?>"
+                                        id="new_keys_<?php echo esc_attr( $unique_key ) ?>"
                                         style="width:100%;"
                                         rows="5"
-                                        name="field_<?php echo esc_attr( $unique_key ) ?>[multi_radio]"
-                                        placeholder="One line per item" /></textarea>
+                                        name="field_<?php echo esc_attr( $unique_key ) ?>[keys]"
+                                        placeholder="Keys. One key per line. Underscores allowed. No spaces or special characters." /></textarea><br>
 
                                     <textarea type="text" style="display:none;"
-                                        id="new_multi_check_<?php echo esc_attr( $unique_key ) ?>"
+                                        id="new_values_<?php echo esc_attr( $unique_key ) ?>"
                                         style="width:100%;"
                                         rows="5"
-                                        name="field_<?php echo esc_attr( $unique_key ) ?>[multi_check]"
-                                        placeholder="One line per item" /></textarea>
+                                        name="field_<?php echo esc_attr( $unique_key ) ?>[values]"
+                                        placeholder="Labels. One label per line." /></textarea>
                                 </td>
                                 <td>
                                     <select name="field_<?php echo esc_attr( $unique_key ) ?>[required]">
@@ -939,32 +964,32 @@ class DT_Webform_Active_Form_Post_Type
                         let type = jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').val()
                         let dv = jQuery('#new_default_value_<?php echo esc_attr( $unique_key ) ?>')
                         let gn = jQuery('#new_group_name_<?php echo esc_attr( $unique_key ) ?>')
-                        let mr = jQuery('#new_multi_radio_<?php echo esc_attr( $unique_key ) ?>')
-                        let mc = jQuery('#new_multi_check_<?php echo esc_attr( $unique_key ) ?>')
+                        let ks = jQuery('#new_keys_<?php echo esc_attr( $unique_key ) ?>')
+                        let vs = jQuery('#new_values_<?php echo esc_attr( $unique_key ) ?>')
 
                         if ( type === 'multi_radio' ) {
                             dv.val('').hide()
                             gn.val('').hide()
-                            mr.val('').show()
-                            mc.val('').hide()
+                            ks.val('').show()
+                            vs.val('').show()
                         }
                         else if ( type === 'multi_check' ) {
                             dv.val('').hide()
                             gn.val('').hide()
-                            mr.val('').hide()
-                            mc.val('').show()
+                            ks.val('').show()
+                            vs.val('').show()
                         }
                         else if ( type === 'checkbox' ) {
                             dv.val('').hide()
                             gn.val('').show()
-                            mr.val('').hide()
-                            mc.val('').hide()
+                            ks.val('').hide()
+                            vs.val('').hide()
                         }
                         else {
                             dv.show()
                             gn.val('').hide()
-                            mr.val('').hide()
-                            mc.val('').hide()
+                            ks.val('').hide()
+                            vs.val('').hide()
                         }
                     })
                 }
@@ -1008,9 +1033,21 @@ class DT_Webform_Active_Form_Post_Type
             }
         }
 
-        $array = self::filter_for_custom_fields( $_POST );
+        $current_fields_extra = $this->get_extra_fields_by_post_id( $post_id );
 
+
+        dt_write_log($current_fields_extra);
+        $array = self::filter_for_custom_fields( $_POST );
+        dt_write_log($array);
+
+        foreach ( $current_fields_extra as $key => $value ) {
+            if ( ! isset( $array[$key]) ) {
+                delete_post_meta( $post_id, $key, get_post_meta( $post_id, $key, true ) );
+            }
+        }
         foreach ( $array as $key => $value ) {
+
+            // @todo add filter to correct make keys and trim entries
 
             if ( ! get_post_meta( $post_id, $key ) ) {
                 add_post_meta( $post_id, $key, $value, true );
@@ -1027,6 +1064,26 @@ class DT_Webform_Active_Form_Post_Type
         return array_filter( $array, function( $key) {
             return strpos( $key, 'field_' ) === 0;
         }, ARRAY_FILTER_USE_KEY );
+    }
+
+    public static function match_keys_with_values( string $keys, string $values ) : array {
+        if ( empty( $keys ) || empty( $values ) ) {
+            return [];
+        }
+
+        $keys = array_filter( explode( PHP_EOL, $keys ) );
+        $values = array_filter( explode( PHP_EOL, $values ) );
+
+        $list = [];
+
+        foreach( $keys as $index => $key ) {
+            $list[] = [
+                'key' => trim( $keys[$index] ),
+                'value' => trim( $values[$index] ),
+            ];
+        }
+
+        return $list;
     }
 
 }

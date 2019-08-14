@@ -144,7 +144,18 @@ class DT_Webform_Active_Form_Post_Type
     }
 
     public function load_localize_meta_box() {
-        $this->meta_box_content( 'localize' ); // prints
+        global $pagenow;
+        if ( 'post-new.php' == $pagenow ) {
+
+            echo esc_attr__( 'Leads list will display after you save the new form', 'dt_webform' );
+            echo '<div style="display:none;">';
+            $this->meta_box_content( 'appearance' ); // prints
+            echo '</div>';
+
+        } else {
+            $this->meta_box_content( 'localize' ); // prints
+        }
+
     }
 
     /**
@@ -260,7 +271,7 @@ class DT_Webform_Active_Form_Post_Type
 
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
-            <textarea cols="60" rows="5"><iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
+            <textarea cols="30" rows="10"><iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
             ?>" style="width:<?php echo esc_attr( $width ) ?>;height:<?php echo esc_attr( $height ) ?>;" frameborder="0"></iframe>
 
         </textarea>

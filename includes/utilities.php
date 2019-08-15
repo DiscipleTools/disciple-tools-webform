@@ -187,6 +187,10 @@ class DT_Webform_Utilities {
                         padding: .5em;
                         font-size: 1em;
                     }
+                    .input-radio {
+                        padding: .5em;
+                        font-size: 1em;
+                    }
                     textarea.input-text {
                         height:80px;
                         padding: .5em;
@@ -394,12 +398,52 @@ class DT_Webform_Utilities {
         $fields['location_grid'] = $locations;
         $fields['location_lnglat'] = $coordinates;
 
+        dt_write_log($new_lead_meta);
+        dt_write_log($form_meta);
 
         // custom fields
         foreach ( $new_lead_meta as $lead_key => $lead_value ) {
-            if ( 'cf_' == substr( $lead_key, 0, 3 ) && !empty( $lead_value ) ) {
-                $label = ucfirst( str_replace( '_', ' ', substr( $lead_key, 2 ) ) );
-                $notes[$lead_key] = $label . ": " . $lead_value;
+            if ( 'field_' === substr( $lead_key, 0, 6 ) && ! empty( $lead_value ) ) {
+
+                // send to note
+//                $label = ucfirst( str_replace( '_', ' ', substr( $lead_key, 2 ) ) );
+                $notes[$lead_key] =  $lead_value;
+
+
+
+                // check match to DT custom field
+                $vars = explode( '-', $lead_value ); // 0 - meta_key; 1 - keyed field value
+
+                if ( isset( $form_meta[$lead_key] ) ) {
+                    // standard key
+                    $field = maybe_unserialize( $form_meta[$lead_key] );
+                    if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
+                        // set field value to custom field
+                        // @todo
+
+                        // text
+                        if ( $field['type'] === 'text' ) {
+
+                        }
+                        //
+                    }
+
+                }
+                else if( isset( $form_meta[$vars[0]] ) ) {
+                    // multi-checkbox
+
+                    // check if mapping to DT enabled
+                    $field = maybe_unserialize( $form_meta[$vars[0]] );
+                    if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
+                        // set field value to custom field
+                        // @todo
+
+
+                    }
+
+
+                }
+
             }
         }
 

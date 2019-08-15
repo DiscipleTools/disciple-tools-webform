@@ -322,7 +322,7 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                             $i = 0;
                             foreach ( $list as $item ) {
                                 if ( isset( $item['key'] ) && isset( $item['value'] ) ) {
-                                    echo '<span><input type="checkbox" class="input-check" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['key'] ) . '">' . esc_html( $item['value'] ) . '</span>';
+                                    echo '<span><input type="checkbox" class="input-check" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '-' . esc_attr( $item['key'] ) . '" value="' . esc_attr( $item['key'] ) . '">' . esc_html( $item['value'] ) . '</span><br>';
                                 }
                             }
                             ?>
@@ -343,7 +343,7 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                             $i = 0;
                             foreach ( $list as $item ) {
                                 if ( isset( $item['key'] ) && isset( $item['value'] ) ) {
-                                    echo '<span><input type="checkbox" class="input-check" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['key'] ) . '">' . esc_html( $item['value'] ) . '</span>';
+                                    echo '<span><input type="radio" class="input-radio" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['key'] ) . '">' . esc_html( $item['value'] ) . '</span><br>';
                                 }
                             }
                             ?>

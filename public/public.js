@@ -28,10 +28,13 @@ function submit_form() {
     jQuery('#submit-button-container').append(window.SETTINGS.spinner)
 
     let url = get_url()
-    let $inputs = jQuery(':input');
     let data = {};
-    $inputs.each(function() {
+
+    jQuery(':input:not([type=checkbox])').each(function() {
         data[this.name] = jQuery(this).val();
+    });
+    jQuery(':input[type=checkbox]:checked').each(function() {
+      data[this.name] = jQuery(this).val();
     });
 
     return jQuery.ajax({

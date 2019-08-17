@@ -141,6 +141,8 @@ class DT_Webform_New_Leads_Post_Type
             'comment_status' => 'closed',
             'ping_status' => 'closed',
         ];
+        dt_write_log(__METHOD__);
+        dt_write_log($params);
         foreach ( $params as $key => $value ) {
             $key = sanitize_text_field( wp_unslash( $key ) );
             $value = sanitize_text_field( wp_unslash( $value ) );

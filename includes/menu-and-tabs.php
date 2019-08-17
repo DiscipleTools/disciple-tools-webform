@@ -17,6 +17,7 @@ class DT_Webform_Menu
 {
 
     public $token;
+    public $state;
 
     private static $_instance = null;
 
@@ -43,11 +44,28 @@ class DT_Webform_Menu
      * @since   0.1.0
      */
     public function __construct() {
-        $this->token = DT_Webform::$token;
 
-        add_action( "admin_menu", [ $this, "register_menu" ] );
-        add_action( "admin_enqueue_scripts", [ $this, 'scripts' ] );
-        add_action( 'admin_head', [ $this, 'custom_admin_head' ] );
+        if ( is_admin() ) {
+            global $pagenow;
+
+            $this->token = DT_Webform::$token;
+            $this->state = get_option( 'dt_webform_state' );
+
+            add_action( "admin_menu", [ $this, "register_menu" ] );
+            if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) && is_admin() ) {
+                add_action( "admin_enqueue_scripts", [ $this, 'scripts' ] );
+                add_action( 'admin_head', [ $this, 'custom_admin_head' ] );
+
+                // load mapbox resources
+                if ( $this->state === 'combined' || $this->state === 'home' ) {
+                    if ( ! class_exists( 'DT_Mapbox_API' ) ) {
+                        require_once ( trailingslashit( get_theme_file_path() ) . 'dt-mapping/mapbox-api.php' );
+                    }
+                    DT_Mapbox_API::load_admin_header();
+                }
+                // end mapbox
+            }
+        }
     } // End __construct()
 
     /**
@@ -269,30 +287,25 @@ class DT_Webform_Menu
     }
 
     public function custom_admin_head() {
-        global $pagenow;
-
-        if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) && is_admin() ) {
-
-            /**
-             * Add custom css styles for the dt_webform admin page
-             */
-            ?>
-            <style type="text/css">
-                .float-right {
-                    float: right;
-                }
-                button.button-like-link {
-                    background: none !important;
-                    color: blue;
-                    border: none;
-                    padding: 0 !important;
-                    font: inherit;
-                    /*border is optional*/
-                    cursor: pointer;
-                }
-            </style>
-            <?php
-        }
+        /**
+         * Add custom css styles for the dt_webform admin page
+         */
+        ?>
+        <style type="text/css">
+            .float-right {
+                float: right;
+            }
+            button.button-like-link {
+                background: none !important;
+                color: blue;
+                border: none;
+                padding: 0 !important;
+                font: inherit;
+                /*border is optional*/
+                cursor: pointer;
+            }
+        </style>
+        <?php
     }
 
     /**
@@ -365,9 +378,11 @@ class DT_Webform_Menu
     public function tab_home_settings() {
         // begin columns template
         $this->template( 'begin', 1 );
+
         $this->metabox_select_home_site();
         $this->metabox_auto_approve();
         $this->initialize_plugin_state_metabox();
+
         $this->box_geocoding_source();
 
         $this->template( 'end', 1 );

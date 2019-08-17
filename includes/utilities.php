@@ -395,55 +395,55 @@ class DT_Webform_Utilities {
                 ];
             }
         }
-        $fields['location_grid'] = $locations;
-        $fields['location_lnglat'] = $coordinates;
-
-        dt_write_log($new_lead_meta);
-        dt_write_log($form_meta);
+        if ( isset( $locations['values'] ) && ! empty( $locations['values'] ) ) {
+            $fields['location_grid'] = $locations;
+        }
+        if ( isset( $coordinates['values'] ) && ! empty( $coordinates['values'] ) ) {
+            $fields['location_lnglat'] = $coordinates;
+        }
 
         // custom fields
         foreach ( $new_lead_meta as $lead_key => $lead_value ) {
             if ( 'field_' === substr( $lead_key, 0, 6 ) && ! empty( $lead_value ) ) {
 
-                // send to note
-//                $label = ucfirst( str_replace( '_', ' ', substr( $lead_key, 2 ) ) );
-                $notes[$lead_key] =  $lead_value;
-
-
-
-                // check match to DT custom field
-                $vars = explode( '-', $lead_value ); // 0 - meta_key; 1 - keyed field value
-
+                // unserialize post meta
                 if ( isset( $form_meta[$lead_key] ) ) {
-                    // standard key
                     $field = maybe_unserialize( $form_meta[$lead_key] );
-                    if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
-                        // set field value to custom field
-                        // @todo
-
-                        // text
-                        if ( $field['type'] === 'text' ) {
-
-                        }
-                        //
-                    }
-
-                }
-                else if( isset( $form_meta[$vars[0]] ) ) {
-                    // multi-checkbox
-
-                    // check if mapping to DT enabled
-                    $field = maybe_unserialize( $form_meta[$vars[0]] );
-                    if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
-                        // set field value to custom field
-                        // @todo
-
-
-                    }
-
-
+                } else {
+                    continue;
                 }
 
+                if ( ! isset( $field['type'] ) ) {
+                    continue;
+                }
+
+                // prepare note
+                $label = ucfirst( $field['type'] );
+                $notes[$lead_key] =  $label . ': ' . $lead_value;
+
+                // prepare mapped fields
+                if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
+                    // set field value to custom field
+                    switch( $field['type'] ) {
+                        case 'checkbox':
+                            if ( ! isset( $fields[$field['dt_field']] ) ) {
+                                $fields[$field['dt_field']] = [ 'values' => [] ];
+                            }
+                            $fields[$field['dt_field']]['values'][] = [ 'value' => $field['values'] ];
+                            break;
+
+                        case 'multi_radio':
+                        case 'dropdown':
+                        case 'tel':
+                        case 'email':
+                        case 'text':
+                            $fields[$field['dt_field']] = $lead_value;
+                            break;
+                        default:
+                            continue 2;
+                            break;
+                    }
+                }
             }
         }
 
@@ -454,7 +454,6 @@ class DT_Webform_Utilities {
             }
             $fields['sources']['values'] = [ [ "value" => $form_meta['source'] ] ];
         }
-
 
         // ip address
         if ( ! empty( $new_lead_meta['ip_address'] ) ) {
@@ -486,6 +485,9 @@ class DT_Webform_Utilities {
         if ( ! class_exists( 'Disciple_Tools_Contacts' ) ) {
             return new WP_Error( 'disciple_tools_missing', 'Disciple Tools is missing.' );
         }
+
+        dt_write_log('Pre-Submit Fields');
+        dt_write_log($fields);
 
         // Create contact
         $result = Disciple_Tools_Contacts::create_contact( $fields, $check_permission );

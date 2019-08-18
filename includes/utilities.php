@@ -513,6 +513,11 @@ class DT_Webform_Utilities {
  */
 if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
     function dt_get_simple_post_meta( $post_id ) {
+
+        if ( $map = wp_cache_get( __METHOD__, $post_id ) ) {
+            return $map;
+        }
+
         $map = [];
         if ( ! empty( $post_id ) ) {
             $map         = array_map( function( $a ) {
@@ -520,6 +525,8 @@ if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
             }, get_post_meta( $post_id ) ); // map the post meta
             $map['ID'] = $post_id; // add the id to the array
         }
+
+        wp_cache_set( __METHOD__, $map, $post_id );
 
         return $map;
     }
@@ -531,6 +538,11 @@ if ( ! function_exists( 'dt_get_location_grid_mirror' ) ) {
      * @return array|string
      */
     function dt_get_location_grid_mirror( $url_only = false ) {
+
+        if ( $mirror = wp_cache_get( __METHOD__, $url_only ) ) {
+            return $mirror;
+        }
+
         $mirror = get_option( 'dt_location_grid_mirror' );
         if ( empty( $mirror ) ) {
             $array = [
@@ -541,6 +553,8 @@ if ( ! function_exists( 'dt_get_location_grid_mirror' ) ) {
             update_option( 'dt_location_grid_mirror', $array, true );
             $mirror = $array;
         }
+
+        wp_cache_set( __METHOD__, $mirror, $url_only );
 
         if ( $url_only ) {
             return $mirror['url'];

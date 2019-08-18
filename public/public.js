@@ -45,11 +45,7 @@ function submit_form() {
         url: url + '/wp-json/dt-public/v1/webform/form_submit',
     })
         .done(function (data) {
-            jQuery('#report').append( window.TRANSLATION.success + '<br>');
-            jQuery('.input-text').val('').empty();
-            jQuery('#submit-button').removeAttr('disabled')
-            jQuery('#selected_values').empty()
-            jQuery('.spinner').remove()
+            jQuery('#contact-form').empty().append( window.TRANSLATION.success + '<br>');
         })
         .fail(function (err) {
             jQuery('#report').html('Failed')

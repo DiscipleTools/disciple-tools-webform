@@ -324,7 +324,7 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                         <div class="section">
                                 <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
                                        class="input-label"><?php echo esc_attr( $dt_webform_value[ 'title' ] ) ?></label><br>
-                                <select class="input-text" name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>">
+                                <select class="input-dropdown" name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>">
                                 <?php
                                     if ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' ) {
                                         echo '<option></option>';
@@ -343,17 +343,15 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                     if ( count($list) > 0 ) {
                         ?>
                         <div class="section">
-                            <fieldset>
                                 <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
-                                       class="input-label"><?php echo esc_attr( $dt_webform_value[ 'labels' ] ) ?></label><br>
+                                       class="input-label"><?php echo esc_attr( $dt_webform_value[ 'title' ] ) ?></label><br>
                                 <?php
                                 foreach ( $list as $item ) {
                                     if ( isset( $item['label'] ) && isset( $item['value'] ) ) {
-                                        echo '<span><input type="radio" class="input-radio" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['key'] ) . '">' . esc_html( $item['value'] ) . '</span><br>';
+                                        echo '<span><input type="radio" class="input-radio" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</span><br>';
                                     }
                                 }
                                 ?>
-                            </fieldset>
                         </div>
                         <?php
                     }
@@ -367,7 +365,7 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
                         <input type="checkbox"
                                id="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                                name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
-                               class="input-check" value="<?php echo esc_attr( $dt_webform_value[ 'values' ] ) ?>"
+                               class="input-checkbox" value="<?php echo esc_attr( $dt_webform_value[ 'values' ] ) ?>"
                                 <?php echo esc_attr( ($dt_webform_value[ 'required' ] === 'yes') ? 'required' : '' ) ?>
                         />
                         <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="input-label">

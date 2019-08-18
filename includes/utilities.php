@@ -23,6 +23,10 @@ class DT_Webform_Utilities {
 
         $meta['form_title'] = get_the_title( $post_id );
 
+        foreach ( $meta as $key => $value ) {
+            $meta[$key] = maybe_unserialize( $value );
+        }
+
         wp_cache_set( 'get_form_meta', $meta, $token );
 
         return $meta;
@@ -75,6 +79,7 @@ class DT_Webform_Utilities {
 
         return $ordered_fields;
     }
+
 
 
     public static function get_theme( string $theme, string $token ) {

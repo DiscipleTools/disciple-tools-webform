@@ -142,11 +142,6 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function load_info_meta_box( $post ) {
         $this->meta_box_content( 'info' ); // prints
-
-        if (  get_post_meta( $post->ID, 'location_select', true ) === 'click_map' && ! get_option( 'dt_mapbox_api_key' ) ) {
-            echo '<div style="color:red;">You need to establish you Mapbox.com key. <a href="'.admin_url() .'admin.php?page=dt_mapping_module&tab=geocoding">Go to MapBox settings</a></div>';
-            update_post_meta( $post->ID, 'location_select', 'none' );
-        }
     }
 
     public function load_localize_meta_box() {
@@ -495,16 +490,7 @@ class DT_Webform_Active_Form_Post_Type
         'default'     => $this->form_types(),
         'section'     => 'info',
         ];
-        $fields['location_select'] = [
-            'name'        => __( 'Map', 'dt_webform' ),
-            'description' => '',
-            'type'        => 'key_select',
-            'default'     => [
-                'none' => 'None',
-                'click_map' => 'Click Map'
-            ],
-            'section'     => 'info',
-        ];
+        
 
         $fields['assigned_to'] = [
             'name'        => __( 'Assign To User', 'dt_webform' ),
@@ -886,15 +872,23 @@ class DT_Webform_Active_Form_Post_Type
                 foreach( $fields as $key => $field ) {
                     ?>
                     <tr>
-                        <td><?php echo esc_html( $field['name'] ) ?><input type="hidden" name="<?php echo esc_attr( $key ) ?>[name]" value="<?php echo esc_html( $field['label'] ) ?>" /></td>
+                        <td><?php echo esc_html( $field['name'] ) ?><input type="hidden" style="width:100%;" name="<?php echo esc_attr( $key ) ?>[name]" value="<?php echo esc_html( $field['label'] ) ?>" /></td>
                         <td>
-                            <input type="text" name="<?php echo esc_attr( $key ) ?>[label]" placeholder="Enter a label" value="<?php echo esc_html( $field['label'] ) ?>" />
+                            <?php if ( 'header_description_field' === $key ) : ?>
+                                <textarea style="width:100%;" name="<?php echo esc_attr( $key ) ?>[label]"><?php echo esc_html( $field['label'] ) ?></textarea>
+                            <?php else : ?>
+                                <input style="width:100%;" type="text" name="<?php echo esc_attr( $key ) ?>[label]" placeholder="Enter a label" value="<?php echo esc_html( $field['label'] ) ?>" />
+                            <?php endif; ?>
                         </td>
                         <td>
-                            <select name="<?php echo esc_attr( $key ) ?>[required]">
-                                <option value="no" <?php echo ( $field['required'] === 'no' ) ? 'selected' : '' ?>>No</option>
-                                <option value="yes" <?php echo ( $field['required'] === 'yes' ) ? 'selected' : '' ?>>Yes</option>
-                            </select>
+                            <?php if ( 'header_description_field' === $key || 'header_title_field' === $key ) : ?>
+                                <input type="hidden" name="<?php echo esc_attr( $key ) ?>[required]" value="no" />
+                            <?php else : ?>
+                                <select name="<?php echo esc_attr( $key ) ?>[required]">
+                                    <option value="no" <?php echo ( $field['required'] === 'no' ) ? 'selected' : '' ?>>No</option>
+                                    <option value="yes" <?php echo ( $field['required'] === 'yes' ) ? 'selected' : '' ?>>Yes</option>
+                                </select>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <select name="<?php echo esc_attr( $key ) ?>[hidden]">
@@ -1021,6 +1015,7 @@ class DT_Webform_Active_Form_Post_Type
                                     <?php
                                     break;
 
+                                case 'note':
                                 case 'header':
                                     ?>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
@@ -1030,7 +1025,6 @@ class DT_Webform_Active_Form_Post_Type
                                     <td></td>
                                     <?php
                                     break;
-
                                 case 'description':
                                     ?>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
@@ -1045,7 +1039,19 @@ class DT_Webform_Active_Form_Post_Type
                                     <td></td>
                                     <?php
                                     break;
-
+                                case 'map':
+                                    ?>
+                                    <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
+                                        <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
+                                    </td>
+                                    <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
+                                        <select name="<?php echo esc_attr( $unique_key ) ?>[values]">
+                                            <option value="click_map" selected>Click Map</option>
+                                        </select>
+                                    </td>
+                                    <td></td>
+                                    <?php
+                                    break;
 
                                 // empty elements
                                 case 'divider':
@@ -1125,6 +1131,8 @@ class DT_Webform_Active_Form_Post_Type
                                     <option value="tel"><?php echo esc_attr__( 'Phone', 'dt_webform' ) ?></option>
                                     <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>
                                     <option value="checkbox"><?php echo esc_attr__( 'Checkbox', 'dt_webform' ) ?></option>
+                                    <option value="map"><?php echo esc_attr__( 'Map', 'dt_webform' ) ?></option>
+                                    <option value="note"><?php echo esc_attr__( 'Note', 'dt_webform' ) ?></option>
                                     <option value="dropdown"><?php echo esc_attr__( 'Dropdown', 'dt_webform' ) ?></option>
                                     <option value="multi_radio"><?php echo esc_attr__( 'Multi-Select Radio', 'dt_webform' ) ?></option>
                                </select>
@@ -1161,6 +1169,9 @@ class DT_Webform_Active_Form_Post_Type
                                     rows="5"
                                     name="field_<?php echo esc_attr( $unique_key ) ?>[values]"
                                     placeholder="One value per line. Underscores allowed. No spaces or special characters." /></textarea>`
+                let map_select = `<select name="field_<?php echo esc_attr( $unique_key ) ?>[values]">
+                                        <option value="click_map" selected>Click Map</option>
+                                    </select>`
 
                 labels.html(single_label)
                 values.html(single_value)
@@ -1169,41 +1180,50 @@ class DT_Webform_Active_Form_Post_Type
                 jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').on('change', function(){
                     let type = jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').val()
 
-                    if ( type === 'multi_radio' ) {
-                        labels.empty().append(multi_title).append('<br>').append(multi_label)
-                        values.empty().append(first_line_default).append('<br>').append(multi_value)
-                        dt.empty().html(dt_field)
+                    switch ( type ) {
+                        case 'multi_radio':
+                            labels.empty().append(multi_title).append('<br>').append(multi_label)
+                            values.empty().append(first_line_default).append('<br>').append(multi_value)
+                            dt.empty().html(dt_field)
+                            break;
+                        case 'dropdown':
+                            labels.empty().append(multi_title).append('<br>').append(multi_label)
+                            values.empty().append(first_line_default).append('<br>').append(multi_value)
+                            dt.empty().html(dt_field)
+                            break;
+                        case 'checkbox':
+                            labels.empty().html(single_label)
+                            values.empty().html(single_value)
+                            dt.empty().html(dt_field)
+                            break;
+                        case 'note':
+                        case 'header':
+                            labels.empty().html(single_label)
+                            values.empty()
+                            dt.empty()
+                            break;
+                        case 'description':
+                            labels.empty().html(multi_label)
+                            values.empty()
+                            dt.empty()
+                            break;
+                        case 'divider':
+                            labels.empty()
+                            values.empty()
+                            dt.empty()
+                            break;
+                        case 'map':
+                            labels.empty().html(single_label)
+                            values.empty().html(map_select)
+                            dt.empty()
+                            break;
+                        default:
+                            labels.empty().html(single_label)
+                            values.empty().html(single_value)
+                            dt.empty().html(dt_field)
+                            break;
                     }
-                    else if ( type === 'dropdown' ) {
-                        labels.empty().append(multi_title).append('<br>').append(multi_label)
-                        values.empty().append(first_line_default).append('<br>').append(multi_value)
-                        dt.empty().html(dt_field)
-                    }
-                    else if ( type === 'checkbox' ) {
-                        labels.empty().html(single_label)
-                        values.empty().html(single_value)
-                        dt.empty().html(dt_field)
-                    }
-                    else if ( type === 'header' ) {
-                        labels.empty().html(single_label)
-                        values.empty()
-                        dt.empty()
-                    }
-                    else if ( type === 'description' ) {
-                        labels.empty().html(multi_label)
-                        values.empty()
-                        dt.empty()
-                    }
-                    else if ( type === 'divider') {
-                        labels.empty()
-                        values.empty()
-                        dt.empty()
-                    }
-                    else {
-                        labels.empty().html(single_label)
-                        values.empty().html(single_value)
-                        dt.empty().html(dt_field)
-                    }
+
                 })
             }
 
@@ -1245,8 +1265,7 @@ class DT_Webform_Active_Form_Post_Type
             }
         }
 
-        $array = self::filter_for_core_fields( $_POST );
-        dt_write_log($array);
+        $array = $this->filter_for_core_fields( $_POST );
 
         foreach ( $array as $key => $value ) {
 
@@ -1311,8 +1330,17 @@ class DT_Webform_Active_Form_Post_Type
         }, ARRAY_FILTER_USE_KEY );
     }
 
-    public static function filter_for_core_fields( $array ) {
+
+    public function filter_for_core_fields( $array ) {
+
         return array_filter( $array, function( $key) {
+            // @todo write dry
+            if ( strpos( $key, 'header_title_field' ) === 0 ) {
+                return true;
+            }
+            if ( strpos( $key, 'header_description_field' ) === 0 ) {
+                return true;
+            }
             if ( strpos( $key, 'name_field' ) === 0 ) {
                 return true;
             }

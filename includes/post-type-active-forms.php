@@ -490,7 +490,7 @@ class DT_Webform_Active_Form_Post_Type
         'default'     => $this->form_types(),
         'section'     => 'info',
         ];
-        
+
 
         $fields['assigned_to'] = [
             'name'        => __( 'Assign To User', 'dt_webform' ),
@@ -872,7 +872,7 @@ class DT_Webform_Active_Form_Post_Type
                 foreach( $fields as $key => $field ) {
                     ?>
                     <tr>
-                        <td><?php echo esc_html( $field['name'] ) ?><input type="hidden" style="width:100%;" name="<?php echo esc_attr( $key ) ?>[name]" value="<?php echo esc_html( $field['label'] ) ?>" /></td>
+                        <td><?php echo esc_html( $field['name'] ) ?><input type="hidden" style="width:100%;" name="<?php echo esc_attr( $key ) ?>[name]" value="<?php echo esc_html( $field['name'] ) ?>" /></td>
                         <td>
                             <?php if ( 'header_description_field' === $key ) : ?>
                                 <textarea style="width:100%;" name="<?php echo esc_attr( $key ) ?>[label]"><?php echo esc_html( $field['label'] ) ?></textarea>

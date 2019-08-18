@@ -157,6 +157,12 @@ class DT_Webform_Utilities {
                 break;
             case 'wide-heavy':
                 $css =  '
+                    #title {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                    }
+                    #description {}
                     #contact-form {}
                     .section {
                         padding:10px 0;
@@ -174,11 +180,7 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-                    p.title {
-                        font-size: 2em;
-                        font-weight: bolder;
-                        font-family: sans-serif;
-                    }
+                    
                     label.error {
                         color: red;
                         font-size: .8em;
@@ -443,6 +445,9 @@ class DT_Webform_Utilities {
                         case 'email':
                         case 'text':
                             $fields[$field['dt_field']] = $lead_value;
+                            break;
+                        case 'note':
+                            $notes[$lead_key] = $field['label'] . ': ' . esc_html( $lead_value );
                             break;
                         default:
                             continue 2;

@@ -68,43 +68,47 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
     // @codingStandardsIgnoreEnd ?>
 
     <style>
-        #email2 { display:none; }
+        .email { display:none; }
         <?php echo esc_attr( DT_Webform_Utilities::get_theme( $dt_webform_meta['theme'] ?? '', $dt_webform_token ) ) ?>
     </style>
 
 </head>
 <body>
-
-
-<p id="title" class="title" <?php echo ( isset( $dt_webform_core_fields['header_title_field']['hidden'] ) &&  $dt_webform_core_fields['header_title_field']['hidden'] === 'yes' ) ? 'style="display:none;" ' : ''; ?>><?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?></p>
-<p id="title" class="description" <?php echo ( isset( $dt_webform_core_fields['header_description_field']['hidden'] ) &&  $dt_webform_core_fields['header_description_field']['hidden'] === 'yes' ) ? 'style="display:none;" ' : ''; ?>><?php echo esc_html( $dt_webform_core_fields['header_description_field']['label'] ?? '' ) ?></p>
-
 <form id="contact-form" action="">
-
     <input type="hidden" id="token" name="token" value="<?php echo esc_attr( $dt_webform_token ) ?>"/>
     <input type="hidden" id="ip_address" name="ip_address" value="<?php echo esc_attr( DT_Webform::get_real_ip_address() ?? '' ) ?>"/>
 
+    <div id="title" <?php echo ( isset( $dt_webform_core_fields['header_title_field']['hidden'] ) &&  $dt_webform_core_fields['header_title_field']['hidden'] === 'yes' ) ? 'style="display:none;" ' : ''; ?>>
+        <?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?>
+    </div>
+    <div id="description"  <?php echo ( isset( $dt_webform_core_fields['header_description_field']['hidden'] ) &&  $dt_webform_core_fields['header_description_field']['hidden'] === 'yes' ) ? 'style="display:none;" ' : ''; ?>>
+        <?php echo esc_html( $dt_webform_core_fields['header_description_field']['label'] ?? '' ) ?>
+    </div>
 
     <?php if ( $dt_webform_core_fields['name_field']['hidden'] !== 'yes' ) : ?>
-        <div class="section">
+        <div id="section-name" class="section">
             <label for="name" class="input-label"><?php echo isset( $dt_webform_meta['name'] ) ? esc_attr( $dt_webform_meta['name'] ) : 'Name' ?></label><br>
             <input type="text" id="name" name="name" class="input-text" value="" required/><br>
         </div>
     <?php endif; ?>
 
     <?php if ( $dt_webform_core_fields['phone_field']['hidden'] !== 'yes' ) : ?>
-        <div class="section">
+        <div id="section-phone" class="section">
             <label for="phone" class="input-label"><?php echo isset( $dt_webform_meta['phone'] ) ? esc_attr( $dt_webform_meta['phone'] ) : 'Phone' ?></label><br>
             <input type="tel" id="phone" name="phone" class="input-text" value="" /><br>
         </div>
     <?php endif; ?>
 
-    <input type="email" id="email2" name="email2" class="input-text" value=""/>
 
     <?php if ( $dt_webform_core_fields['email_field']['hidden'] !== 'yes' ) : ?>
-        <div class="section">
+        <div id="section-email" class="section">
             <label for="email" class="input-label"><?php echo isset( $dt_webform_meta['email'] ) ? esc_attr( $dt_webform_meta['email'] ) : 'Email' ?></label><br>
+            <input type="email" id="email2" name="email2" class="input-text email" value=""/>
             <input type="email" id="email" name="email" class="input-text" value=""/><br>
+        </div>
+    <?php else : ?>
+        <div id="section-email" class="section email">
+            <input type="email" id="email2" name="email2" class="input-text email" value=""/>
         </div>
     <?php endif; ?>
 
@@ -129,10 +133,13 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
                     $list = DT_Webform_Active_Form_Post_Type::match_labels_with_values( $dt_webform_value['labels'], $dt_webform_value['values'] );
                     if ( count($list) > 0 ) {
                         ?>
-                        <div class="section">
+                        <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                                 <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
-                                       class="input-label"><?php echo esc_attr( $dt_webform_value[ 'title' ] ) ?></label><br>
-                                <select class="input-dropdown" name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>">
+                                       class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
+                                    <?php echo esc_attr( $dt_webform_value[ 'title' ] ) ?>
+                                </label>
+                            <br>
+                                <select class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?> <?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>">
                                 <?php
                                     if ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' ) {
                                         echo '<option></option>';
@@ -150,13 +157,13 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
                     $list = DT_Webform_Active_Form_Post_Type::match_labels_with_values( $dt_webform_value['labels'], $dt_webform_value['values'] );
                     if ( count($list) > 0 ) {
                         ?>
-                        <div class="section">
+                        <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                                 <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
-                                       class="input-label"><?php echo esc_attr( $dt_webform_value[ 'title' ] ) ?></label><br>
+                                       class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value[ 'title' ] ) ?></label><br>
                                 <?php
                                 foreach ( $list as $item ) {
                                     if ( isset( $item['label'] ) && isset( $item['value'] ) ) {
-                                        echo '<span><input type="radio" class="input-radio" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</span><br>';
+                                        echo '<span><input type="radio" class="input-'. esc_attr( $dt_webform_value['type'] ) . ' ' . esc_attr( $dt_webform_value[ 'key'] ) .'" name="' . esc_attr( $dt_webform_value[ 'key' ] ) . '" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</span><br>';
                                     }
                                 }
                                 ?>
@@ -169,15 +176,16 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
                 case 'checkbox':
                     // text box
                     ?>
-                    <div class="section">
+                    <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                         <input type="checkbox"
                                id="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                                name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
-                               class="input-checkbox" value="<?php echo esc_attr( $dt_webform_value[ 'values' ] ) ?>"
+                               class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?> <?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                               value="<?php echo esc_attr( $dt_webform_value[ 'values' ] ) ?>"
                                 <?php echo esc_attr( ($dt_webform_value[ 'required' ] === 'yes') ? 'required' : '' ) ?>
                         />
-                        <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="input-label">
-                            <?php echo esc_html( $dt_webform_value[ 'labels' ] ) ?></label>
+                        <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                               class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value[ 'labels' ] ) ?></label>
                     </div>
                     <?php
                     break;
@@ -186,13 +194,15 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
                 case 'email':
                 case 'text':
                     ?>
-                    <div class="section">
+                    <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                         class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?> section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>">
                         <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
-                               class="input-label"><?php echo esc_attr( $dt_webform_value[ 'labels' ] ) ?></label><br>
+                               class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value[ 'labels' ] ) ?></label>
+                        <br>
                         <input type="<?php echo esc_attr( $dt_webform_value[ 'type' ] ) ?>"
                                id="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                                name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
-                               class="input-text"
+                               class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?> <?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                                value="" <?php echo esc_attr( $dt_webform_value[ 'required' ] == 'yes' ? 'required' : '' ) ?>/>
                     </div>
                     <?php
@@ -201,21 +211,25 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
                 case 'header':
                 case 'description':
                     ?>
-                    <div class="section">
+                    <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                         class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?> section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>">
                         <?php echo esc_attr( $dt_webform_value[ 'labels' ] ) ?>
                     </div>
                     <?php
                     break;
 
                 case 'divider':
-                    ?><hr><?php
+                    ?><hr class="hr hr-<?php echo esc_attr( $dt_webform_value[ 'type' ] ) ?> hr-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"><?php
                     break;
 
                 case 'note':
                     ?>
-                    <div class="section">
-                        <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="input-label"><?php echo esc_html( $dt_webform_value['labels'] ) ?? '' ?></label><br>
-                        <textarea name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="input-textarea"></textarea>
+                    <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>" class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
+                        <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                               class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value['labels'] ) ?? '' ?></label>
+                        <br>
+                        <textarea name="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                                  class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?> <?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"></textarea>
                     </div>
                     <?php
 
@@ -225,7 +239,8 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
 
                     if ( $dt_webform_value[ 'values' ] === 'click_map' ) {
                         ?>
-                        <div class="section">
+                        <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                             class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?> <?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>">
                             <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
                             <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
 

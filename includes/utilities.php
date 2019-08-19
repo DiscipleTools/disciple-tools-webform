@@ -82,7 +82,12 @@ class DT_Webform_Utilities {
 
 
 
-    public static function get_theme( string $theme, string $token ) {
+    public static function get_theme( string $theme, string $token = null ) {
+
+        $meta = self::get_form_meta( $token );
+        if ( empty( $meta ) ) {
+            $meta = [];
+        }
 
         // Unique styles
         switch ( $theme ) {
@@ -116,6 +121,10 @@ class DT_Webform_Utilities {
                 break;
             case 'heavy':
                 $css =   '
+                    #wrapper {
+                        margin: auto;
+                        max-width: 1000px;
+                    }
                     #contact-form {}
                     .section {
                         padding-bottom:10px;
@@ -157,74 +166,194 @@ class DT_Webform_Utilities {
                 break;
             case 'wide-heavy':
                 $css =  '
-                    #title {
-                        font-size: 2em;
-                        font-weight: bolder;
-                        font-family: sans-serif;
+                    #wrapper {
+                        margin: auto;
+                        max-width: 1000px;
                     }
-                    #description {}
                     #contact-form {}
-                    .section {
-                        padding:10px 0;
-                        width: 100%;
-                    }
-                    fieldset {
-                        border: 0px solid white;
-                    }
-                    #name {}
-                    #phone {}
-                    #email {}
-                    #comments {}
-                    textarea.input-text {}
-                    button.submit-button {
-                        padding: 1em;
-                        font-weight: bolder;
-                    }
-                    
-                    label.error {
-                        color: red;
-                        font-size: .8em;
-                    }
                     .input-text {
                         padding: .5em;
                         font-size: 1em;
                         width: 100%;
                     }
-                    .input-check {
-                        padding: .5em;
-                        font-size: 1em;
-                    }
-                    .input-radio {
-                        padding: .5em;
-                        font-size: 1em;
-                    }
-                    textarea.input-text {
+                    .input-textarea {
                         height:80px;
                         padding: .5em;
                         font-size: 1.2em;
                         border: .5px solid #ccc;
                     }
+                    .input-checkbox {}
+                    .input-multi_radio {
+                        font-size:1.1em;
+                    }
+                    .span-radio {
+                        float:left;
+                        padding:5px;
+                        
+                    }
+                    .input-dropdown {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
+                    }
+                    .input-tel {
+                        padding: .5em;
+                        font-size: 1.2em;
+                        line-height: 1.5em;
+                        width: 100%;
+                    }
+                    .input-email {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    .input-note {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    button.submit-button {
+                        padding: 1em;
+                        font-weight: bolder;
+                    }
+                    
+                    .hr {}
+                    .hr-divider {}
+                    
+                    label.error {
+                        color: red;
+                        font-size: .8em;
+                    }
+                    
                     .input-label {
                         font-size: 1.2em;
                         font-family: sans-serif;
                     }
+                    .label-dropdown {}
+                    .label-multi_radio {
+                        margin-bottom:10px;
+                    }
+                    
+                    .section {
+                        padding: 10px 0;
+                        width: 100%;
+                    }
+                    .section-dropdown {}
+                    .section-multi_radio {}
+                    .section-checkbox {
+                        padding:0;
+                    }
+                    .section-header {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                        padding-top: .5em;
+                    }
+                    .section-map {
+                        margin: 10px 0 ;
+                        padding: 20px 0;
+                    }
+                    
+                    #title {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                        padding-top: .5em;
+                    }
+                    #description {
+                        padding-bottom: 1em;
+                    }
                     ';
                 break;
             default:
-                return '';
+                $css = '
+                    // FORM WRAPPER
+                    #wrapper {}
+                    #contact-form {}
+                    
+                    // INPUT CLASSES
+                    .input-text {}
+                    .input-textarea {}
+                    .input-checkbox {}
+                    .input-multi_radio {}
+                    .span-radio {}
+                    .input-tel {}
+                    .input-email {}
+                    .input-dropdown {}
+                    .input-note {}
+                    button.submit-button {}
+                    
+                    // DIVIDER CLASSES
+                    .hr {}
+                    .hr-divider {}
+                    
+                    // ERROR CLASSES
+                    label.error {}
+                    
+                    // LABELS
+                    .input-label {}
+                    .label-dropdown {}
+                    .label-multi_radio {}
+                    .label-checkbox {}
+                    .label-tel {}
+                    .label-email {}
+                    .label-text {}
+                    .label-note {}
+                    
+                    // SECTION CLASSES
+                    .section {}
+                    .section-dropdown {}
+                    .section-multi_radio {}
+                    .section-checkbox {}
+                    .section-tel {}
+                    .section-email {}
+                    .section-text {}
+                    .section-header {}
+                    .section-description {}
+                    .section-note {}
+                    .section-map {}
+                    
+                    // CORE SECTION AND INPUTS
+                    #title {}
+                    #description {}
+                    #section-name {}
+                    #section-phone {}
+                    #section-email {}
+                    #name {}
+                    #phone {}
+                    #email {}
+                    
+                    // EXTRA SECTIONS AND INPUTS
+                    ';
+
+                $ids = '';
+                foreach ( $meta as $key => $value ) {
+                    if ( substr( $key, 0, 5 ) === 'field' ) {
+                        if ( empty( $value['labels'] ) ) {
+                            $value['labels'] = 'Divider';
+                        }
+                        $ids .= '// ' . esc_html( $value['labels'] ) . PHP_EOL;
+                        $ids .= '#section-' . esc_attr( $key ) . ' {}' . PHP_EOL;
+                        $ids .= '#' . esc_attr( $key ) . ' {}' . PHP_EOL . PHP_EOL;
+                    }
+                }
+
+                return $css . $ids;
                 break;
 
 
         }
 
-        $meta = self::get_form_meta( $token );
-
         /**
          * Location Styles
          */
         $location_styles = '';
-        if ( isset( $meta['location_select'] ) && $meta['location_select'] === 'click_map') {
-            $location_styles = '
+        foreach( $meta as $key => $value ) {
+            if ( substr( $key, 0, 5 ) === 'field' && $value['type'] === 'map' ) {
+                $location_styles = '
                 #geocoder {
                     padding-bottom: 10px;
                 }
@@ -276,6 +405,7 @@ class DT_Webform_Utilities {
                     padding-bottom: 15px;
                 }
             ';
+            }
         }
 
         /**
@@ -286,8 +416,10 @@ class DT_Webform_Utilities {
             $custom_css = $meta['custom_css'];
         }
 
+        $css = $location_styles . $css . $custom_css;
+        $css = trim( str_replace( PHP_EOL, '', str_replace('  ', '', $css ) ) );
 
-        return $location_styles . $css . $custom_css;
+        return $css;
     }
 
     /**

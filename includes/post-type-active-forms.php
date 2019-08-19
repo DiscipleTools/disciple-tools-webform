@@ -130,10 +130,11 @@ class DT_Webform_Active_Form_Post_Type
         add_meta_box( $this->post_type . '_appearance', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_core_fields', __( 'Core Fields', 'dt_webform' ), [ $this, 'load_core_fields_metabox' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
-        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'low' );
+        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'high' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
-        add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'side', 'low' );
+        add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'side', 'high' );
         add_meta_box( $this->post_type . '_localize', __( 'Localize', 'dt_webform' ), [ $this, 'load_localize_meta_box' ], $this->post_type, 'normal', 'low' );
+        add_meta_box( $this->post_type . '_css', __( 'Form Styles', 'dt_webform' ), [ $this, 'load_form_styles_meta_box' ], $this->post_type, 'side', 'low' );
 
     }
 
@@ -142,6 +143,13 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function load_info_meta_box( $post ) {
         $this->meta_box_content( 'info' ); // prints
+    }
+
+    public function load_form_styles_meta_box( $post ) {
+
+        $css = DT_Webform_Utilities::get_theme( 'get-default-css', get_post_meta( $post->ID, 'token', true ) );
+        echo nl2br($css);
+
     }
 
     public function load_localize_meta_box() {
@@ -1055,6 +1063,7 @@ class DT_Webform_Active_Form_Post_Type
 
                                 // empty elements
                                 case 'divider':
+                                case 'spacer':
                                 default:
                                     ?>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
@@ -1127,11 +1136,12 @@ class DT_Webform_Active_Form_Post_Type
                                     <option value="header"><?php echo esc_attr__( 'Section Header', 'dt_webform' ) ?></option>
                                     <option value="description"><?php echo esc_attr__( 'Section Description', 'dt_webform' ) ?></option>
                                     <option value="divider"><?php echo esc_attr__( 'Section Divider', 'dt_webform' ) ?></option>
+                                    <option value="spacer"><?php echo esc_attr__( 'Section Spacer', 'dt_webform' ) ?></option>
                                     <option value="text"><?php echo esc_attr__( 'Text', 'dt_webform' ) ?></option>
                                     <option value="tel"><?php echo esc_attr__( 'Phone', 'dt_webform' ) ?></option>
                                     <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>
                                     <option value="checkbox"><?php echo esc_attr__( 'Checkbox', 'dt_webform' ) ?></option>
-                                    <option value="map"><?php echo esc_attr__( 'Map', 'dt_webform' ) ?></option>
+                                    <?php if ( get_option( 'dt_webform_state' ) === 'combined') : ?><option value="map"><?php echo esc_attr__( 'Map', 'dt_webform' ) ?></option><?php endif; ?>
                                     <option value="note"><?php echo esc_attr__( 'Note', 'dt_webform' ) ?></option>
                                     <option value="dropdown"><?php echo esc_attr__( 'Dropdown', 'dt_webform' ) ?></option>
                                     <option value="multi_radio"><?php echo esc_attr__( 'Multi-Select Radio', 'dt_webform' ) ?></option>
@@ -1208,6 +1218,11 @@ class DT_Webform_Active_Form_Post_Type
                             dt.empty()
                             break;
                         case 'divider':
+                            labels.empty()
+                            values.empty()
+                            dt.empty()
+                            break;
+                        case 'spacer':
                             labels.empty()
                             values.empty()
                             dt.empty()

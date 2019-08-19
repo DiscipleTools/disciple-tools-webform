@@ -379,11 +379,15 @@ class DT_Webform_Menu
         // begin columns template
         $this->template( 'begin', 1 );
 
-        $this->metabox_select_home_site();
+        if ( $this->state === 'home' ) {
+            $this->metabox_select_home_site();
+        }
         $this->metabox_auto_approve();
         $this->initialize_plugin_state_metabox();
 
-        $this->box_geocoding_source();
+        if ( $this->state === 'combined' ) {
+            $this->box_geocoding_source();
+        }
 
         $this->template( 'end', 1 );
     }
@@ -516,7 +520,7 @@ class DT_Webform_Menu
 
         // Get status of auto approve
         $options = get_option( 'dt_webform_options' );
-        if ( ! get_option( 'dt_webform_site_link' ) ) {
+        if ( $this->state ==='remote' && ! get_option( 'dt_webform_site_link' ) ) {
             DT_Webform::set_auto_approve_to_false();
             $options['auto_approve'] = false;
         }

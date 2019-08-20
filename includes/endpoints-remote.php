@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * DT_Webform_Remote_Endpoints
  *
@@ -7,9 +8,6 @@
  * @package    DT_Webform
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
 
 /**
  * Initialize instance
@@ -77,6 +75,7 @@ class DT_Webform_Remote_Endpoints
      * @return bool|\WP_Error
      */
     public function form_submit( WP_REST_Request $request ){
+        dt_write_log( __METHOD__ );
         $params = $request->get_params();
 
         // Honeypot
@@ -99,7 +98,7 @@ class DT_Webform_Remote_Endpoints
         }
 
         // Insert new lead
-        $status = DT_Webform_New_Leads_Post_Type::insert_post( $params );
+        $status = DT_Webform_Utilities::insert_post( $params );
 
         // Handle error and add form title
         if ( is_wp_error( $status ) ) {

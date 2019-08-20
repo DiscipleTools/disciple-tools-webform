@@ -28,10 +28,13 @@ function submit_form() {
     jQuery('#submit-button-container').append(window.SETTINGS.spinner)
 
     let url = get_url()
-    let $inputs = jQuery(':input');
     let data = {};
-    $inputs.each(function() {
+
+    jQuery(':input:not([type=checkbox])').each(function() {
         data[this.name] = jQuery(this).val();
+    });
+    jQuery(':input[type=checkbox]:checked').each(function() {
+      data[this.name] = jQuery(this).val();
     });
 
     return jQuery.ajax({
@@ -42,10 +45,7 @@ function submit_form() {
         url: url + '/wp-json/dt-public/v1/webform/form_submit',
     })
         .done(function (data) {
-            jQuery('#report').append( window.TRANSLATION.success + '<br>');
-            jQuery('.input-text').val('').empty();
-            jQuery('#submit-button').removeAttr('disabled')
-            jQuery('.spinner').remove()
+            jQuery('#contact-form').empty().append( window.TRANSLATION.success + '<br>');
         })
         .fail(function (err) {
             jQuery('#report').html('Failed')

@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * Administrative tables for the plugin
  */
@@ -71,14 +72,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
             case 'description':
                 return get_metadata( 'post', $item->ID, 'description', true );
             case 'embed':
-                $width = get_metadata( 'post', $item->ID, 'width', true );
-                $height = get_metadata( 'post', $item->ID, 'height', true );
-                $token = get_metadata( 'post', $item->ID, 'token', true );
-                $site = dt_webform()->public_uri;
-
-                $code = '<textarea cols="30" rows="7" id="embed-'.$item->ID.'" style="display:none;"><iframe src="'. esc_attr( $site ) .'form.php?token='. esc_attr( $token )
-                .'" width="'. esc_attr( $width ) .'px" height="'. esc_attr( $height ) .'px"></iframe></textarea></span>';
-
+                $code = '<textarea cols="30" rows="5" id="embed-'.$item->ID.'" style="display:none;width:100%">'. DT_Webform_Active_Form_Post_Type::instance()->embed_code( $item->ID ).'</textarea></span>';
                 return $code;
             case 'if_coloumn_name_is_field_name':
                 return $item->{$column_name};
@@ -217,18 +211,12 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
                 return '';
 
             case 'source':
-                $token = get_post_meta( $item->ID, 'token', true );
-                $args = array(
-                'meta_key' => 'token',
-                'meta_value' => $token,
-                'post_type' => 'dt_webform_forms',
-                );
-                $source = new WP_Query( $args );
-                if ( $source->found_posts < 1 ) {
-                    return __( 'No longer available', 'dt_webform' );
+                $title = get_post_meta( $item->ID, 'form_title', true );
+                if ( ! $title ) {
+                    return __( 'Not reported', 'dt_webform' );
                 }
-                print '<a href="' . esc_attr( admin_url() ) .'post.php?post='. esc_attr( $source->posts[0]->ID ).'&action=edit">' . esc_attr( $source->posts[0]->post_title ) . '</a>';
-                return '';
+
+                return esc_html( $title );
 
             case 'date':
                 return $item->post_date;
@@ -318,7 +306,7 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
 
             foreach ( $selected_records as $selected_record ) {
 
-                $result = DT_Webform_Home::create_contact_record( $selected_record );
+                $result = DT_Webform_Utilities::create_contact_record( $selected_record );
 
                 if ( is_wp_error( $result ) ) {
                     dt_write_log( 'process_bulk_action()' );
@@ -330,14 +318,14 @@ class DT_Webform_New_Leads_List extends WP_List_Table {
         if ( 'transfer' === $this->current_action() ) {
             if ( isset( $_GET['form'] ) ) {
                 $selected_records = array_map( 'sanitize_key', wp_unslash( $_GET['form'] ) );
-                DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
+                DT_Webform_Utilities::trigger_transfer_of_new_leads( $selected_records );
             }
         }
     }
 
     public function prepare_items( $token = null ) {
 
-        $per_page = 10;
+        $per_page = 100;
         $order = ( !empty( $_REQUEST['order'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'asc'; //If no order, default to asc
         $paged = ( !empty( $_REQUEST['paged'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['paged'] ) ) : '1'; //If no order, default to asc
 

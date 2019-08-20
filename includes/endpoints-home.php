@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * DT_Webform_Home_Endpoints
  *
@@ -7,9 +8,6 @@
  * @package    DT_Webform
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
 
 /**
  * Initialize instance
@@ -76,6 +74,7 @@ class DT_Webform_Home_Endpoints
      * @return array|\WP_Error
      */
     public function transfer_collection( WP_REST_Request $request ) {
+        dt_write_log( __METHOD__ );
 
         $params = $request->get_params();
         $site_key = Site_Link_System::verify_transfer_token( $params['transfer_token'] );
@@ -85,7 +84,7 @@ class DT_Webform_Home_Endpoints
 
                 $old_records = [];
                 foreach ( $params['selected_records'] as $record ) {
-                    $result = DT_Webform_New_Leads_Post_Type::insert_post( $record );
+                    $result = DT_Webform_Utilities::insert_post( $record );
 
                     if ( is_wp_error( $result ) || empty( $result ) ) {
                         $error[] = new WP_Error( 'failed_insert', 'Failed record ' . $record['ID'] );

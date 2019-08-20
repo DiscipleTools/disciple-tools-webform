@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * DT_Webform_New_Leads_Post_Type
  *
@@ -12,6 +13,7 @@ DT_Webform_New_Leads_Post_Type::instance(); // Initialize instance
 class DT_Webform_New_Leads_Post_Type
 {
     public $post_type;
+    public static $form_meta;
     /**
      * DT_Webform_New_Leads_Post_Type The single instance of DT_Webform_New_Leads_Post_Type.
      *
@@ -111,48 +113,19 @@ class DT_Webform_New_Leads_Post_Type
         if ( $post->post_type === $this->post_type ) {
             $options = get_option( 'dt_webform_options' );
 
-            if ( ! get_option( 'dt_webform_site_link' ) ) {
-                DT_Webform_Settings::set_auto_approve_to_false();
-                $options['auto_approve'] = false;
-            } elseif ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) { // if auto approve is set
+            if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) { // if auto approve is set
                 $state = get_option( 'dt_webform_state' );
                 if ( 'remote' == $state ) {
                     $selected_records[] = $post_id;
-                    DT_Webform_Remote::trigger_transfer_of_new_leads( $selected_records );
+                    DT_Webform_Utilities::trigger_transfer_of_new_leads( $selected_records );
                 } else {
-                    DT_Webform_Home::create_contact_record( $post_id );
+                    DT_Webform_Utilities::create_contact_record( $post_id );
                 }
             }
         }
     }
 
-    /**
-     * Insert Post
-     *
-     * @return int|\WP_Error
-     */
-    public static function insert_post( $params ) {
 
-        // Prepare Insert
-        $args = [
-            'post_type' => 'dt_webform_new_leads',
-            'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
-            'comment_status' => 'closed',
-            'ping_status' => 'closed',
-        ];
-        foreach ( $params as $key => $value ) {
-            $key = sanitize_text_field( wp_unslash( $key ) );
-            $value = sanitize_text_field( wp_unslash( $value ) );
-            $args['meta_input'][$key] = $value;
-        }
-        // Add the form title to the record.
-        $form_title = DT_Webform_Active_Form_Post_Type::get_form_title_by_token( $params['token'] );
-        $args['form_title'] = $form_title;
-
-        // Insert
-        $status = wp_insert_post( $args, true );
-        return $status;
-    }
 
 }
 

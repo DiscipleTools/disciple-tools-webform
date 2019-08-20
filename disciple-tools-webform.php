@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
@@ -16,9 +17,17 @@
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+/*******************************************************************************************************************
+ * MIGRATION ENGINE
+ ******************************************************************************************************************/
+require_once( 'includes/class-migration-engine.php' );
+try {
+    DT_Webform_Migration_Engine::migrate( DT_Webform_Migration_Engine::$migration_number );
+} catch ( Throwable $e ) {
+    $migration_error = new WP_Error( 'migration_error', 'Migration engine for webform failed to migrate.', [ 'error' => $e ] );
+    dt_write_log( $migration_error );
 }
+/*******************************************************************************************************************/
 
 /**
  * Gets the instance of the `DT_Webform` class.  This function is useful for quickly grabbing data
@@ -144,9 +153,8 @@ class DT_Webform {
      */
     private function home() {
 
-        require_once( 'includes/home-endpoints.php' );
-        require_once( 'includes/home.php' );
-        require_once( 'includes/customize-site-linking.php' );
+        require_once( 'includes/endpoints-home.php' );
+
     }
 
     /**
@@ -157,9 +165,7 @@ class DT_Webform {
      */
     private function remote() {
 
-        require_once( 'includes/customize-site-linking.php' );
-        require_once( 'includes/remote-endpoints.php' );
-        require_once( 'includes/remote.php' );
+        require_once( 'includes/endpoints-remote.php' );
 
     }
 
@@ -177,12 +183,12 @@ class DT_Webform {
             require_once( 'includes/site-link-post-type.php' );
             Site_Link_System::instance( 100, 'dashicons-admin-links' );
         }
+        require_once( 'includes/site-link-customize.php' );
 
+        require_once( 'includes/utilities.php' );
         require_once( 'includes/post-type-active-forms.php' );
         require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
         require_once( 'includes/tables.php' );
-        require_once( 'includes/settings.php' );
-        require_once( 'includes/enqueue-scripts.php' ); // enqueue scripts and styles
 
         // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {
@@ -351,6 +357,35 @@ class DT_Webform {
         unset( $method, $args );
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public static function get_real_ip_address() {
+        $ip = '';
+        if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ))   //check ip from share internet
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }
+        elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ))   //to check ip is pass from proxy
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) )
+        {
+            // @codingStandardsIgnoreLine
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
+
+    public static function set_auto_approve_to_false() {
+        $options = get_option( 'dt_webform_options' );
+        $options['auto_approve'] = false;
+        update_option( 'dt_webform_options', $options, false );
+    }
 }
 // End of main class
 
@@ -429,3 +464,5 @@ if ( ! function_exists( 'dt_is_child_theme_of_disciple_tools' ) ) {
         return false;
     }
 }
+
+

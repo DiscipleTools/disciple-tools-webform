@@ -407,6 +407,9 @@ class DT_Webform_Utilities {
                     }
                     ';
                 break;
+            case 'none':
+                $css =  '';
+                break;
             default:
                 $css = '
                     // FORM WRAPPER

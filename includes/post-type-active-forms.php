@@ -150,6 +150,51 @@ class DT_Webform_Active_Form_Post_Type
         $css = DT_Webform_Utilities::get_theme( 'get-default-css', get_post_meta( $post->ID, 'token', true ) );
         echo nl2br($css);
 
+        dt_write_log('start ***************************************');
+        // upgrade custom fields
+        $results = new WP_Query( [
+            'post_type' => 'dt_webform_forms',
+            'posts_per_page' => -1,
+            'nopaging' => true
+        ] );
+        dt_write_log($results);
+        if ( $results->found_posts > 0 ) {
+            foreach ( $results->posts as $item ) {
+                // get all meta for ID
+                $meta = dt_get_simple_post_meta( $item->ID );
+                if ( empty( $meta ) ) {
+                    continue;
+                }
+
+                foreach ( $meta as $key => $value ) {
+                    // filter for custom fields
+                    if ( substr( $key, 0, 5 ) !== 'field' ) {
+                        continue;
+                    }
+
+                    // upgrade arrays
+                    $value = maybe_unserialize( $value );
+                    $new = [
+                        'key' => $key,
+                        'order' => 1,
+                        'required' => 'no',
+                        'type' => 'text',
+                        'labels' => $value['label'] ?? '',
+                        'values' => '',
+                        'dt_field' => '',
+                    ];
+
+                    // re save new arrays
+                    update_post_meta( $item->ID, $key, $new );
+                }
+
+            }
+        }
+
+        // upgrade core fields
+
+
+        dt_write_log('end ***************************************');
     }
 
     public function load_localize_meta_box() {

@@ -17,6 +17,18 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
 
+/*******************************************************************************************************************
+ * MIGRATION ENGINE
+ ******************************************************************************************************************/
+//require_once( 'includes/admin/class-migration-engine.php' );
+//try {
+//    DT_Webform_Migration_Engine::migrate( DT_Webform_Migration_Engine::$migration_number );
+//} catch ( Throwable $e ) {
+//    $migration_error = new WP_Error( 'migration_error', 'Migration engine for mapping module failed to migrate.', [ 'error' => $e ] );
+//    dt_write_log( $migration_error );
+//}
+/*******************************************************************************************************************/
+
 /**
  * Gets the instance of the `DT_Webform` class.  This function is useful for quickly grabbing data
  * used throughout the plugin.

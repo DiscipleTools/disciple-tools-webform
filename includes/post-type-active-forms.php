@@ -130,10 +130,10 @@ class DT_Webform_Active_Form_Post_Type
         add_meta_box( $this->post_type . '_appearance', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_core_fields', __( 'Core Fields', 'dt_webform' ), [ $this, 'load_core_fields_metabox' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
-        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'high' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
-        add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'side', 'high' );
         add_meta_box( $this->post_type . '_localize', __( 'Localize', 'dt_webform' ), [ $this, 'load_localize_meta_box' ], $this->post_type, 'normal', 'low' );
+        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'high' );
+        add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'side', 'low' );
         add_meta_box( $this->post_type . '_css', __( 'Form Styles', 'dt_webform' ), [ $this, 'load_form_styles_meta_box' ], $this->post_type, 'side', 'low' );
 
     }
@@ -265,27 +265,29 @@ class DT_Webform_Active_Form_Post_Type
             echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
         }
         else {
-            $width = get_post_meta( $post->ID, 'width', true );
-            if ( ! ( substr( $width, -2, 2 ) === 'px' || substr( $width, -1, 1 ) === '%' ) ) {
-                $width = '100%';
-                update_post_meta( $post->ID, 'width', $width );
-            }
-            $height = get_metadata( 'post', $post->ID, 'height', true );
-            if ( ! ( substr( $height, -2, 2 ) === 'px' || substr( $height, -1, 1 ) === '%' ) ) {
-                $height = '550px';
-                update_post_meta( $post->ID, 'height', $height );
-            }
-            $token = get_metadata( 'post', $post->ID, 'token', true );
-            $site = dt_webform()->public_uri;
-
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
-            <textarea cols="30" rows="10"><iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
-            ?>" style="width:<?php echo esc_attr( $width ) ?>;height:<?php echo esc_attr( $height ) ?>;" frameborder="0"></iframe>
-
-        </textarea>
+            <textarea cols="30" rows="10"><?php echo $this->embed_code( $post->ID ) ?></textarea>
             <?php
         }
+    }
+
+    public function embed_code( $post_id ) {
+        $width = get_post_meta( $post_id, 'width', true );
+        if ( ! ( substr( $width, -2, 2 ) === 'px' || substr( $width, -1, 1 ) === '%' ) ) {
+            $width = '100%';
+            update_post_meta($post_id, 'width', $width );
+        }
+        $height = get_metadata( 'post', $post_id, 'height', true );
+        if ( ! ( substr( $height, -2, 2 ) === 'px' || substr( $height, -1, 1 ) === '%' ) ) {
+            $height = '550px';
+            update_post_meta( $post_id, 'height', $height );
+        }
+        $token = get_metadata( 'post', $post_id, 'token', true );
+        $site = dt_webform()->public_uri;
+
+        return '<iframe src="'. esc_url( $site ) .'form.php?token='. esc_attr( $token )
+            .'" style="width:'. esc_attr( $width ) .';height:'. esc_attr( $height ) .';" frameborder="0"></iframe>';
     }
 
     /**
@@ -298,23 +300,7 @@ class DT_Webform_Active_Form_Post_Type
             echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
         }
         else {
-            $width = get_post_meta( $post->ID, 'width', true );
-            if ( ! ( substr( $width, -2, 2 ) === 'px' || substr( $width, -1, 1 ) === '%' ) ) {
-                $width = '100%';
-                update_post_meta( $post->ID, 'width', $width );
-            }
-            $height = get_metadata( 'post', $post->ID, 'height', true );
-            if ( ! ( substr( $height, -2, 2 ) === 'px' || substr( $height, -1, 1 ) === '%' ) ) {
-                $height = '550px';
-                update_post_meta( $post->ID, 'height', $height );
-            }
-            $token = get_metadata( 'post', $post->ID, 'token', true );
-            $site = dt_webform()->public_uri;
-
-            ?>
-            <iframe src="<?php echo esc_attr( $site ) ?>form.php?token=<?php echo esc_attr( $token )
-            ?>" style="width:<?php echo esc_attr( $width ) ?>;height:<?php echo esc_attr( $height ) ?>;" frameborder="0"></iframe>
-            <?php
+            echo $this->embed_code( $post->ID );
         }
     }
 
@@ -406,6 +392,14 @@ class DT_Webform_Active_Form_Post_Type
 
             echo '</tbody>' . "\n";
             echo '</table>' . "\n";
+            ?>
+            <div>
+                <br clear="all">
+                <span style="float:right;" id="update_fields_button"><button type="submit" class="button">Update</button> </span>
+                <br clear="all">
+            </div>
+            <?php
+
         }
     } // End meta_box_content()
 
@@ -544,17 +538,7 @@ class DT_Webform_Active_Form_Post_Type
         ];
         $fields['custom_css'] = [
             'name'        => __( 'Custom CSS', 'dt_webform' ),
-            'description' => 'STYLES: div.contact-form,
-                    .section,
-                    input.name,
-                    input.phone,
-                    input.email,
-                    input.comments,
-                    input.input-text,
-                    button.submit-button,
-                    p.title,
-                    label.error,
-                    .input-label',
+            'description' => 'See "Form Styles" box for a list of ids and classes.',
             'type'        => 'textarea',
             'default'     => '',
             'section'     => 'appearance',
@@ -1185,6 +1169,7 @@ class DT_Webform_Active_Form_Post_Type
 
                 labels.html(single_label)
                 values.html(single_value)
+                dt.html(dt_field)
 
 
                 jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').on('change', function(){

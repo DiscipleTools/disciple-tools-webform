@@ -379,9 +379,7 @@ class DT_Webform_Menu
         // begin columns template
         $this->template( 'begin', 1 );
 
-        if ( $this->state === 'home' ) {
-            $this->metabox_select_home_site();
-        }
+        $this->metabox_select_home_site();
         $this->metabox_auto_approve();
         $this->initialize_plugin_state_metabox();
 

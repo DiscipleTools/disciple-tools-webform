@@ -13,7 +13,7 @@ class DT_Webform_Utilities {
             return false;
         }
         if ( $meta = wp_cache_get( 'get_form_meta', $token ) ) {
-            return $meta;
+            return maybe_unserialize( $meta );
         }
 
         global $wpdb;
@@ -21,10 +21,11 @@ class DT_Webform_Utilities {
         $post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1", $token ) );
         $meta = dt_get_simple_post_meta( $post_id );
 
-        $meta['form_title'] = get_the_title( $post_id );
-
-        foreach ( $meta as $key => $value ) {
-            $meta[$key] = maybe_unserialize( $value );
+        if ( isset( $meta['_edit_last'] ) ) {
+            unset( $meta['_edit_last'] );
+        }
+        if ( isset( $meta['_edit_lock'] ) ) {
+            unset( $meta['_edit_lock'] );
         }
 
         wp_cache_set( 'get_form_meta', $meta, $token );
@@ -430,9 +431,9 @@ class DT_Webform_Utilities {
      * @return bool|\WP_Error
      */
     public static function trigger_transfer_of_new_leads( $selected_records = [] ) {
+        dt_write_log(__METHOD__);
 
         $transfer_records = [];
-        $transfer_token = '';
 
         $site_transfer_post_id = get_option( 'dt_webform_site_link' );
         if ( empty( $site_transfer_post_id ) ) {
@@ -442,8 +443,15 @@ class DT_Webform_Utilities {
 
         // get entire record from selected records
         foreach ( $selected_records as $record ) {
-            array_push( $transfer_records, dt_get_simple_post_meta( $record ) );
+            $array = dt_get_simple_post_meta( $record );
+            if ( isset( $array['token'] ) ) {
+                $transfer_records[] = dt_get_simple_post_meta( $record );
+            }
         }
+        if ( empty( $transfer_records ) ) {
+            return false;
+        }
+
 
         // Send remote request
         $args = [
@@ -453,6 +461,9 @@ class DT_Webform_Utilities {
                 'selected_records' => $transfer_records,
             ]
         ];
+
+        dt_write_log($args);
+
         $result = wp_remote_get( 'https://' . $transfer_vars['url'] . '/wp-json/dt-public/v1/webform/transfer_collection', $args );
         if ( is_wp_error( $result ) ) {
             dt_write_log( $result );
@@ -462,8 +473,10 @@ class DT_Webform_Utilities {
         if ( isset( $result['body'] ) && ! empty( $result['body'] ) ) {
             $records = json_decode( $result['body'] );
 
-            foreach ( $records as $record ) {
-                wp_delete_post( $record, true );
+            if ( is_array( $records ) ) {
+                foreach ( $records as $record ) {
+                    wp_delete_post( $record, true );
+                }
             }
         }
 
@@ -478,12 +491,16 @@ class DT_Webform_Utilities {
      * @return bool|\WP_Error
      */
     public static function create_contact_record( $new_lead_id ) {
+        dt_write_log(__METHOD__);
 
         // set vars
         $check_permission = false;
         $fields = [];
         $notes = [];
         $new_lead_meta = dt_get_simple_post_meta( $new_lead_id );
+
+        dt_write_log('new_lead_meta');
+        dt_write_log($new_lead_meta);
 
         // check required fields
         if ( ! isset( $new_lead_meta['token'] ) || empty( $new_lead_meta['token'] ) ) {
@@ -493,7 +510,13 @@ class DT_Webform_Utilities {
             return new WP_Error( 'missing_contact_info', 'Missing name' );
         }
 
-        $form_meta = self::get_form_meta( $new_lead_meta['token'] );
+        // get form data: remote verse local form
+        $form_meta = [];
+        if ( isset( $new_lead_meta['form_meta'] ) ) {
+            $form_meta = $new_lead_meta['form_meta'];
+        }
+        dt_write_log('form_meta');
+        dt_write_log($form_meta);
 
         // name
         $fields['title'] = $new_lead_meta['name'];
@@ -603,15 +626,10 @@ class DT_Webform_Utilities {
         }
 
         // form source
-        if ( ! isset( $form_meta['form_title'] ) || empty( $form_meta['form_title'] ) ) {
-            $notes['source'] = __( 'Source Form: Unknown (token: ', 'dt_webform' ) . $new_lead_meta['token'] . ')';
+        if ( ! isset( $new_lead_meta['form_title'] ) || empty( $new_lead_meta['form_title'] ) ) {
+            $notes['form_title'] = __( 'Source Form: Unknown (token: ', 'dt_webform' ) . $new_lead_meta['token'] . ')';
         } else {
-            $notes['source'] = __( 'Source Form: ', 'dt_webform' )  . $form_meta['form_title'];
-        }
-
-        // comments
-        if ( ! empty( $new_lead_meta['comments'] ) ) {
-            $notes['comments'] = __( 'Comments: ', 'dt_webform' ) . $new_lead_meta['comments'];
+            $notes['form_title'] = __( 'Source Form: ', 'dt_webform' )  . $new_lead_meta['form_title'];
         }
 
         $fields['notes'] = $notes;
@@ -622,13 +640,11 @@ class DT_Webform_Utilities {
             $fields['overall_status'] = 'assigned';
         }
 
-
         // Post to contact
         if ( ! class_exists( 'Disciple_Tools_Contacts' ) ) {
             return new WP_Error( 'disciple_tools_missing', 'Disciple Tools is missing.' );
         }
 
-        dt_write_log('Pre-Submit Fields');
         dt_write_log($fields);
 
         // Create contact
@@ -646,7 +662,93 @@ class DT_Webform_Utilities {
 
         return $result;
     }
+
+    /**
+     * Insert Post
+     *
+     * @return int|\WP_Error
+     */
+    public static function insert_post( $params ) {
+        dt_write_log(__METHOD__);
+
+        $params = array_filter( $params );
+        dt_write_log($params);
+
+        // Prepare Insert
+        $args = [
+            'post_type' => 'dt_webform_new_leads',
+            'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
+            'comment_status' => 'closed',
+            'ping_status' => 'closed',
+        ];
+
+        foreach ( $params as $key => $value ) {
+            $key = sanitize_text_field( wp_unslash( $key ) );
+            if ( is_array( $value ) ) {
+                $value = dt_sanitize_array( $value );
+            }
+            else {
+                $value = sanitize_text_field( wp_unslash( $value ) );
+            }
+
+            $args['meta_input'][$key] = $value;
+        }
+
+        // get form_meta
+        $form_meta = [];
+        if ( ! empty( $params['token'] ) ) {
+            $form_meta = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
+        }
+
+        // add form_title
+        if ( ! isset( $args['meta_input']['form_title'] ) && ! empty( $form_meta ) ) {
+            $form_title = DT_Webform_Active_Form_Post_Type::get_form_title_by_token( $params['token'] );
+            $args['meta_input']['form_title'] = $form_title;
+        }
+
+        // add full form meta
+        if ( ! isset( $args['meta_input']['form_meta'] ) && ! empty( $form_meta ) ) {
+            $args['meta_input']['form_meta'] = DT_Webform_Utilities::get_form_meta( $params['token'] );
+        }
+
+        // add assigned to
+        if ( ! isset( $args['meta_input']['assigned_to'] ) && ! empty( $form_meta ) ) {
+            $args['meta_input']['assigned_to'] = $form_meta['assigned_to'];
+        }
+
+        // add source
+        if ( ! isset( $args['meta_input']['source'] ) && ! empty( $form_meta ) ) {
+            $args['meta_input']['source'] = $form_meta['source'];
+        }
+
+        // Add plugin status
+        if ( ! isset( $args['meta_input']['form_state'] ) || empty( $args['meta_input']['form_state'] ) ) {
+            $args['meta_input']['form_state'] = get_option( 'dt_webform_state' );
+        }
+
+        dt_write_log($args);
+
+        // Insert
+        $status = wp_insert_post( $args, true );
+        return $status;
+    }
+
+
 }
+
+//if ( ! function_exists( 'dt_sanitize_array' ) ) {
+    function dt_sanitize_array( &$array ) {
+        foreach ($array as &$value) {
+            if( !is_array($value) )
+                $value = sanitize_text_field( wp_unslash( $value ) );
+            else
+                dt_sanitize_array($value);
+        }
+        return $array;
+    }
+//}
+
+
 
 /**
  * This returns a simple array versus the multi dimensional array
@@ -663,7 +765,7 @@ if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
         $map = [];
         if ( ! empty( $post_id ) ) {
             $map         = array_map( function( $a ) {
-                return $a[0];
+                return maybe_unserialize( $a[0] );
             }, get_post_meta( $post_id ) ); // map the post meta
             $map['ID'] = $post_id; // add the id to the array
         }

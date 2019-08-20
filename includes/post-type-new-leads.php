@@ -13,6 +13,7 @@ DT_Webform_New_Leads_Post_Type::instance(); // Initialize instance
 class DT_Webform_New_Leads_Post_Type
 {
     public $post_type;
+    public static $form_meta;
     /**
      * DT_Webform_New_Leads_Post_Type The single instance of DT_Webform_New_Leads_Post_Type.
      *
@@ -124,35 +125,7 @@ class DT_Webform_New_Leads_Post_Type
         }
     }
 
-    /**
-     * Insert Post
-     *
-     * @return int|\WP_Error
-     */
-    public static function insert_post( $params ) {
 
-        // Prepare Insert
-        $args = [
-            'post_type' => 'dt_webform_new_leads',
-            'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
-            'comment_status' => 'closed',
-            'ping_status' => 'closed',
-        ];
-        dt_write_log(__METHOD__);
-        dt_write_log($params);
-        foreach ( $params as $key => $value ) {
-            $key = sanitize_text_field( wp_unslash( $key ) );
-            $value = sanitize_text_field( wp_unslash( $value ) );
-            $args['meta_input'][$key] = $value;
-        }
-        // Add the form title to the record.
-        $form_title = DT_Webform_Active_Form_Post_Type::get_form_title_by_token( $params['token'] );
-        $args['form_title'] = $form_title;
-
-        // Insert
-        $status = wp_insert_post( $args, true );
-        return $status;
-    }
 
 }
 

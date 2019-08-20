@@ -46,7 +46,7 @@ class DT_Webform_Migration_Engine
                         throw new Exception( sprintf( "Expected to find migration number %04d", $expected_migration_number ) );
                     }
                     require_once( plugin_dir_path( __FILE__ ) . "migrations/$filename" );
-                    $migration_name = sprintf( "DT_Mapping_Module_Migration_%04d", $got_migration_number );
+                    $migration_name = sprintf( "DT_Webform_Migration_%04d", $got_migration_number );
                     $rv[] = new $migration_name();
                     $expected_migration_number++;
                 } else {

@@ -17,19 +17,19 @@ class DT_Webform_Migration_0000 extends DT_Webform_Migration {
      * @throws \Exception  Got error when creating table $name.
      */
     public function up() {
+        global $wpdb;
+        $results = $wpdb->get_col( "SELECT ID from $wpdb->posts WHERE post_type = 'dt_webform_forms'" );
 
-        $results = new WP_Query( [
-            'post_type' => 'dt_webform_forms',
-            'posts_per_page' => -1,
-            'nopaging' => true
-        ] );
+        if ( count( $results ) > 0 ) {
+            require_once ( plugin_dir_path(__DIR__) . '/post-type-active-forms.php' );
+            require_once ( plugin_dir_path(__DIR__) . '/utilities.php' );
 
-        if ( $results->found_posts > 0 ) {
-            foreach ( $results->posts as $item ) {
+            foreach ( $results as $post_id ) {
+                $post_id = (int) $post_id;
                 // upgrade custom fields
 
                 // get all meta for ID
-                $meta = dt_get_simple_post_meta( $item->ID );
+                $meta  = dt_get_simple_post_meta( $post_id );
                 if ( empty( $meta ) ) {
                     continue;
                 }
@@ -53,15 +53,14 @@ class DT_Webform_Migration_0000 extends DT_Webform_Migration {
                     ];
 
                     // re save new arrays
-                    update_post_meta( $item->ID, $key, $new );
+                    update_post_meta( $post_id, $key, $new );
                 }
 
                 // upgrade core fields
-                require_once ( '../../post-type-active-forms.php' );
-                $core_fields = DT_Webform_Active_Form_Post_Type::instance()->get_core_fields( $item->ID );
+                $core_fields = DT_Webform_Active_Form_Post_Type::instance()->get_core_fields( $post_id );
                 foreach( $core_fields as $key => $value ) {
                     if ( ! isset( $meta[$key] ) && empty( $meta[$key] ) ) {
-                        update_post_meta( $item->ID, $key, $value );
+                        update_post_meta( $post_id, $key, $value );
                     }
                 }
 

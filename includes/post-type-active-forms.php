@@ -1010,6 +1010,14 @@ class DT_Webform_Active_Form_Post_Type
                                     break;
 
                                 case 'note':
+                                    ?>
+                                    <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
+                                        <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
+                                    </td>
+                                    <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
+                                    <td>Saves to Comments</td>
+                                    <?php
+                                    break;
                                 case 'header':
                                     ?>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">

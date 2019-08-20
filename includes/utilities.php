@@ -94,29 +94,108 @@ class DT_Webform_Utilities {
         switch ( $theme ) {
             case 'simple':
                 $css =   '
-                    .section {
-                        padding-bottom:5px;
+                    #wrapper {
+                        margin: auto;
+                        max-width: 400px;
+                    }
+                    #contact-form {}
+                    .input-text {
+                        padding: .2em;
+                        font-size: .8em;
+                        width: 100%;
+                    }
+                    .input-textarea {
+                        height:80px;
+                        padding: .2em;
+                        font-size: .8em;
+                        border: .5px solid #ccc;
+                    }
+                    .input-checkbox {}
+                    .input-multi_radio {
+                        padding: .2em;
+                        font-size: .8em;
+                    }
+                    .span-radio {
+                        float:left;
+                        padding:5px;
+                    }
+                    .input-dropdown {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
+                    }
+                    .input-tel {
+                       padding: .2em;
+                        font-size: .8em;
+                        width: 100%;
+                    }
+                    .input-email {
+                        padding: .2em;
+                        font-size: .8em;
+                        width: 100%;
+                    }
+                    .input-note {
+                        padding: .2em;
+                        font-size: .8em;
+                        width: 100%;
                     }
                     button.submit-button {
-                        padding: .8em;
+                        padding: 1em;
                         font-weight: bolder;
                     }
-                    p.title {
-                        font-size: 1.5em;
-                        font-weight: bold;
-                    }
+                    
+                    .hr {}
+                    .hr-divider {}
+                    
                     label.error {
                         color: red;
                         font-size: .8em;
                     }
-                    .input-text {
-                        padding: .7em;
-                        width: 200px;
+                    .input-label {
+                        font-size: 1em;
+                        font-family: sans-serif;
                     }
-                    textarea.input-text {
-                        height:70px;
-                        padding: .7em;
-                        border: .5px solid #ccc;
+                    .label-dropdown {}
+                    .label-multi_radio {
+                        margin-bottom:10px;
+                    }
+                    #title {
+                        font-size: 1.2em;
+                        font-weight:bold;
+                        font-family: sans-serif;
+                        padding: .5em 0;
+                    }
+                    #description {
+                        padding-bottom: .8em;
+                        font-size: .9em;
+                        font-family: sans-serif;
+                    }
+                    .section {
+                        padding: 10px 0;
+                        width: 100%;
+                    }
+                    .section-dropdown {}
+                    .section-multi_radio {}
+                    .section-checkbox {
+                        padding:0;
+                    }
+                    .section-header {
+                       font-size: 1.2em;
+                        font-weight:bold;
+                        font-family: sans-serif;
+                        padding: .5em 0;
+                    }
+                    .section-description {
+                        padding-bottom: .8em;
+                        font-size: .9em;
+                        font-family: sans-serif;
+                    }
+                    .section-map {
+                        margin: 10px 0 ;
+                        padding: 10px 0;
                     }
                     ';
                 break;
@@ -124,44 +203,103 @@ class DT_Webform_Utilities {
                 $css =   '
                     #wrapper {
                         margin: auto;
-                        max-width: 1000px;
+                        max-width: 400px;
                     }
                     #contact-form {}
-                    .section {
-                        padding-bottom:10px;
-                    }
-                    #name {}
-                    #phone {}
-                    #email {}
-                    #comments {}
-                    textarea.input-text {}
-                    button.submit-button {
-                        padding: 1em;
-                        font-weight: bolder;
-                    }
-                    p.title {
-                        font-size: 2em;
-                        font-weight: bolder;
-                        font-family: sans-serif;
-                    }
-                    label.error {
-                        color: red;
-                        font-size: .8em;
-                    }
                     .input-text {
                         padding: .5em;
                         font-size: 1em;
-                        width: 250px;
+                        width: 100%;
                     }
-                    textarea.input-text {
+                    .input-textarea {
                         height:80px;
                         padding: .5em;
                         font-size: 1.2em;
                         border: .5px solid #ccc;
                     }
+                    .input-checkbox {}
+                    .input-multi_radio {
+                        font-size:1.1em;
+                    }
+                    .span-radio {
+                        float:left;
+                        padding:5px;
+                        
+                    }
+                    .input-dropdown {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
+                    }
+                    .input-tel {
+                        padding: .5em;
+                        font-size: 1.2em;
+                        line-height: 1.5em;
+                        width: 100%;
+                    }
+                    .input-email {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    .input-note {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    button.submit-button {
+                        padding: 1em;
+                        font-weight: bolder;
+                    }
+                    
+                    .hr {}
+                    .hr-divider {}
+                    
+                    label.error {
+                        color: red;
+                        font-size: .8em;
+                    }
+                    
                     .input-label {
                         font-size: 1.2em;
                         font-family: sans-serif;
+                    }
+                    .label-dropdown {}
+                    .label-multi_radio {
+                        margin-bottom:10px;
+                    }
+                    
+                    .section {
+                        padding: 10px 0;
+                        width: 100%;
+                    }
+                    .section-dropdown {}
+                    .section-multi_radio {}
+                    .section-checkbox {
+                        padding:0;
+                    }
+                    .section-header {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                        padding-top: .5em;
+                    }
+                    .section-map {
+                        margin: 10px 0 ;
+                        padding: 20px 0;
+                    }
+                    
+                    #title {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                        padding-top: .5em;
+                    }
+                    #description {
+                        padding-bottom: 1em;
                     }
                     ';
                 break;

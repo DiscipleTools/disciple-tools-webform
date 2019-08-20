@@ -11,6 +11,7 @@ if ( ! isset( $_GET['token'] ) ) {
 $dt_webform_token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
 $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token );
+$dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
 
 ?>
 <html>
@@ -59,12 +60,18 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
 
     <?php
     /* location files */
-
-    ?>
-    <script type="text/javascript" src="https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js"></script>
-    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css" type="text/css" media="all">
-    <?php
-
+    if ( count( $dt_webform_fields ) > 0 ) {
+        foreach ( $dt_webform_fields as $dt_webform_key => $dt_webform_value ) :
+            if ( isset( $dt_webform_value[ 'type' ] ) && $dt_webform_value[ 'type' ] === 'map' ) :
+                ?>
+                <script type="text/javascript" src="https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js"></script>
+                <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css" type="text/css"
+                      media="all">
+            <?php
+            break;
+            endif;
+        endforeach;
+    }
     // @codingStandardsIgnoreEnd ?>
 
     <style>
@@ -118,7 +125,7 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
     /**
      * Add custom fields to form
      */
-    $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
+
 
 
     if ( count( $dt_webform_fields ) > 0 ) {

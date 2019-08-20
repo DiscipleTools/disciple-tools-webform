@@ -74,7 +74,7 @@ class DT_Webform_Home_Endpoints
      * @return array|\WP_Error
      */
     public function transfer_collection( WP_REST_Request $request ) {
-        dt_write_log(__METHOD__);
+        dt_write_log( __METHOD__ );
 
         $params = $request->get_params();
         $site_key = Site_Link_System::verify_transfer_token( $params['transfer_token'] );

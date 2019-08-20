@@ -75,7 +75,7 @@ class DT_Webform_Remote_Endpoints
      * @return bool|\WP_Error
      */
     public function form_submit( WP_REST_Request $request ){
-        dt_write_log(__METHOD__);
+        dt_write_log( __METHOD__ );
         $params = $request->get_params();
 
         // Honeypot

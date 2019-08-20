@@ -21,8 +21,8 @@ class DT_Webform_Migration_0000 extends DT_Webform_Migration {
         $results = $wpdb->get_col( "SELECT ID from $wpdb->posts WHERE post_type = 'dt_webform_forms'" );
 
         if ( count( $results ) > 0 ) {
-            require_once ( plugin_dir_path(__DIR__) . '/post-type-active-forms.php' );
-            require_once ( plugin_dir_path(__DIR__) . '/utilities.php' );
+            require_once( plugin_dir_path( __DIR__ ) . '/post-type-active-forms.php' );
+            require_once( plugin_dir_path( __DIR__ ) . '/utilities.php' );
 
             foreach ( $results as $post_id ) {
                 $post_id = (int) $post_id;
@@ -58,12 +58,11 @@ class DT_Webform_Migration_0000 extends DT_Webform_Migration {
 
                 // upgrade core fields
                 $core_fields = DT_Webform_Active_Form_Post_Type::instance()->get_core_fields( $post_id );
-                foreach( $core_fields as $key => $value ) {
+                foreach ( $core_fields as $key => $value ) {
                     if ( ! isset( $meta[$key] ) && empty( $meta[$key] ) ) {
                         update_post_meta( $post_id, $key, $value );
                     }
                 }
-
             }
         }
 

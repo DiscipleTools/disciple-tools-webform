@@ -69,11 +69,11 @@ class DT_Webform_Utilities {
             }
             $order[$value['order']][$value['key']] = $value;
         }
-        ksort($order);
+        ksort( $order );
 
         $ordered_fields = [];
         foreach ( $order as $value ) {
-            foreach( $value as $k => $v ) {
+            foreach ( $value as $k => $v ) {
                 $ordered_fields[$k] = $v;
             }
         }
@@ -93,7 +93,7 @@ class DT_Webform_Utilities {
         // Unique styles
         switch ( $theme ) {
             case 'simple':
-                $css =   '
+                $css = '
                     #wrapper {
                         margin: auto;
                         max-width: 400px;
@@ -200,7 +200,7 @@ class DT_Webform_Utilities {
                     ';
                 break;
             case 'heavy':
-                $css =   '
+                $css = '
                     #wrapper {
                         margin: auto;
                         max-width: 400px;
@@ -304,7 +304,7 @@ class DT_Webform_Utilities {
                     ';
                 break;
             case 'wide-heavy':
-                $css =  '
+                $css = '
                     #wrapper {
                         margin: auto;
                         max-width: 1000px;
@@ -408,7 +408,7 @@ class DT_Webform_Utilities {
                     ';
                 break;
             case 'none':
-                $css =  '';
+                $css = '';
                 break;
             default:
                 $css = '
@@ -493,7 +493,7 @@ class DT_Webform_Utilities {
          * Location Styles
          */
         $location_styles = '';
-        foreach( $meta as $key => $value ) {
+        foreach ( $meta as $key => $value ) {
             if ( substr( $key, 0, 5 ) === 'field' && $value['type'] === 'map' ) {
                 $location_styles = '
                 #geocoder {
@@ -559,7 +559,7 @@ class DT_Webform_Utilities {
         }
 
         $css = $location_styles . $css . $custom_css;
-        $css = trim( str_replace( PHP_EOL, '', str_replace('  ', '', $css ) ) );
+        $css = trim( str_replace( PHP_EOL, '', str_replace( '  ', '', $css ) ) );
 
         return $css;
     }
@@ -572,7 +572,7 @@ class DT_Webform_Utilities {
      * @return bool|\WP_Error
      */
     public static function trigger_transfer_of_new_leads( $selected_records = [] ) {
-        dt_write_log(__METHOD__);
+        dt_write_log( __METHOD__ );
 
         $transfer_records = [];
 
@@ -603,7 +603,7 @@ class DT_Webform_Utilities {
             ]
         ];
 
-        dt_write_log($args);
+        dt_write_log( $args );
 
         $result = wp_remote_get( 'https://' . $transfer_vars['url'] . '/wp-json/dt-public/v1/webform/transfer_collection', $args );
         if ( is_wp_error( $result ) ) {
@@ -632,7 +632,7 @@ class DT_Webform_Utilities {
      * @return bool|\WP_Error
      */
     public static function create_contact_record( $new_lead_id ) {
-        dt_write_log(__METHOD__);
+        dt_write_log( __METHOD__ );
 
         // set vars
         $check_permission = false;
@@ -640,8 +640,8 @@ class DT_Webform_Utilities {
         $notes = [];
         $new_lead_meta = dt_get_simple_post_meta( $new_lead_id );
 
-        dt_write_log('new_lead_meta');
-        dt_write_log($new_lead_meta);
+        dt_write_log( 'new_lead_meta' );
+        dt_write_log( $new_lead_meta );
 
         // check required fields
         if ( ! isset( $new_lead_meta['token'] ) || empty( $new_lead_meta['token'] ) ) {
@@ -656,8 +656,8 @@ class DT_Webform_Utilities {
         if ( isset( $new_lead_meta['form_meta'] ) ) {
             $form_meta = $new_lead_meta['form_meta'];
         }
-        dt_write_log('form_meta');
-        dt_write_log($form_meta);
+        dt_write_log( 'form_meta' );
+        dt_write_log( $form_meta );
 
         // name
         $fields['title'] = $new_lead_meta['name'];
@@ -722,12 +722,12 @@ class DT_Webform_Utilities {
 
                 // prepare note
                 $label = ucfirst( $field['type'] );
-                $notes[$lead_key] =  $label . ': ' . $lead_value;
+                $notes[$lead_key] = $label . ': ' . $lead_value;
 
                 // prepare mapped fields
                 if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
                     // set field value to custom field
-                    switch( $field['type'] ) {
+                    switch ( $field['type'] ) {
                         case 'checkbox':
                             if ( ! isset( $fields[$field['dt_field']] ) ) {
                                 $fields[$field['dt_field']] = [ 'values' => [] ];
@@ -786,7 +786,7 @@ class DT_Webform_Utilities {
             return new WP_Error( 'disciple_tools_missing', 'Disciple Tools is missing.' );
         }
 
-        dt_write_log($fields);
+        dt_write_log( $fields );
 
         // Create contact
         $result = Disciple_Tools_Contacts::create_contact( $fields, $check_permission );
@@ -810,10 +810,10 @@ class DT_Webform_Utilities {
      * @return int|\WP_Error
      */
     public static function insert_post( $params ) {
-        dt_write_log(__METHOD__);
+        dt_write_log( __METHOD__ );
 
         $params = array_filter( $params );
-        dt_write_log($params);
+        dt_write_log( $params );
 
         // Prepare Insert
         $args = [
@@ -838,7 +838,7 @@ class DT_Webform_Utilities {
         // get form_meta
         $form_meta = [];
         if ( ! empty( $params['token'] ) ) {
-            $form_meta = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
+            $form_meta = maybe_unserialize( self::get_form_meta( $params['token'] ) );
         }
 
         // add form_title
@@ -849,7 +849,7 @@ class DT_Webform_Utilities {
 
         // add full form meta
         if ( ! isset( $args['meta_input']['form_meta'] ) && ! empty( $form_meta ) ) {
-            $args['meta_input']['form_meta'] = DT_Webform_Utilities::get_form_meta( $params['token'] );
+            $args['meta_input']['form_meta'] = self::get_form_meta( $params['token'] );
         }
 
         // add assigned to
@@ -867,7 +867,7 @@ class DT_Webform_Utilities {
             $args['meta_input']['form_state'] = get_option( 'dt_webform_state' );
         }
 
-        dt_write_log($args);
+        dt_write_log( $args );
 
         // Insert
         $status = wp_insert_post( $args, true );
@@ -878,15 +878,15 @@ class DT_Webform_Utilities {
 }
 
 //if ( ! function_exists( 'dt_sanitize_array' ) ) {
-    function dt_sanitize_array( &$array ) {
-        foreach ($array as &$value) {
-            if( !is_array($value) )
-                $value = sanitize_text_field( wp_unslash( $value ) );
-            else
-                dt_sanitize_array($value);
+function dt_sanitize_array( &$array ) {
+    foreach ($array as &$value) {
+        if ( !is_array( $value ) ) {
+            $value = sanitize_text_field( wp_unslash( $value ) );
+        } else {          dt_sanitize_array( $value );
         }
-        return $array;
     }
+    return $array;
+}
 //}
 
 
@@ -951,7 +951,7 @@ if ( ! function_exists( 'dt_get_location_grid_mirror' ) ) {
 
 if ( ! function_exists( 'dt_get_mapbox_endpoint' ) ) {
     function dt_get_mapbox_endpoint( $type = 'places' ) : string {
-        switch( $type ) {
+        switch ( $type ) {
             case 'permanent':
                 return 'https://api.mapbox.com/geocoding/v5/mapbox.places-permanent/';
                 break;

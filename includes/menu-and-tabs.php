@@ -59,7 +59,7 @@ class DT_Webform_Menu
                 // load mapbox resources
                 if ( $this->state === 'combined' || $this->state === 'home' ) {
                     if ( ! class_exists( 'DT_Mapbox_API' ) ) {
-                        require_once ( trailingslashit( get_theme_file_path() ) . 'dt-mapping/mapbox-api.php' );
+                        require_once( trailingslashit( get_theme_file_path() ) . 'dt-mapping/mapbox-api.php' );
                     }
                     DT_Mapbox_API::load_admin_header();
                 }

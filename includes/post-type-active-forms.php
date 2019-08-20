@@ -148,7 +148,7 @@ class DT_Webform_Active_Form_Post_Type
     public function load_form_styles_meta_box( $post ) {
 
         $css = DT_Webform_Utilities::get_theme( 'get-default-css', get_post_meta( $post->ID, 'token', true ) );
-        echo nl2br($css);
+        echo nl2br( esc_html( $css ) );
 
     }
 
@@ -267,7 +267,7 @@ class DT_Webform_Active_Form_Post_Type
         else {
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
-            <textarea cols="30" rows="10"><?php echo $this->embed_code( $post->ID ) ?></textarea>
+            <textarea cols="30" rows="10"><?php $this->embed_code( $post->ID ) ?></textarea>
             <?php
         }
     }
@@ -276,7 +276,7 @@ class DT_Webform_Active_Form_Post_Type
         $width = get_post_meta( $post_id, 'width', true );
         if ( ! ( substr( $width, -2, 2 ) === 'px' || substr( $width, -1, 1 ) === '%' ) ) {
             $width = '100%';
-            update_post_meta($post_id, 'width', $width );
+            update_post_meta( $post_id, 'width', $width );
         }
         $height = get_metadata( 'post', $post_id, 'height', true );
         if ( ! ( substr( $height, -2, 2 ) === 'px' || substr( $height, -1, 1 ) === '%' ) ) {
@@ -286,8 +286,8 @@ class DT_Webform_Active_Form_Post_Type
         $token = get_metadata( 'post', $post_id, 'token', true );
         $site = dt_webform()->public_uri;
 
-        return '<iframe src="'. esc_url( $site ) .'form.php?token='. esc_attr( $token )
-            .'" style="width:'. esc_attr( $width ) .';height:'. esc_attr( $height ) .';" frameborder="0"></iframe>';
+        ?><iframe src="<?php echo esc_url( $site ) ?>form.php?token=<?php echo esc_attr( $token )
+?>" style="width:<?php echo esc_attr( $width ) ?>;height:<?php echo esc_attr( $height ) ?>;" frameborder="0"></iframe><?php
     }
 
     /**
@@ -300,7 +300,7 @@ class DT_Webform_Active_Form_Post_Type
             echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
         }
         else {
-            echo $this->embed_code( $post->ID );
+            $this->embed_code( $post->ID );
         }
     }
 
@@ -783,18 +783,18 @@ class DT_Webform_Active_Form_Post_Type
         $meta = dt_get_simple_post_meta( $post_id );
         $fields = self::filter_for_custom_fields( $meta );
         $custom_fields = [];
-        if ( ! empty( $fields) ) {
+        if ( ! empty( $fields ) ) {
             foreach ( $fields as $key => $value ) {
                 $custom_fields[$key] = maybe_unserialize( $value );
             }
-            $custom_fields =  DT_Webform_Utilities::order_custom_field_array( $custom_fields );
+            $custom_fields = DT_Webform_Utilities::order_custom_field_array( $custom_fields );
         }
         return $custom_fields;
     }
 
     public static function get_core_fields_by_token( $token ) : array {
         $post_id = self::get_form_id_by_token( $token );
-        return DT_Webform_Active_Form_Post_Type::instance()->get_core_fields( $post_id );
+        return self::instance()->get_core_fields( $post_id );
     }
 
     public function get_core_fields( int $post_id ) : array {
@@ -833,11 +833,11 @@ class DT_Webform_Active_Form_Post_Type
         $meta = dt_get_simple_post_meta( $post_id );
         $fields = self::filter_for_custom_fields( $meta );
         $custom_fields = [];
-        if ( ! empty( $fields) ) {
+        if ( ! empty( $fields ) ) {
             foreach ( $fields as $key => $value ) {
                 $custom_fields[$key] = maybe_unserialize( $value );
             }
-            $custom_fields =  DT_Webform_Utilities::order_custom_field_array( $custom_fields );
+            $custom_fields = DT_Webform_Utilities::order_custom_field_array( $custom_fields );
         }
         return $custom_fields;
     }
@@ -850,7 +850,7 @@ class DT_Webform_Active_Form_Post_Type
             return;
         }
 
-        $fields = $this->get_core_fields(  $post->ID );
+        $fields = $this->get_core_fields( $post->ID );
 
         ?>
         <table class="widefat striped">
@@ -861,19 +861,19 @@ class DT_Webform_Active_Form_Post_Type
             </thead>
             <tbody>
             <?php
-                foreach( $fields as $key => $field ) {
-                    ?>
+            foreach ( $fields as $key => $field ) {
+                ?>
                     <tr>
                         <td><?php echo esc_html( $field['name'] ) ?><input type="hidden" style="width:100%;" name="<?php echo esc_attr( $key ) ?>[name]" value="<?php echo esc_html( $field['name'] ) ?>" /></td>
                         <td>
-                            <?php if ( 'header_description_field' === $key ) : ?>
+                        <?php if ( 'header_description_field' === $key ) : ?>
                                 <textarea style="width:100%;" name="<?php echo esc_attr( $key ) ?>[label]"><?php echo esc_html( $field['label'] ) ?></textarea>
                             <?php else : ?>
                                 <input style="width:100%;" type="text" name="<?php echo esc_attr( $key ) ?>[label]" placeholder="Enter a label" value="<?php echo esc_html( $field['label'] ) ?>" />
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if ( 'header_description_field' === $key || 'header_title_field' === $key ) : ?>
+                        <?php if ( 'header_description_field' === $key || 'header_title_field' === $key ) : ?>
                                 <input type="hidden" name="<?php echo esc_attr( $key ) ?>[required]" value="no" />
                             <?php else : ?>
                                 <select name="<?php echo esc_attr( $key ) ?>[required]">
@@ -890,7 +890,7 @@ class DT_Webform_Active_Form_Post_Type
                         </td>
                     </tr>
                     <?php
-                }
+            }
             ?>
             </tbody>
         </table>
@@ -960,7 +960,7 @@ class DT_Webform_Active_Form_Post_Type
 
                         <?php
                         if ( isset( $data['type'] ) ) {
-                            switch( $data['type'] ) {
+                            switch ( $data['type'] ) {
 
                                 // multi labels, multi values
                                 case 'dropdown':
@@ -1066,7 +1066,6 @@ class DT_Webform_Active_Form_Post_Type
                                     <?php
                                     break;
                             }
-
                         }
 
                         ?>
@@ -1315,7 +1314,7 @@ class DT_Webform_Active_Form_Post_Type
         $array = self::filter_for_custom_fields( $_POST );
 
         foreach ( $current_fields_extra as $key => $value ) {
-            if ( ! isset( $array[$key]) ) {
+            if ( ! isset( $array[$key] ) ) {
                 delete_post_meta( $post_id, $key, get_post_meta( $post_id, $key, true ) );
             }
         }
@@ -1374,7 +1373,7 @@ class DT_Webform_Active_Form_Post_Type
 
         $list = [];
 
-        foreach( $values as $index => $item ) {
+        foreach ( $values as $index => $item ) {
             $list[] = [
                 'label' => trim( $labels[$index] ),
                 'value' => trim( $values[$index] ),

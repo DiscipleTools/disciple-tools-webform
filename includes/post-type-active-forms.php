@@ -993,6 +993,8 @@ class DT_Webform_Active_Form_Post_Type
 
                                 // single labels, single values
                                 case 'checkbox':
+                                case 'tel':
+                                case 'email':
                                 case 'text':
                                     ?>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">

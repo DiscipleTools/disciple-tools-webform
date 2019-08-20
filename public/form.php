@@ -198,7 +198,7 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
                     <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                          class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?> section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>">
                         <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
-                               class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value[ 'labels' ] ) ?></label>
+                               class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value[ 'labels' ] ?? '' ) ?></label>
                         <br>
                         <input type="<?php echo esc_attr( $dt_webform_value[ 'type' ] ) ?>"
                                id="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"

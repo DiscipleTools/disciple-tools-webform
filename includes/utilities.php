@@ -61,7 +61,7 @@ class DT_Webform_Utilities {
         $order = [];
         foreach ( $custom_fields as $value ) {
             $value = maybe_unserialize( $value );
-            if ( isset( $value['order'] ) && $value['order'] === 0 ){
+            if ( ! isset( $value['order'] ) || $value['order'] < 1 ) {
                 $value['order'] = 1;
             }
             if ( ! isset( $order[$value['order']] ) ) {

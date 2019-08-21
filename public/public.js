@@ -60,7 +60,7 @@ jQuery(document).ready(function () {
 
     let validator = jQuery('#contact-form').validate({
         errorPlacement: function(error, element) {
-            error.appendTo( element.parent("p") );
+            error.appendTo( element.parent("div") );
         },
         rules: {
             name: {

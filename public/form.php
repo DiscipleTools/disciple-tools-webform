@@ -10,7 +10,7 @@ if ( ! isset( $_GET['token'] ) ) {
 }
 $dt_webform_token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
 $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
-$dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token );
+$dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token ); dt_write_log($dt_webform_core_fields);
 $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
 
 ?>
@@ -83,9 +83,20 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 <body>
 <div id="wrapper">
 <form id="contact-form" action="">
+
+    <?php
+    /**
+     * Hidden Fields
+     */
+    ?>
     <input type="hidden" id="token" name="token" value="<?php echo esc_attr( $dt_webform_token ) ?>"/>
     <input type="hidden" id="ip_address" name="ip_address" value="<?php echo esc_attr( DT_Webform::get_real_ip_address() ?? '' ) ?>"/>
 
+    <?php
+    /**
+     * Core Fields
+     */
+    ?>
     <div id="title" <?php echo ( isset( $dt_webform_core_fields['header_title_field']['hidden'] ) &&  $dt_webform_core_fields['header_title_field']['hidden'] === 'yes' ) ? 'style="display:none;" ' : ''; ?>>
         <?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?>
     </div>
@@ -93,26 +104,25 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
         <?php echo nl2br( esc_html(  $dt_webform_core_fields['header_description_field']['label'] ?? '' ) ) ?>
     </div>
 
-    <?php if ( $dt_webform_core_fields['name_field']['hidden'] !== 'yes' ) : ?>
+    <?php if ( isset( $dt_webform_core_fields['name_field'] ) && $dt_webform_core_fields['name_field']['hidden'] !== 'yes' ) : ?>
         <div id="section-name" class="section">
-            <label for="name" class="input-label"><?php echo isset( $dt_webform_meta['name'] ) ? esc_attr( $dt_webform_meta['name'] ) : 'Name' ?></label><br>
-            <input type="text" id="name" name="name" class="input-text" value="" required/><br>
+            <label for="name" class="input-label label-name"><?php echo esc_html( $dt_webform_core_fields['name_field']['name'] ) ?? '' ?></label><br>
+            <input type="text" id="name" name="name" class="input-text input-name" value="" <?php echo ( $dt_webform_core_fields['name_field']['required'] === 'yes' ) ? 'required' : '' ?>/>
         </div>
     <?php endif; ?>
 
-    <?php if ( $dt_webform_core_fields['phone_field']['hidden'] !== 'yes' ) : ?>
+    <?php if ( isset( $dt_webform_core_fields['phone_field'] ) && $dt_webform_core_fields['phone_field']['hidden'] !== 'yes' ) : ?>
         <div id="section-phone" class="section">
-            <label for="phone" class="input-label"><?php echo isset( $dt_webform_meta['phone'] ) ? esc_attr( $dt_webform_meta['phone'] ) : 'Phone' ?></label><br>
-            <input type="tel" id="phone" name="phone" class="input-text" value="" /><br>
+            <label for="phone" class="input-label"><?php echo esc_html( $dt_webform_core_fields['phone_field']['name'] ) ?? '' ?></label><br>
+            <input type="tel" id="phone" name="phone" class="input-text input-phone" value="" <?php echo ( $dt_webform_core_fields['phone_field']['required'] === 'yes' ) ? 'required' : '' ?>/>
         </div>
     <?php endif; ?>
 
-
-    <?php if ( $dt_webform_core_fields['email_field']['hidden'] !== 'yes' ) : ?>
+    <?php if ( isset( $dt_webform_core_fields['email_field'] ) && $dt_webform_core_fields['email_field']['hidden'] !== 'yes' ) : ?>
         <div id="section-email" class="section">
-            <label for="email" class="input-label"><?php echo isset( $dt_webform_meta['email'] ) ? esc_attr( $dt_webform_meta['email'] ) : 'Email' ?></label><br>
+            <label for="email" class="input-label label-email"><?php echo esc_html( $dt_webform_core_fields['email_field']['name']  ) ?? '' ?></label><br>
             <input type="email" id="email2" name="email2" class="input-text email" value=""/>
-            <input type="email" id="email" name="email" class="input-text" value=""/><br>
+            <input type="email" id="email" name="email" class="input-text input-email" value="" <?php echo ( $dt_webform_core_fields['email_field']['required'] === 'yes' ) ? 'required' : '' ?>/>
         </div>
     <?php else : ?>
         <div id="section-email" class="section email">
@@ -120,14 +130,12 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
         </div>
     <?php endif; ?>
 
+
+
     <?php
-
     /**
-     * Add custom fields to form
+     * Extra fields
      */
-
-
-
     if ( count( $dt_webform_fields ) > 0 ) {
         foreach ( $dt_webform_fields as $dt_webform_key => $dt_webform_value ) {
             if ( ! isset( $dt_webform_value['type'] ) ) {
@@ -262,7 +270,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                             <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
 
                             <!-- Widget -->
-                            <div class="label-map-instructions">Zoom and Click Map to Select Locations</div>
+                            <div class="label-map-instructions">zoom and click map to select locations</div>
                             <div>
                                 <div id='map'></div>
                                 <div id="list">

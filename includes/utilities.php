@@ -289,7 +289,6 @@ class DT_Webform_Utilities {
                     }
                     .section-map {
                         margin: 10px 0 ;
-                        padding: 20px 0;
                     }
                     
                     #title {
@@ -310,6 +309,51 @@ class DT_Webform_Utilities {
                         max-width: 1000px;
                     }
                     #contact-form {}
+                    
+                    #title {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                        padding: .5em 0;
+                    }
+                   #description {
+                        padding: .5em 0;
+                    }
+                    #section-name {}
+                    #section-phone {}
+                    #section-email {}
+                    #name {}
+                    #phone {}
+                    #email {}
+                    
+                    .section {
+                        padding: 10px 0;
+                        width: 100%;
+                    }
+                    .section-dropdown {}
+                    .section-multi_radio {}
+                    .section-checkbox {
+                        padding:0;
+                    }
+                    .section-tel {}
+                    .section-email {}
+                    .section-text {}
+                    .section-header {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        font-family: sans-serif;
+                        padding-top: .5em;
+                    }
+                    .section-description {}
+                    .section-note {}
+                    .section-map {
+                        padding-bottom: 10px;
+                    }
+                    .section-custom_label {
+                        font-size: 1.2em;
+                        font-family: sans-serif;
+                    }
+                    
                     .input-text {
                         padding: .5em;
                         font-size: 1em;
@@ -330,14 +374,6 @@ class DT_Webform_Utilities {
                         padding:5px;
                         
                     }
-                    .input-dropdown {
-                        font-size: 1.2em;
-                        width: 50%;
-                        -webkit-appearance: none;
-                        -moz-appearance: none;
-                        appearance: none;
-                        padding: 5px;
-                    }
                     .input-tel {
                         padding: .5em;
                         font-size: 1.2em;
@@ -349,6 +385,14 @@ class DT_Webform_Utilities {
                         font-size: 1em;
                         width: 100%;
                     }
+                    .input-dropdown {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
+                    }
                     .input-note {
                         padding: .5em;
                         font-size: 1em;
@@ -359,14 +403,6 @@ class DT_Webform_Utilities {
                         font-weight: bolder;
                     }
                     
-                    .hr {}
-                    .hr-divider {}
-                    
-                    label.error {
-                        color: red;
-                        font-size: .8em;
-                    }
-                    
                     .input-label {
                         font-size: 1.2em;
                         font-family: sans-serif;
@@ -375,35 +411,22 @@ class DT_Webform_Utilities {
                     .label-multi_radio {
                         margin-bottom:10px;
                     }
-                    
-                    .section {
-                        padding: 10px 0;
-                        width: 100%;
-                    }
-                    .section-dropdown {}
-                    .section-multi_radio {}
-                    .section-checkbox {
-                        padding:0;
-                    }
-                    .section-header {
-                        font-size: 2em;
-                        font-weight: bolder;
-                        font-family: sans-serif;
-                        padding-top: .5em;
-                    }
-                    .section-map {
-                        margin: 10px 0 ;
-                        padding: 20px 0;
+                    .label-checkbox {}
+                    .label-tel {}
+                    .label-email {}
+                    .label-text {}
+                    .label-note {}
+                    .label-map {}
+                    .label-map-instructions {
+                        color: grey;
                     }
                     
-                    #title {
-                        font-size: 2em;
-                        font-weight: bolder;
-                        font-family: sans-serif;
-                        padding-top: .5em;
-                    }
-                    #description {
-                        padding-bottom: 1em;
+                    .hr {}
+                    .hr-divider {}
+                    
+                    label.error {
+                        color: red;
+                        font-size: .8em;
                     }
                     ';
                 break;
@@ -416,34 +439,15 @@ class DT_Webform_Utilities {
                     #wrapper {}
                     #contact-form {}
                     
-                    // INPUT CLASSES
-                    .input-text {}
-                    .input-textarea {}
-                    .input-checkbox {}
-                    .input-multi_radio {}
-                    .span-radio {}
-                    .input-tel {}
-                    .input-email {}
-                    .input-dropdown {}
-                    .input-note {}
-                    button.submit-button {}
-                    
-                    // DIVIDER CLASSES
-                    .hr {}
-                    .hr-divider {}
-                    
-                    // ERROR CLASSES
-                    label.error {}
-                    
-                    // LABELS
-                    .input-label {}
-                    .label-dropdown {}
-                    .label-multi_radio {}
-                    .label-checkbox {}
-                    .label-tel {}
-                    .label-email {}
-                    .label-text {}
-                    .label-note {}
+                    // CORE SECTION AND INPUTS
+                    #title {}
+                    #description {}
+                    #section-name {}
+                    #section-phone {}
+                    #section-email {}
+                    #name {}
+                    #phone {}
+                    #email {}
                     
                     // SECTION CLASSES
                     .section {}
@@ -457,16 +461,38 @@ class DT_Webform_Utilities {
                     .section-description {}
                     .section-note {}
                     .section-map {}
+                    .section-custom_label {}
                     
-                    // CORE SECTION AND INPUTS
-                    #title {}
-                    #description {}
-                    #section-name {}
-                    #section-phone {}
-                    #section-email {}
-                    #name {}
-                    #phone {}
-                    #email {}
+                    // INPUT CLASSES
+                    .input-text {}
+                    .input-textarea {}
+                    .input-checkbox {}
+                    .input-multi_radio {}
+                    .span-radio {}
+                    .input-tel {}
+                    .input-email {}
+                    .input-dropdown {}
+                    .input-note {}
+                    button.submit-button {}
+                    
+                    // LABELS
+                    .input-label {}
+                    .label-dropdown {}
+                    .label-multi_radio {}
+                    .label-checkbox {}
+                    .label-tel {}
+                    .label-email {}
+                    .label-text {}
+                    .label-note {}
+                    .label-map {}
+                    .label-map-instructions {}
+                    
+                    // DIVIDER CLASSES
+                    .hr {}
+                    .hr-divider {}
+                    
+                    // ERROR CLASSES
+                    label.error {}
                     
                     // EXTRA SECTIONS AND INPUTS
                     ';

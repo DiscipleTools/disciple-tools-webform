@@ -267,7 +267,11 @@ class DT_Webform_Active_Form_Post_Type
         else {
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
-            <textarea cols="30" rows="10"><?php $this->embed_code( $post->ID ) ?></textarea>
+            <textarea cols="30" rows="10"><?php
+                // WordPress.XSS.EscapeOutput.OutputNotEscaped
+                // @phpcs:ignore
+                echo $this->embed_code( $post->ID );
+            ?></textarea>
             <?php
         }
     }
@@ -286,8 +290,8 @@ class DT_Webform_Active_Form_Post_Type
         $token = get_metadata( 'post', $post_id, 'token', true );
         $site = dt_webform()->public_uri;
 
-        ?><iframe src="<?php echo esc_url( $site ) ?>form.php?token=<?php echo esc_attr( $token )
-?>" style="width:<?php echo esc_attr( $width ) ?>;height:<?php echo esc_attr( $height ) ?>;" frameborder="0"></iframe><?php
+        return '<iframe src="'. esc_url( $site ) .'form.php?token='. esc_attr( $token )
+            .'" style="width:'. esc_attr( $width ) .';height:'. esc_attr( $height ) .';" frameborder="0"></iframe>';
     }
 
     /**
@@ -300,7 +304,9 @@ class DT_Webform_Active_Form_Post_Type
             echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
         }
         else {
-            $this->embed_code( $post->ID );
+            // WordPress.XSS.EscapeOutput.OutputNotEscaped
+            // @phpcs:ignore
+            echo $this->embed_code( $post->ID );
         }
     }
 
@@ -545,41 +551,6 @@ class DT_Webform_Active_Form_Post_Type
         ];
 
 
-        $fields['title'] = [
-            'name'        => '"Header" Title',
-            'description' => '',
-            'type'        => 'text',
-            'default'     => 'Contact Us',
-            'section'     => 'localize',
-        ];
-        $fields['name'] = [
-            'name'        => '"Name" Title',
-            'description' => '',
-            'type'        => 'text',
-            'default'     => 'Name',
-            'section'     => 'localize',
-        ];
-        $fields['phone'] = [
-            'name'        => '"Phone" Title',
-            'description' => '',
-            'type'        => 'text',
-            'default'     => 'Phone',
-            'section'     => 'localize',
-        ];
-        $fields['email'] = [
-            'name'        => '"Email" Title',
-            'description' => '',
-            'type'        => 'text',
-            'default'     => __( 'Email', 'dt_webform' ),
-            'section'     => 'localize',
-        ];
-        $fields['comments_title'] = [
-            'name'        => '"Comments" Title',
-            'description' => '',
-            'type'        => 'text',
-            'default'     => __( 'Comments', 'dt_webform' ),
-            'section'     => 'localize',
-        ];
         $fields['js_string_required'] = [
             'name'        => __( 'Required', 'dt_webform' ),
             'description' => __( 'translate: "Required"', 'dt_webform' ),
@@ -1018,6 +989,7 @@ class DT_Webform_Active_Form_Post_Type
                                     <td>Saves to Comments</td>
                                     <?php
                                     break;
+                                case 'custom_label':
                                 case 'header':
                                     ?>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
@@ -1130,6 +1102,7 @@ class DT_Webform_Active_Form_Post_Type
                                     <option value="description"><?php echo esc_attr__( 'Section Description', 'dt_webform' ) ?></option>
                                     <option value="divider"><?php echo esc_attr__( 'Section Divider', 'dt_webform' ) ?></option>
                                     <option value="spacer"><?php echo esc_attr__( 'Section Spacer', 'dt_webform' ) ?></option>
+                                    <option value="custom_label"><?php echo esc_attr__( 'Custom Label', 'dt_webform' ) ?></option>
                                     <option value="text"><?php echo esc_attr__( 'Text', 'dt_webform' ) ?></option>
                                     <option value="tel"><?php echo esc_attr__( 'Phone', 'dt_webform' ) ?></option>
                                     <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>
@@ -1200,6 +1173,7 @@ class DT_Webform_Active_Form_Post_Type
                             values.empty().html(single_value)
                             dt.empty().html(dt_field)
                             break;
+                        case 'custom_label':
                         case 'note':
                         case 'header':
                             labels.empty().html(single_label)

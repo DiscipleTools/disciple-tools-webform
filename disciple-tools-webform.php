@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * @license GPL-2.0 or later
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
+$dt_webform_required_dt_theme_version = '0.22.1';
 
 /*******************************************************************************************************************
  * MIGRATION ENGINE
@@ -38,6 +39,19 @@ try {
  * @return object
  */
 function dt_webform() {
+    global $dt_webform_required_dt_theme_version;
+    $wp_theme = wp_get_theme();
+    $version = $wp_theme->version;
+    /*
+     * Check if the Disciple.Tools theme is loaded and is the latest required version
+     */
+    if ( 'disciple-tools-theme' !== $wp_theme->get_template() || $version < $dt_webform_required_dt_theme_version ) {
+        add_action( 'admin_notices', 'dt_starter_plugin_hook_admin_notice' );
+        add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
+        return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active or not the required version for this plugin.' );
+    }
+
+
     $current_theme = get_option( 'current_theme' );
     $state = get_option( 'dt_webform_state' );
 
@@ -225,7 +239,7 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '1.1';
+        $this->version             = '2.0';
     }
 
     /**

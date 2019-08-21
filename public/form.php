@@ -90,7 +90,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
         <?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?>
     </div>
     <div id="description"  <?php echo ( isset( $dt_webform_core_fields['header_description_field']['hidden'] ) &&  $dt_webform_core_fields['header_description_field']['hidden'] === 'yes' ) ? 'style="display:none;" ' : ''; ?>>
-        <?php echo esc_html( $dt_webform_core_fields['header_description_field']['label'] ?? '' ) ?>
+        <?php echo nl2br( esc_html(  $dt_webform_core_fields['header_description_field']['label'] ?? '' ) ) ?>
     </div>
 
     <?php if ( $dt_webform_core_fields['name_field']['hidden'] !== 'yes' ) : ?>
@@ -193,7 +193,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                 <?php echo esc_attr( ($dt_webform_value[ 'required' ] === 'yes') ? 'required' : '' ) ?>
                         />
                         <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
-                               class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value[ 'labels' ] ) ?></label>
+                               class="label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value[ 'labels' ] ) ?></label>
                     </div>
                     <?php
                     break;
@@ -216,12 +216,13 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                     <?php
                     break;
 
+                case 'custom_label':
                 case 'header':
                 case 'description':
                     ?>
                     <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                          class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
-                        <?php echo esc_attr( $dt_webform_value[ 'labels' ] ) ?>
+                        <?php echo nl2br( esc_html( $dt_webform_value[ 'labels' ] ) ) ?>
                     </div>
                     <?php
                     break;
@@ -251,14 +252,17 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 
                     if ( $dt_webform_value[ 'values' ] === 'click_map' ) {
                         ?>
-                        <br clear="all" />
                         <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                              class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
+
+                            <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
+                                   class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value['labels'] ) ?? '' ?></label>
+                            <br>
                             <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
                             <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
 
                             <!-- Widget -->
-                            <div class="label-map">Zoom and Click Map to Select Locations</div>
+                            <div class="label-map-instructions">Zoom and Click Map to Select Locations</div>
                             <div>
                                 <div id='map'></div>
                                 <div id="list">

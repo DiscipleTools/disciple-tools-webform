@@ -26,7 +26,11 @@ try {
     DT_Webform_Migration_Engine::migrate( DT_Webform_Migration_Engine::$migration_number );
 } catch ( Throwable $e ) {
     $migration_error = new WP_Error( 'migration_error', 'Migration engine for webform failed to migrate.', [ 'error' => $e ] );
-    dt_write_log( $migration_error );
+    if ( function_exists( 'dt_write_log' ) ) {
+        dt_write_log( maybe_serialize( $migration_error ) );
+    } else {
+        error_log( 'Migration engine for webform failed to migrate.' );
+    }
 }
 /*******************************************************************************************************************/
 
@@ -42,22 +46,24 @@ function dt_webform() {
     global $dt_webform_required_dt_theme_version;
     $wp_theme = wp_get_theme();
     $version = $wp_theme->version;
-    /*
-     * Check if the Disciple.Tools theme is loaded and is the latest required version
-     */
-    if ( 'disciple-tools-theme' !== $wp_theme->get_template() || $version < $dt_webform_required_dt_theme_version ) {
-        add_action( 'admin_notices', 'dt_starter_plugin_hook_admin_notice' );
-        add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
-        return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active or not the required version for this plugin.' );
-    }
-
 
     $current_theme = get_option( 'current_theme' );
     $state = get_option( 'dt_webform_state' );
 
-    if ( ( 'combined' == $state || 'home' == $state ) && ! ( 'Disciple Tools' == $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
-        add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
-        return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active.' );
+    /*
+     * Check if the Disciple.Tools theme is loaded and is the latest required version
+     */
+
+    if ( ( 'combined' == $state || 'home' == $state ) ) {
+        if ( ! ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
+            add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
+            return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active.' );
+        }
+        if ( ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) && $version < $dt_webform_required_dt_theme_version ) {
+            add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
+            add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
+            return new WP_Error( 'current_theme_not_dt', 'Please upgrade Disciple Tools Theme to ' . $dt_webform_required_dt_theme_version . ' to use this plugin.' );
+        }
     }
 
     return DT_Webform::get_instance();

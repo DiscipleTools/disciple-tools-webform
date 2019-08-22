@@ -54,7 +54,7 @@ function dt_webform() {
      * Check if the Disciple.Tools theme is loaded and is the latest required version
      */
 
-    if ( ( 'combined' == $state || 'home' == $state ) ) {
+    if ( 'combined' == $state || 'home' == $state ) {
         if ( ! ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
             add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
             return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active.' );

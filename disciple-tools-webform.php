@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * @license GPL-2.0 or later
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
-$dt_webform_required_dt_theme_version = '0.22.1';
+$dt_webform_required_dt_theme_version = '0.22.2';
 
 /*******************************************************************************************************************
  * MIGRATION ENGINE

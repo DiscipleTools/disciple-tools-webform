@@ -23,6 +23,7 @@ if ( !defined( 'ABSPATH' ) ) {
  *          0.1.16 Added https filter, capability filter for token verification
  *          0.1.17 Added type column to admin list
  *          0.1.18 Added listing function by site type
+ *          0.1.19 Added unique identifiers to the metaboxes to remove conflicts.
  */
 if ( ! class_exists( 'Site_Link_System' ) ) {
 
@@ -367,19 +368,19 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
         public function register_post_type() {
             $args = [
                 'labels' => [
-                        'name'               => $this->plural, /* This is the Title of the Group */
-                        'singular_name'      => $this->singular, /* This is the individual type */
-                        'all_items'          => __( 'All' ) . ' ' . $this->plural, /* the all items menu item */
-                        'add_new'            => __( 'Add New' ), /* The add new menu item */
-                        'add_new_item'       => __( 'Add New' ) . ' ' . $this->singular, /* Add New Display Title */
-                        'edit'               => __( 'Edit' ), /* Edit Dialog */
-                        'edit_item'          => __( 'Edit' ) . ' ' . $this->singular, /* Edit Display Title */
-                        'new_item'           => __( 'New' ) . ' ' . $this->singular, /* New Display Title */
-                        'view_item'          => __( 'View' ) . ' ' . $this->singular, /* View Display Title */
-                        'search_items'       => __( 'Search' ) . ' ' . $this->plural, /* Search Custom Type Title */
-                        'not_found'          => __( 'Nothing found in the Database.' ), /* This displays if there are no entries yet */
-                        'not_found_in_trash' => __( 'Nothing found in Trash' ), /* This displays if there is nothing in the trash */
-                        'parent_item_colon'  => ''
+                    'name'               => $this->plural, /* This is the Title of the Group */
+                    'singular_name'      => $this->singular, /* This is the individual type */
+                    'all_items'          => __( 'All' ) . ' ' . $this->plural, /* the all items menu item */
+                    'add_new'            => __( 'Add New' ), /* The add new menu item */
+                    'add_new_item'       => __( 'Add New' ) . ' ' . $this->singular, /* Add New Display Title */
+                    'edit'               => __( 'Edit' ), /* Edit Dialog */
+                    'edit_item'          => __( 'Edit' ) . ' ' . $this->singular, /* Edit Display Title */
+                    'new_item'           => __( 'New' ) . ' ' . $this->singular, /* New Display Title */
+                    'view_item'          => __( 'View' ) . ' ' . $this->singular, /* View Display Title */
+                    'search_items'       => __( 'Search' ) . ' ' . $this->plural, /* Search Custom Type Title */
+                    'not_found'          => __( 'Nothing found in the Database.' ), /* This displays if there are no entries yet */
+                    'not_found_in_trash' => __( 'Nothing found in Trash' ), /* This displays if there is nothing in the trash */
+                    'parent_item_colon'  => ''
                 ], /* end of arrays */
 
                 'public'              => false,
@@ -452,8 +453,8 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
         public function register_custom_column_headings( $defaults ) {
 
             $new_columns = array(
-            'linked' => __( 'Linked' ),
-            'type' => __( 'Type' )
+                'linked' => __( 'Linked' ),
+                'type' => __( 'Type' )
             );
 
             $last_item = [];
@@ -502,7 +503,7 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                     strtolower( $this->singular ),
                     // translators: Publish box date format, see http://php.net/date
                     '<strong>' . date_i18n( __( 'M j, Y @ G:i' ),
-                    strtotime( $post->post_date ) ) . '</strong>',
+                        strtotime( $post->post_date ) ) . '</strong>',
                     '',
                     ''
                 ),
@@ -513,8 +514,8 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
         }
 
         public function meta_box_setup() {
-            add_meta_box( $this->post_type . '_details', __( 'Manage Site Link' ), [ $this, 'meta_box_load_management_box' ], $this->post_type, 'normal', 'high' );
-            add_meta_box( $this->post_type . '_instructions', __( 'Configuration' ), [ $this, 'meta_box_configuration_box' ], $this->post_type, 'normal', 'high' );
+            add_meta_box( $this->post_type . '_details' . hash( 'sha256' , self::get_current_site_base_url() ), __( 'Manage Site Link' ), [ $this, 'meta_box_load_management_box' ], $this->post_type, 'normal', 'high' );
+            add_meta_box( $this->post_type . '_instructions'  . hash( 'sha256' , self::get_current_site_base_url() ), __( 'Configuration' ), [ $this, 'meta_box_configuration_box' ], $this->post_type, 'normal', 'high' );
         }
 
         public function meta_box_content( $section = 'info' ) {
@@ -866,9 +867,9 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
 
                     <!-- Footer Information -->
                     <p><?php esc_attr_e( 'Current Site' ) ?>: <span
-                                class="info-color"><?php echo esc_html( self::get_current_site_base_url() ); ?></span></p>
+                            class="info-color"><?php echo esc_html( self::get_current_site_base_url() ); ?></span></p>
                     <p class="text-small"><?php esc_attr_e( 'Timestamp' ) ?>: <span
-                                class="info-color"><?php echo esc_attr( current_time( 'Y-m-d H:i', 1 ) ) ?></span>
+                            class="info-color"><?php echo esc_attr( current_time( 'Y-m-d H:i', 1 ) ) ?></span>
                         <em>( <?php esc_attr_e( 'Compare this number to linked site. It should be identical.' ) ?> )</em></p>
 
                     <?php

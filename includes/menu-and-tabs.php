@@ -817,7 +817,7 @@ class DT_Webform_Menu
                                     let table_body = ''
                                     jQuery.each( data, function(i,v) {
                                         let string = '<tr><td class="add-column">'
-                                        string += '<button onclick="add_selection(' + v.grid_id +')">Add</button></td> '
+                                        string += '<button type="button" onclick="add_selection(' + v.grid_id +')">Add</button></td> '
                                         string += '<td><strong style="font-size:1.2em;">'+v.name+'</strong> <br>'
                                         if ( v.admin0_name !== v.name ) {
                                             string += v.admin0_name
@@ -840,7 +840,7 @@ class DT_Webform_Menu
                                         string += '</td></tr>'
                                         table_body += string
                                     })
-                                    print.append('<table>' + table_body + '</table>')
+                                    print.append('<table>' + table_body + '</table><div><h2>Success!</h2></div>')
                                 }
                             }
 

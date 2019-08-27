@@ -283,6 +283,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 
                             <!-- Mapbox script -->
                             <script>
+                                window.spinner = '<img class="load-spinner" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) . 'spinner.svg' ?>" width="20px" />'
                                 mapboxgl.accessToken = '<?php echo esc_html( get_option( 'dt_mapbox_api_key' ) ) ?>';
                                 var map = new mapboxgl.Map({
                                     container: 'map',
@@ -320,6 +321,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 
                                 // Click event
                                 map.on('click', function (e) {
+                                    jQuery('#list').empty().append(window.spinner);
                                     console.log(e)
 
                                     let lng = e.lngLat.lng
@@ -355,6 +357,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 
                                 // Geolocate event
                                 userGeocoder.on('geolocate', function(e) { // respond to search
+                                    jQuery('#list').empty().append(window.spinner);
                                     console.log(e)
                                     let lat = e.coords.latitude
                                     let lng = e.coords.longitude

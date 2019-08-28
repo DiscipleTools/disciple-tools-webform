@@ -321,7 +321,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 
                                 // Click event
                                 map.on('click', function (e) {
-                                    jQuery('#list').empty().append(window.spinner);
+                                    jQuery('#list-location-grid').empty().append(window.spinner);
                                     console.log(e)
 
                                     let lng = e.lngLat.lng
@@ -357,7 +357,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 
                                 // Geolocate event
                                 userGeocoder.on('geolocate', function(e) { // respond to search
-                                    jQuery('#list').empty().append(window.spinner);
+                                    jQuery('#list-location-grid').empty().append(window.spinner);
                                     console.log(e)
                                     let lat = e.coords.latitude
                                     let lng = e.coords.longitude

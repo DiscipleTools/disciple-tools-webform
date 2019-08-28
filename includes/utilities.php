@@ -156,7 +156,7 @@ class DT_Webform_Utilities {
                     }
                     .input-label {
                         font-size: 1em;
-                        font-family: sans-serif;
+                        
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -165,13 +165,12 @@ class DT_Webform_Utilities {
                     #title {
                         font-size: 1.2em;
                         font-weight:bold;
-                        font-family: sans-serif;
                         padding: .5em 0;
                     }
                     #description {
                         padding-bottom: .8em;
                         font-size: .9em;
-                        font-family: sans-serif;
+                        
                     }
                     .section {
                         padding: 10px 0;
@@ -185,13 +184,12 @@ class DT_Webform_Utilities {
                     .section-header {
                        font-size: 1.2em;
                         font-weight:bold;
-                        font-family: sans-serif;
                         padding: .5em 0;
                     }
                     .section-description {
                         padding-bottom: .8em;
                         font-size: .9em;
-                        font-family: sans-serif;
+                        
                     }
                     .section-map {
                         margin: 10px 0 ;
@@ -265,7 +263,7 @@ class DT_Webform_Utilities {
                     
                     .input-label {
                         font-size: 1.2em;
-                        font-family: sans-serif;
+                        
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -284,7 +282,6 @@ class DT_Webform_Utilities {
                     .section-header {
                         font-size: 2em;
                         font-weight: bolder;
-                        font-family: sans-serif;
                         padding-top: .5em;
                     }
                     .section-map {
@@ -294,7 +291,6 @@ class DT_Webform_Utilities {
                     #title {
                         font-size: 2em;
                         font-weight: bolder;
-                        font-family: sans-serif;
                         padding-top: .5em;
                     }
                     #description {
@@ -313,7 +309,6 @@ class DT_Webform_Utilities {
                     #title {
                         font-size: 2em;
                         font-weight: bolder;
-                        font-family: sans-serif;
                         padding: .5em 0;
                     }
                    #description {
@@ -341,7 +336,7 @@ class DT_Webform_Utilities {
                     .section-header {
                         font-size: 2em;
                         font-weight: bolder;
-                        font-family: sans-serif;
+                        
                         padding-top: .5em;
                     }
                     .section-description {}
@@ -351,7 +346,7 @@ class DT_Webform_Utilities {
                     }
                     .section-custom_label {
                         font-size: 1.2em;
-                        font-family: sans-serif;
+                        
                     }
                     
                     .input-text {
@@ -405,7 +400,7 @@ class DT_Webform_Utilities {
                     
                     .input-label {
                         font-size: 1.2em;
-                        font-family: sans-serif;
+                        
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -580,7 +575,7 @@ class DT_Webform_Utilities {
          * Custom CSS
          */
         $custom_css = '';
-        if ( isset( $meta['custom_css'] ) && $meta['custom_css'] === 'click_map') {
+        if ( isset( $meta['custom_css'] ) && ! empty( $meta['custom_css'] ) ) {
             $custom_css = $meta['custom_css'];
         }
 

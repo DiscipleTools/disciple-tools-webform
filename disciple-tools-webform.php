@@ -4,12 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
- * Version:  2.0
+ * Version:  2.1
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Requires at least: 4.7.0
  * (Requires 4.7+ because of the integration of the REST API at 4.7 and the security requirements of this milestone version.)
- * Tested up to: 4.9
+ * Tested up to: 5.3
  *
  * @package Disciple_Tools
  * @link    https://github.com/DiscipleTools
@@ -174,7 +174,6 @@ class DT_Webform {
     private function home() {
 
         require_once( 'includes/endpoints-home.php' );
-
     }
 
     /**
@@ -197,12 +196,7 @@ class DT_Webform {
      * @return void
      */
     private function includes() {
-
-
-        if ( ! class_exists( 'Site_Link_System' ) ) {
-            require_once( 'includes/site-link-post-type.php' );
-            Site_Link_System::instance( 100, 'dashicons-admin-links' );
-        }
+        require_once( 'includes/mapbox-api.php' ); // @todo duplicate of same class in Disciple Tools
         require_once( 'includes/site-link-customize.php' );
 
         require_once( 'includes/utilities.php' );
@@ -245,7 +239,7 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '2.0';
+        $this->version             = '2.1';
     }
 
     /**
@@ -459,10 +453,18 @@ if ( !function_exists( 'dt_write_log' ) ) {
      */
     function dt_write_log( $log ) {
         if ( true === WP_DEBUG ) {
-            if ( is_array( $log ) || is_object( $log ) ) {
-                error_log( print_r( $log, true ) );
+            global $dt_write_log_microtime;
+            $now = microtime( true );
+            if ( $dt_write_log_microtime > 0 ) {
+                $elapsed_log = sprintf( "[elapsed:%5dms]", ( $now - $dt_write_log_microtime ) * 1000 );
             } else {
-                error_log( $log );
+                $elapsed_log = "[elapsed:-------]";
+            }
+            $dt_write_log_microtime = $now;
+            if ( is_array( $log ) || is_object( $log ) ) {
+                error_log( $elapsed_log . " " . print_r( $log, true ) );
+            } else {
+                error_log( "$elapsed_log $log" );
             }
         }
     }

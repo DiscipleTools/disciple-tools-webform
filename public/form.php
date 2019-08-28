@@ -295,7 +295,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                 // Controls
                                 let searchGeocoder = new MapboxGeocoder({
                                     accessToken: mapboxgl.accessToken,
-                                    types: 'country',
+                                    types: 'country region district locality neighborhood postcode',
                                     marker: {color: 'orange'},
                                     mapboxgl: mapboxgl
                                 });

@@ -263,9 +263,11 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                         <div id="section-<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                              class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
 
+                            <?php if ( ! empty( $dt_webform_value['labels'] ) ) : ?>
                             <label for="<?php echo esc_attr( $dt_webform_value[ 'key' ] ) ?>"
                                    class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value['labels'] ) ?? '' ?></label>
-                            <br>
+                            <?php endif; ?>
+
                             <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
                             <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
 

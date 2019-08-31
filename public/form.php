@@ -26,7 +26,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="jquery-migrate.min.js"></script>
     <script type="text/javascript" src="jquery.validate.min.js"></script>
-    <script type="text/javascript" src="public.js"></script>
+    <script type="text/javascript" src="public.js?ver=1.0"></script>
     <script>
         window.TRANSLATION = {
             'required': '<?php echo $dt_webform_meta['js_string_required'] ?? esc_html__( 'Required', 'dt_webform' ) ?>',

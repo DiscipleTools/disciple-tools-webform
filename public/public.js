@@ -14,6 +14,14 @@ let getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
+jQuery(document).ready(function() {
+  if ( getUrlParameter('success') ) {
+    jQuery('#report').empty().append( window.TRANSLATION.success + '<br>');
+  } else {
+    console.log('not success')
+  }
+})
+
 function check_form() {
     let validator = jQuery('#contact-form').validate();
     let status = validator.form()
@@ -45,7 +53,8 @@ function submit_form() {
         url: url + '/wp-json/dt-public/v1/webform/form_submit',
     })
         .done(function (data) {
-            jQuery('#contact-form').empty().append( window.TRANSLATION.success + '<br>');
+          window.location = window.location + '&success=true'
+
         })
         .fail(function (err) {
             jQuery('#report').html('Failed')

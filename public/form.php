@@ -14,8 +14,9 @@ $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_t
 $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
 
 ?>
-<html>
+<html lang="en">
 <head>
+    <title><?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?></title>
     <?php
     /**
      * Coding standards require enqueue of files, but for the purpose of a light iframe, we don't want

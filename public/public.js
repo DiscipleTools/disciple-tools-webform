@@ -17,8 +17,6 @@ let getUrlParameter = function getUrlParameter(sParam) {
 jQuery(document).ready(function() {
   if ( getUrlParameter('success') ) {
     jQuery('#report').empty().append( window.TRANSLATION.success + '<br>');
-  } else {
-    console.log('not success')
   }
 })
 

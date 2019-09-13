@@ -69,7 +69,7 @@ function dt_webform() {
     return DT_Webform::get_instance();
 
 }
-add_action( 'plugins_loaded', 'dt_webform' );
+add_action( 'after_setup_theme', 'dt_webform' );
 
 
 /**

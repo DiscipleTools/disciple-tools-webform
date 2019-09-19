@@ -125,9 +125,9 @@ class DT_Webform_Active_Form_Post_Type
      * @return void
      */
     public function meta_box_setup() {
-        add_meta_box( $this->post_type . '_info', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_info_box', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
 
-        add_meta_box( $this->post_type . '_appearance', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_appearance_box', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_core_fields', __( 'Core Fields', 'dt_webform' ), [ $this, 'load_core_fields_metabox' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );

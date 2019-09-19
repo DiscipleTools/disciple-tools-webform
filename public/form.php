@@ -76,8 +76,8 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
     // @codingStandardsIgnoreEnd ?>
 
     <style>
-        .email { display:none; }
         <?php echo esc_attr( DT_Webform_Utilities::get_theme( $dt_webform_meta['theme'] ?? '', $dt_webform_token ) ) ?>
+        .email { display:none; }
     </style>
 
 </head>

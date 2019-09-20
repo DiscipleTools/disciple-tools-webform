@@ -184,7 +184,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                     }
                                 }
                                 ?>
-                        </div>
+                        <br style="clear: both;" /> </div>
                         <?php
                     }
                     break;

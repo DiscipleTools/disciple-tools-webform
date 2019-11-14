@@ -946,7 +946,7 @@ if ( ! function_exists( 'dt_get_location_grid_mirror' ) ) {
     function dt_get_location_grid_mirror( $url_only = false ) {
 
         if ( $mirror = wp_cache_get( __METHOD__, $url_only ) ) {
-            return $mirror;
+            return $url_only ? $mirror["url"] : $mirror;
         }
 
         $mirror = get_option( 'dt_location_grid_mirror' );

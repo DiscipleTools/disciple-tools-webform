@@ -726,6 +726,8 @@ class DT_Webform_Utilities {
             $fields['location_lnglat'] = $coordinates;
         }
 
+        $contact_fields = Disciple_Tools_Contact_Post_Type::instance()->get_custom_fields_settings();
+
         // custom fields
         foreach ( $new_lead_meta as $lead_key => $lead_value ) {
             if ( 'field_' === substr( $lead_key, 0, 6 ) && ! empty( $lead_value ) ) {
@@ -761,7 +763,11 @@ class DT_Webform_Utilities {
                         case 'tel':
                         case 'email':
                         case 'text':
-                            $fields[$field['dt_field']] = $lead_value;
+                            if ( isset( $contact_fields[$field['dt_field']]["type"] ) && $contact_fields[$field['dt_field']]["type"] === "multi_select" ) {
+                                $fields[$field['dt_field']]['values'][] = [ 'value' => $lead_value ];
+                            } else {
+                                $fields[$field['dt_field']] = $lead_value;
+                            }
                             break;
                         case 'note':
                             $notes[$lead_key] = $field['label'] . ': ' . esc_html( $lead_value );

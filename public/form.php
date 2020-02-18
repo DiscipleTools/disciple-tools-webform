@@ -117,7 +117,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 
     <?php if ( isset( $dt_webform_core_fields['phone_field'] ) && $dt_webform_core_fields['phone_field']['hidden'] !== 'yes' ) : ?>
         <div id="section-phone" class="section">
-            <label for="phone" class="input-label"><?php echo esc_html( $dt_webform_core_fields['phone_field']['name'] ) ?? '' ?></label><br>
+            <label for="phone" class="input-label"><?php echo esc_html( $dt_webform_core_fields['phone_field']['label'] ) ?? '' ?></label><br>
             <input type="tel" id="phone" name="phone" class="input-text input-phone" value="" <?php echo ( $dt_webform_core_fields['phone_field']['required'] === 'yes' ) ? 'required' : '' ?>/>
         </div>
     <?php endif; ?>
@@ -125,7 +125,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
     <?php if ( isset( $dt_webform_core_fields['email_field'] ) && $dt_webform_core_fields['email_field']['hidden'] !== 'yes' ) : ?>
         <div id="section-email" class="section">
             <label for="email"
-                   class="input-label label-email"><?php echo esc_html( $dt_webform_core_fields['email_field']['name'] ) ?? '' ?></label><br>
+                   class="input-label label-email"><?php echo esc_html( $dt_webform_core_fields['email_field']['label'] ) ?? '' ?></label><br>
             <input type="email" id="email2" name="email2" class="input-text email" value=""/>
             <input type="email" id="email" name="email" class="input-text input-email" value="" <?php echo ( $dt_webform_core_fields['email_field']['required'] === 'yes' ) ? 'required' : '' ?>/>
         </div>

@@ -1,3 +1,6 @@
+//check online status
+window.addEventListener('online',  checkStorage);
+
 //Get URL Parameters
 let getUrlParameter = function getUrlParameter(sParam) {
     let sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -24,43 +27,107 @@ function check_form() {
     let validator = jQuery('#contact-form').validate();
     let status = validator.form()
     if( status ) {
-        submit_form()
+        get_data();
     }
 
 }
 
-function submit_form() {
-    jQuery('#submit-button').attr('disabled', 'disabled')
-    jQuery('#submit-button-container').append(window.SETTINGS.spinner)
+function storeData(data) {
+  // save data in localStorage
 
-    let url = get_url()
-    let data = {};
+  if (typeof Storage !== 'undefined') {
+    const entry = {
+      time: new Date().getTime(),
+      data: JSON.stringify(data),
+    }
+    localStorage.setItem(new URLSearchParams(location.search).get('token'), JSON.stringify(entry));
+    //reenable the submit button if the data is saved.
+    document.querySelector('#submit-button').disabled = false;
+    document.querySelector("#submit-button-container .spinner").remove()
+    return true;
+  }
+  return false;
+}
 
-    jQuery(':input:not([type=checkbox])').each(function() {
-        data[this.name] = jQuery(this).val();
-    });
-    jQuery(':input[type=checkbox]:checked').each(function() {
+function submit_form(data) {
+  let url = get_url();
+  console.log(data);
+  fetch(url + '/wp-json/dt-public/v1/webform/form_submit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: data
+  })
+  .then((data) => {
+    console.log('Success:', data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+}
+
+function get_data() {
+  var submitButtonContainer = document.querySelector('#submit-button-container');
+  var submitButton = document.querySelector('#submit-button');
+
+  submitButton.disabled = true;
+  submitButtonContainer.insertAdjacentHTML("beforeend", window.SETTINGS.spinner);
+  let data = {};
+
+  jQuery(':input:not([type=checkbox])').each(function() {
       data[this.name] = jQuery(this).val();
-    });
+  });
+  jQuery(':input[type=checkbox]:checked').each(function() {
+    data[this.name] = jQuery(this).val();
+  });
+  console.log(JSON.stringify(data));
 
-    return jQuery.ajax({
-        type: "POST",
-        data: JSON.stringify(data),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        url: url + '/wp-json/dt-public/v1/webform/form_submit',
-    })
-        .done(function (data) {
-          window.location = window.location + '&success=true'
+  if (!navigator.onLine) {
+    // user is offline, store data locally
+    const stored = storeData(data);
+    let message = '<strong>You appear to be offline right now. </strong>';
+    if (stored) {
+      message += 'Your data was saved and will be submitted once you come back online.';
+    }
+    console.log(message);
+    document.querySelector("form").reset()
+    submitButtonContainer.insertAdjacentHTML("beforeend", `<span class="offlineMessage">${message}</span>`);
+  } else {
+    submit_form(JSON.stringify(data));
+    submitButton.disabled = false;
+    document.querySelector("#submit-button-container .spinner").remove()
 
-        })
-        .fail(function (err) {
-            jQuery('#report').html('Failed')
-        });
+  }
 }
 
 function get_url() {
     return window.location.protocol + '//' + window.location.hostname
+}
+
+function checkStorage() {
+  // check if we have saved data in localStorage
+  console.log("checkStorage");
+  if (typeof Storage !== 'undefined') {
+    const item = localStorage.getItem(new URLSearchParams(location.search).get('token'));
+    const entry = item && JSON.parse(item);
+
+    if (entry) {
+
+      //TODO: Delete the localstorage after confirmed save
+      // discard submissions older than one day
+      const now = new Date().getTime();
+      const day = 24 * 60 * 60 * 1000;
+      if (now - day > entry.time) {
+        localStorage.removeItem(this.id);
+        return;
+      }
+
+      // we have saved form data, try to submit it
+      var formData = JSON.parse(item).data;
+      submit_form(formData);
+    }
+  }
 }
 
 jQuery(document).ready(function () {
@@ -75,7 +142,7 @@ jQuery(document).ready(function () {
                 minlength: 2,
             },
             phone: {
-                required: true,
+                required: false,
                 minlength: 10
             },
             l: {
@@ -101,20 +168,23 @@ jQuery(document).ready(function () {
     });
     validator.form()
 
-    // This is a form delay to discourage robots
-    let counter = 7;
-    let myInterval = setInterval(function () {
-        let button = jQuery('#submit-button')
+    let button = jQuery('#submit-button')
+    button.html( window.TRANSLATION.submit ).prop('disabled', false)
 
-        button.html( window.TRANSLATION.submit_in + ' ' + counter)
-        --counter;
+    // // This is a form delay to discourage robots
+    // let counter = 7;
+    // let myInterval = setInterval(function () {
+    //     let button = jQuery('#submit-button')
 
-        if ( counter === 0 ) {
-            clearInterval(myInterval);
-            button.html( window.TRANSLATION.submit ).prop('disabled', false)
-        }
+    //     button.html( window.TRANSLATION.submit_in + ' ' + counter)
+    //     --counter;
 
-    }, 1000);
+    //     if ( counter === 0 ) {
+    //         clearInterval(myInterval);
+    //         button.html( window.TRANSLATION.submit ).prop('disabled', false)
+    //     }
+
+    // }, 1000);
 
 
 })

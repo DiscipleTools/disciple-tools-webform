@@ -1,5 +1,6 @@
 //check online status
-window.addEventListener('online',  checkStorage);
+window.addEventListener('online', checkStorage);
+window.addEventListener('load', checkStorage);
 
 //Get URL Parameters
 let getUrlParameter = function getUrlParameter(sParam) {
@@ -36,11 +37,11 @@ function storeData(data) {
   // save data in localStorage
 
   if (typeof Storage !== 'undefined') {
-    const entry = {
-      time: new Date().getTime(),
-      data: JSON.stringify(data),
-    }
-    localStorage.setItem(new URLSearchParams(location.search).get('token'), JSON.stringify(entry));
+    const formToken = new URLSearchParams(location.search).get('token');
+    const time = + new Date()
+    const key = `${formToken}_${time}`;
+
+    localStorage.setItem(key, JSON.stringify(data));
     //reenable the submit button if the data is saved.
     document.querySelector('#submit-button').disabled = false;
     document.querySelector("#submit-button-container .spinner").remove()
@@ -49,10 +50,10 @@ function storeData(data) {
   return false;
 }
 
-function submit_form(data) {
+async function submit_form(data) {
   let url = get_url();
   console.log(data);
-  fetch(url + '/wp-json/dt-public/v1/webform/form_submit', {
+  return fetch(url + '/wp-json/dt-public/v1/webform/form_submit', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
@@ -60,7 +61,11 @@ function submit_form(data) {
     body: data
   })
   .then((data) => {
-    console.log('Success:', data);
+    if (data.status == 200) {
+      return data.status;
+    } else {
+      throw new Error(data.status);
+    }
   })
   .catch((error) => {
     console.error('Error:', error);
@@ -81,7 +86,6 @@ function get_data() {
   jQuery(':input[type=checkbox]:checked').each(function() {
     data[this.name] = jQuery(this).val();
   });
-  console.log(JSON.stringify(data));
 
   if (!navigator.onLine) {
     // user is offline, store data locally
@@ -90,11 +94,20 @@ function get_data() {
     if (stored) {
       message += 'Your data was saved and will be submitted once you come back online.';
     }
+
     console.log(message);
-    document.querySelector("form").reset()
+    document.querySelector("form").reset();
+
+    if (document.querySelector(".offlineMessage")) {
+      document.querySelector(".offlineMessage").remove();
+    }
+
     submitButtonContainer.insertAdjacentHTML("beforeend", `<span class="offlineMessage">${message}</span>`);
+
   } else {
-    submit_form(JSON.stringify(data));
+    submit_form(JSON.stringify(data)).then((response) => {
+      console.log(response);
+     });
     submitButton.disabled = false;
     document.querySelector("#submit-button-container .spinner").remove()
 
@@ -105,27 +118,28 @@ function get_url() {
     return window.location.protocol + '//' + window.location.hostname
 }
 
-function checkStorage() {
+async function checkStorage() {
   // check if we have saved data in localStorage
   console.log("checkStorage");
   if (typeof Storage !== 'undefined') {
-    const item = localStorage.getItem(new URLSearchParams(location.search).get('token'));
-    const entry = item && JSON.parse(item);
+    const token = new URLSearchParams(location.search).get('token');
 
-    if (entry) {
 
-      //TODO: Delete the localstorage after confirmed save
-      // discard submissions older than one day
-      const now = new Date().getTime();
-      const day = 24 * 60 * 60 * 1000;
-      if (now - day > entry.time) {
-        localStorage.removeItem(this.id);
-        return;
+    for (let i=0; i< localStorage.length; i++) {
+      let key = localStorage.key(i);
+      if (key.includes(token)) {
+        const fromLocalStore = localStorage.getItem(key);
+        if (fromLocalStore) {
+            // we have saved form data, try to submit it
+            const item = JSON.parse(fromLocalStore);
+
+            submit_form(JSON.stringify(item)).then(function(res) {
+                if (res === 200) {
+                  localStorage.removeItem(key);
+                }
+              });
+        }
       }
-
-      // we have saved form data, try to submit it
-      var formData = JSON.parse(item).data;
-      submit_form(formData);
     }
   }
 }

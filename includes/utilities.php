@@ -146,17 +146,24 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-                    
+
                     .hr {}
                     .hr-divider {}
-                    
+                    .offlineMessage {
+                        color: #9F6000;
+                        background-color: #FEEFB3;
+                        padding: 1em;
+                        font-size: 1.2em;
+                        margin: 1em 0;
+                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+                    },
                     label.error {
                         color: red;
                         font-size: .8em;
                     }
                     .input-label {
                         font-size: 1em;
-                        
+
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -170,7 +177,7 @@ class DT_Webform_Utilities {
                     #description {
                         padding-bottom: .8em;
                         font-size: .9em;
-                        
+
                     }
                     .section {
                         padding: 10px 0;
@@ -189,7 +196,7 @@ class DT_Webform_Utilities {
                     .section-description {
                         padding-bottom: .8em;
                         font-size: .9em;
-                        
+
                     }
                     .section-map {
                         margin: 10px 0 ;
@@ -222,7 +229,7 @@ class DT_Webform_Utilities {
                     .span-radio {
                         float:left;
                         padding:5px;
-                        
+
                     }
                     .input-dropdown {
                         font-size: 1.2em;
@@ -252,24 +259,31 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-                    
+                    .offlineMessage {
+                        color: #9F6000;
+                        background-color: #FEEFB3;
+                        padding: 1em;
+                        font-size: 1.2em;
+                        margin: 1em 0;
+                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+                    },
                     .hr {}
                     .hr-divider {}
-                    
+
                     label.error {
                         color: red;
                         font-size: .8em;
                     }
-                    
+
                     .input-label {
                         font-size: 1.2em;
-                        
+
                     }
                     .label-dropdown {}
                     .label-multi_radio {
                         margin-bottom:10px;
                     }
-                    
+
                     .section {
                         padding: 10px 0;
                         width: 100%;
@@ -287,7 +301,7 @@ class DT_Webform_Utilities {
                     .section-map {
                         margin: 10px 0 ;
                     }
-                    
+
                     #title {
                         font-size: 2em;
                         font-weight: bolder;
@@ -305,7 +319,7 @@ class DT_Webform_Utilities {
                         max-width: 1000px;
                     }
                     #contact-form {}
-                    
+
                     #title {
                         font-size: 2em;
                         font-weight: bolder;
@@ -320,7 +334,7 @@ class DT_Webform_Utilities {
                     #name {}
                     #phone {}
                     #email {}
-                    
+
                     .section {
                         padding: 10px 0;
                         width: 100%;
@@ -336,7 +350,7 @@ class DT_Webform_Utilities {
                     .section-header {
                         font-size: 2em;
                         font-weight: bolder;
-                        
+
                         padding-top: .5em;
                     }
                     .section-description {}
@@ -346,9 +360,9 @@ class DT_Webform_Utilities {
                     }
                     .section-custom_label {
                         font-size: 1.2em;
-                        
+
                     }
-                    
+
                     .input-text {
                         padding: .5em;
                         font-size: 1em;
@@ -367,7 +381,7 @@ class DT_Webform_Utilities {
                     .span-radio {
                         float:left;
                         padding:5px;
-                        
+
                     }
                     .input-tel {
                         padding: .5em;
@@ -397,10 +411,10 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-                    
+
                     .input-label {
                         font-size: 1.2em;
-                        
+
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -415,10 +429,17 @@ class DT_Webform_Utilities {
                     .label-map-instructions {
                         color: grey;
                     }
-                    
+                    .offlineMessage {
+                        color: #9F6000;
+                        background-color: #FEEFB3;
+                        padding: 1em;
+                        font-size: 1.2em;
+                        margin: 1em 0;
+                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+                    },
                     .hr {}
                     .hr-divider {}
-                    
+
                     label.error {
                         color: red;
                         font-size: .8em;
@@ -433,7 +454,7 @@ class DT_Webform_Utilities {
                     // FORM WRAPPER
                     #wrapper {}
                     #contact-form {}
-                    
+
                     // CORE SECTION AND INPUTS
                     #title {}
                     #description {}
@@ -443,7 +464,7 @@ class DT_Webform_Utilities {
                     #name {}
                     #phone {}
                     #email {}
-                    
+
                     // SECTION CLASSES
                     .section {}
                     .section-dropdown {}
@@ -457,7 +478,7 @@ class DT_Webform_Utilities {
                     .section-note {}
                     .section-map {}
                     .section-custom_label {}
-                    
+
                     // INPUT CLASSES
                     .input-text {}
                     .input-textarea {}
@@ -469,7 +490,7 @@ class DT_Webform_Utilities {
                     .input-dropdown {}
                     .input-note {}
                     button.submit-button {}
-                    
+
                     // LABELS
                     .input-label {}
                     .label-dropdown {}
@@ -481,14 +502,21 @@ class DT_Webform_Utilities {
                     .label-note {}
                     .label-map {}
                     .label-map-instructions {}
-                    
+
                     // DIVIDER CLASSES
                     .hr {}
                     .hr-divider {}
-                    
+
                     // ERROR CLASSES
                     label.error {}
-                    
+                    .offlineMessage {
+                        color: #9F6000;
+                        background-color: #FEEFB3;
+                        padding: 1em;
+                        font-size: 1.2em;
+                        margin: 1em 0;
+                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+                    }
                     // EXTRA SECTIONS AND INPUTS
                     ';
 
@@ -551,7 +579,7 @@ class DT_Webform_Utilities {
                     vertical-align: top;
                 }
                 .results-add-button {
-                    
+
                 }
                 .results-title-column {}
                 .results-title {
@@ -562,7 +590,7 @@ class DT_Webform_Utilities {
                     padding-bottom:5px;
                 }
                 .results-table {
-                    
+
                 }
                 .results-table td {
                     padding-bottom: 15px;

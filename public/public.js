@@ -1,3 +1,15 @@
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
+
 //check online status
 window.addEventListener('online', checkStorage);
 window.addEventListener('load', checkStorage);
@@ -102,14 +114,14 @@ function get_data() {
       document.querySelector(".offlineMessage").remove();
     }
 
-    submitButtonContainer.insertAdjacentHTML("beforeend", `<span class="offlineMessage">${message}</span>`);
+    submitButtonContainer.insertAdjacentHTML("beforeend", `<div class="offlineMessage">${message}</div>`);
 
   } else {
     submit_form(JSON.stringify(data)).then((response) => {
       console.log(response);
+      submitButton.disabled = false;
+      document.querySelector("#submit-button-container .spinner").remove()
      });
-    submitButton.disabled = false;
-    document.querySelector("#submit-button-container .spinner").remove()
 
   }
 }

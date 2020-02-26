@@ -11,7 +11,6 @@ if ( ! isset( $_GET['token'] ) ) {
 $dt_webform_token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
 $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token );
-dt_write_log( $dt_webform_core_fields );
 $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
 
 ?>

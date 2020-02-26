@@ -34,6 +34,16 @@ try {
 }
 /*******************************************************************************************************************/
 
+function my_plugin_action() {
+    if ( !isset($_GET['token']) ) return;
+
+    include('public/form.php');
+    exit;
+  }
+  add_action( 'init', 'my_plugin_action' );
+
+  https://rsdt.local/wp-content/plugins/disciple-tools-webform/public/form.php?token=788c9df1800358f3f0850d9d348e561f
+
 /**
  * Gets the instance of the `DT_Webform` class.  This function is useful for quickly grabbing data
  * used throughout the plugin.

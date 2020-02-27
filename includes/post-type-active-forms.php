@@ -272,6 +272,8 @@ class DT_Webform_Active_Form_Post_Type
                 // @phpcs:ignore
                 echo $this->embed_code( $post->ID );
             ?></textarea>
+
+            or Directly access the offline capable form at <?php echo $this->direct_link( $post->ID );?>
             <?php
         }
     }
@@ -292,6 +294,15 @@ class DT_Webform_Active_Form_Post_Type
 
         return '<iframe src="'. esc_url( $site ) .'form.php?token='. esc_attr( $token )
             .'" style="width:'. esc_attr( $width ) .';height:'. esc_attr( $height ) .';" frameborder="0"></iframe>';
+    }
+
+    public function direct_link( $post_id ) {
+        $token = get_metadata( 'post', $post_id, 'token', true );
+        $site = dt_webform()->public_uri;
+
+        $href = esc_url( $site ) .'form.php?token='. esc_attr( $token );
+        $link = '<a href="' . $href . '">' . $href . '</a>';
+        return $link;
     }
 
     /**
@@ -665,21 +676,21 @@ class DT_Webform_Active_Form_Post_Type
                 case 'combined':
                     echo '<script type="text/javascript">
                             jQuery(document).ready( function($) {
-                                
+
                                 jQuery("#toplevel_page_dt_extensions").addClass("wp-has-current-submenu wp-menu-open");
                                 jQuery("li:contains(\'Webform\')").addClass("current");
                                 $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">' . esc_attr( $label ) . '</a>\');
-                            
+
                             });
                         </script>';
                     break;
                 default: // covers remote and unset states
                     echo '<script type="text/javascript">
                             jQuery(document).ready( function($) {
-                                
+
                                 $("#toplevel_page_dt_webform").addClass("current wp-has-current-submenu wp-menu-open");
                                 $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">' . esc_attr( $label ) . '</a>\');
-                            
+
                             });
                         </script>';
                     break;

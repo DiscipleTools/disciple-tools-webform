@@ -45,10 +45,10 @@ class DT_Webform_Utilities {
 
         global $wpdb;
         $css = $wpdb->get_var( $wpdb->prepare( "
-            SELECT meta_value 
-            FROM $wpdb->postmeta 
-            WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) 
-            AND meta_key = 'custom_css' 
+            SELECT meta_value
+            FROM $wpdb->postmeta
+            WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 )
+            AND meta_key = 'custom_css'
             LIMIT 1", $token ) );
 
         wp_cache_set( 'get_custom_css', $css, $token );
@@ -149,7 +149,7 @@ class DT_Webform_Utilities {
 
                     .hr {}
                     .hr-divider {}
-                    .offlineMessage {
+                    .offlineWarning {
                         color: #9F6000;
                         background-color: #FEEFB3;
                         padding: 1em;
@@ -259,7 +259,7 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-                    .offlineMessage {
+                    .offlineWarning {
                         color: #9F6000;
                         background-color: #FEEFB3;
                         padding: 1em;
@@ -429,7 +429,7 @@ class DT_Webform_Utilities {
                     .label-map-instructions {
                         color: grey;
                     }
-                    .offlineMessage {
+                    .offlineWarning {
                         color: #9F6000;
                         background-color: #FEEFB3;
                         padding: 1em;
@@ -509,7 +509,7 @@ class DT_Webform_Utilities {
 
                     // ERROR CLASSES
                     label.error {}
-                    .offlineMessage {
+                    .offlineWarning {
                         color: #9F6000;
                         background-color: #FEEFB3;
                         padding: 1em;

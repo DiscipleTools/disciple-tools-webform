@@ -1,15 +1,3 @@
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').then(function(registration) {
-      // Registration was successful
-      console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }, function(err) {
-      // registration failed :(
-      console.log('ServiceWorker registration failed: ', err);
-    });
-  });
-}
-
 //check online status
 window.addEventListener('online', checkStorage);
 window.addEventListener('load', checkStorage);
@@ -105,16 +93,17 @@ function get_data() {
     let message = '<strong>You appear to be offline right now. </strong>';
     if (stored) {
       message += 'Your data was saved and will be submitted once you come back online.';
+
+      document.querySelector("#offlineWarningBanner").innerText = offlineCountMessage(offlineCount())
     }
 
     console.log(message);
     document.querySelector("form").reset();
 
-    if (document.querySelector(".offlineMessage")) {
-      document.querySelector(".offlineMessage").remove();
-    }
+    removeOfflineWarning();
 
-    submitButtonContainer.insertAdjacentHTML("beforeend", `<div class="offlineMessage">${message}</div>`);
+    submitButtonContainer.insertAdjacentHTML("beforeend", `<div class="offlineWarning">${message}</div>`);
+    setTimeout(removeOfflineWarning, 2000);
 
   } else {
     submit_form(JSON.stringify(data)).then((response) => {
@@ -126,13 +115,42 @@ function get_data() {
   }
 }
 
+function removeOfflineWarning() {
+  if (document.querySelector(".offlineWarning")) {
+    document.querySelector(".offlineWarning").remove();
+  }
+}
+
+function offlineCount() {
+  const token = new URLSearchParams(location.search).get('token');
+  let offlineCount = 0;
+
+  for (let i=0; i< localStorage.length; i++) {
+    let key = localStorage.key(i);
+    if (key.includes(token)) {
+      offlineCount++
+    }
+  }
+
+  return offlineCount;
+}
+
+function offlineCountMessage(offlineCount) {
+  let message;
+  if (offlineCount == 1) {
+    message = `You have ${offlineCount} contact stored offline, reconnect to the internet to save this contacts`
+  }
+  else if (offlineCount > 1) {
+    message = `You have ${offlineCount} contacts stored offline, reconnect to the internet to save these contacts`
+  }
+  return message ? message : "";
+}
 function get_url() {
     return window.location.protocol + '//' + window.location.hostname
 }
 
 async function checkStorage() {
   // check if we have saved data in localStorage
-  console.log("checkStorage");
   if (typeof Storage !== 'undefined') {
     const token = new URLSearchParams(location.search).get('token');
 
@@ -148,6 +166,7 @@ async function checkStorage() {
             submit_form(JSON.stringify(item)).then(function(res) {
                 if (res === 200) {
                   localStorage.removeItem(key);
+                  document.querySelector("#offlineWarningBanner").innerText = offlineCountMessage(offlineCount());
                 }
               });
         }

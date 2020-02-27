@@ -273,7 +273,10 @@ class DT_Webform_Active_Form_Post_Type
                 echo $this->embed_code( $post->ID );
             ?></textarea>
 
-            or Directly access the offline capable form at <?php echo $this->direct_link( $post->ID );?>
+            or Directly access the offline capable form at <?php
+                // WordPress.XSS.EscapeOutput.OutputNotEscaped
+                // @phpcs:ignore
+                echo $this->direct_link( $post->ID );?>
             <?php
         }
     }

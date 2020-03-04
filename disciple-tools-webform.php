@@ -201,17 +201,19 @@ class DT_Webform {
      * @return void
      */
     private function includes() {
-        require_once( 'includes/mapbox-api.php' ); // @todo duplicate of same class in Disciple Tools
-        require_once( 'includes/site-link-customize.php' );
 
-        require_once( 'includes/utilities.php' );
-        require_once( 'includes/post-type-active-forms.php' );
-        require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
-        require_once( 'includes/tables.php' );
+        $is_rest = dt_is_rest();
+        if ( $is_rest || is_admin() ) {
+            require_once( 'includes/utilities.php' );
+            require_once( 'includes/site-link-customize.php' );
+            require_once( 'includes/post-type-active-forms.php' );
+            require_once( 'includes/post-type-new-leads.php' );
+        }
 
-        // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
         if ( is_admin() ) {
             // Admin and tabs menu
+            require_once( 'includes/tables.php' );
+            require_once( 'includes/mapbox-api.php' );
             require_once( 'includes/menu-and-tabs.php' ); // main wp-admin menu and ui
         }
     }

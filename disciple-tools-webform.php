@@ -57,14 +57,14 @@ function dt_webform() {
     if ( 'combined' == $state || 'home' == $state ) {
         if ( ! ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
             if ( ! is_multisite() ) {
-                add_action('admin_notices', 'dt_webform_no_disciple_tools_theme_found');
+                add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
             }
             return false;
         }
         if ( ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) && $version < $dt_webform_required_dt_theme_version ) {
             if ( ! is_multisite() ) {
-                add_action('admin_notices', 'dt_webform_no_disciple_tools_theme_found');
-                add_action('wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler');
+                add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
+                add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
             }
 
             return new WP_Error( 'current_theme_not_dt', 'Please upgrade Disciple Tools Theme to ' . $dt_webform_required_dt_theme_version . ' to use this plugin.' );

@@ -894,13 +894,10 @@ class DT_Webform_Utilities {
             $args['meta_input']['form_state'] = get_option( 'dt_webform_state' );
         }
 
-        dt_write_log( $args );
-
         // Insert
         $status = wp_insert_post( $args, true );
         return $status;
     }
-
 
 }
 

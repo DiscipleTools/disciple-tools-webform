@@ -213,7 +213,13 @@ class DT_Webform {
         if ( is_admin() ) {
             // Admin and tabs menu
             require_once( 'includes/tables.php' );
-            require_once( 'includes/mapbox-api.php' );
+
+            if ( file_exists( trailingslashit( get_stylesheet_directory() ) . 'dt-mapping/geocode-api/mapbox-api.php' ) ) {
+                require_once( trailingslashit( get_stylesheet_directory() ) . 'dt-mapping/geocode-api/mapbox-api.php' );
+            } else {
+                require_once( 'dt-mapping/geocode-api/mapbox-api.php' );
+            }
+
             require_once( 'includes/menu-and-tabs.php' ); // main wp-admin menu and ui
         }
     }

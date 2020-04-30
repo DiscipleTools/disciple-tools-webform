@@ -241,7 +241,7 @@ class DT_Webform {
     /**
      *
      */
-    function dt_warn_user_about_permalink_settings() {
+    public function dt_warn_user_about_permalink_settings() {
         ?>
         <div class="error notices">
             <p>You may only set your permalink settings to "Post name"'</p>
@@ -254,7 +254,7 @@ class DT_Webform {
      *
      * @param $permalink_structure
      */
-    function dt_permalink_structure_changed_callback( $permalink_structure ) {
+    public function dt_permalink_structure_changed_callback( $permalink_structure ) {
         global $wp_rewrite;
         if ( $permalink_structure !== '/%postname%/' ) {
             add_action( 'admin_notices', [ $this, 'dt_warn_user_about_permalink_settings' ] );

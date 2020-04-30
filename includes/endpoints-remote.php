@@ -62,7 +62,7 @@ class DT_Webform_Remote_Endpoints
                 ],
             ]
         );
-        error_log('here');
+        error_log( 'here' );
 
     }
 

@@ -55,6 +55,7 @@ function submit_form() {
 
         })
         .fail(function (err) {
+          console.log(err)
             jQuery('#report').html('Failed')
         });
 }

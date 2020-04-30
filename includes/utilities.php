@@ -47,10 +47,10 @@ class DT_Webform_Utilities {
 
         global $wpdb;
         $css = $wpdb->get_var( $wpdb->prepare( "
-            SELECT meta_value 
-            FROM $wpdb->postmeta 
-            WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 ) 
-            AND meta_key = 'custom_css' 
+            SELECT meta_value
+            FROM $wpdb->postmeta
+            WHERE post_id = ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = 'token' LIMIT 1 )
+            AND meta_key = 'custom_css'
             LIMIT 1", $token ) );
 
         wp_cache_set( 'get_custom_css', $css, $token );
@@ -148,17 +148,17 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-                    
+
                     .hr {}
                     .hr-divider {}
-                    
+
                     label.error {
                         color: red;
                         font-size: .8em;
                     }
                     .input-label {
                         font-size: 1em;
-                        
+
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -172,7 +172,7 @@ class DT_Webform_Utilities {
                     #description {
                         padding-bottom: .8em;
                         font-size: .9em;
-                        
+
                     }
                     .section {
                         padding: 10px 0;
@@ -191,7 +191,7 @@ class DT_Webform_Utilities {
                     .section-description {
                         padding-bottom: .8em;
                         font-size: .9em;
-                        
+
                     }
                     .section-map {
                         margin: 10px 0 ;
@@ -224,7 +224,7 @@ class DT_Webform_Utilities {
                     .span-radio {
                         float:left;
                         padding:5px;
-                        
+
                     }
                     .input-dropdown {
                         font-size: 1.2em;
@@ -254,24 +254,24 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-                    
+
                     .hr {}
                     .hr-divider {}
-                    
+
                     label.error {
                         color: red;
                         font-size: .8em;
                     }
-                    
+
                     .input-label {
                         font-size: 1.2em;
-                        
+
                     }
                     .label-dropdown {}
                     .label-multi_radio {
                         margin-bottom:10px;
                     }
-                    
+
                     .section {
                         padding: 10px 0;
                         width: 100%;
@@ -289,7 +289,7 @@ class DT_Webform_Utilities {
                     .section-map {
                         margin: 10px 0 ;
                     }
-                    
+
                     #title {
                         font-size: 2em;
                         font-weight: bolder;
@@ -307,7 +307,7 @@ class DT_Webform_Utilities {
                         max-width: 1000px;
                     }
                     #contact-form {}
-                    
+
                     #title {
                         font-size: 2em;
                         font-weight: bolder;
@@ -322,7 +322,7 @@ class DT_Webform_Utilities {
                     #name {}
                     #phone {}
                     #email {}
-                    
+
                     .section {
                         padding: 10px 0;
                         width: 100%;
@@ -338,7 +338,7 @@ class DT_Webform_Utilities {
                     .section-header {
                         font-size: 2em;
                         font-weight: bolder;
-                        
+
                         padding-top: .5em;
                     }
                     .section-description {}
@@ -348,9 +348,9 @@ class DT_Webform_Utilities {
                     }
                     .section-custom_label {
                         font-size: 1.2em;
-                        
+
                     }
-                    
+
                     .input-text {
                         padding: .5em;
                         font-size: 1em;
@@ -369,7 +369,7 @@ class DT_Webform_Utilities {
                     .span-radio {
                         float:left;
                         padding:5px;
-                        
+
                     }
                     .input-tel {
                         padding: .5em;
@@ -399,10 +399,10 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-                    
+
                     .input-label {
                         font-size: 1.2em;
-                        
+
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -417,10 +417,10 @@ class DT_Webform_Utilities {
                     .label-map-instructions {
                         color: grey;
                     }
-                    
+
                     .hr {}
                     .hr-divider {}
-                    
+
                     label.error {
                         color: red;
                         font-size: .8em;
@@ -435,7 +435,7 @@ class DT_Webform_Utilities {
                     // FORM WRAPPER
                     #wrapper {}
                     #contact-form {}
-                    
+
                     // CORE SECTION AND INPUTS
                     #title {}
                     #description {}
@@ -445,7 +445,7 @@ class DT_Webform_Utilities {
                     #name {}
                     #phone {}
                     #email {}
-                    
+
                     // SECTION CLASSES
                     .section {}
                     .section-dropdown {}
@@ -459,7 +459,7 @@ class DT_Webform_Utilities {
                     .section-note {}
                     .section-map {}
                     .section-custom_label {}
-                    
+
                     // INPUT CLASSES
                     .input-text {}
                     .input-textarea {}
@@ -471,7 +471,7 @@ class DT_Webform_Utilities {
                     .input-dropdown {}
                     .input-note {}
                     button.submit-button {}
-                    
+
                     // LABELS
                     .input-label {}
                     .label-dropdown {}
@@ -483,14 +483,14 @@ class DT_Webform_Utilities {
                     .label-note {}
                     .label-map {}
                     .label-map-instructions {}
-                    
+
                     // DIVIDER CLASSES
                     .hr {}
                     .hr-divider {}
-                    
+
                     // ERROR CLASSES
                     label.error {}
-                    
+
                     // EXTRA SECTIONS AND INPUTS
                     ';
 
@@ -553,7 +553,7 @@ class DT_Webform_Utilities {
                     vertical-align: top;
                 }
                 .results-add-button {
-                    
+
                 }
                 .results-title-column {}
                 .results-title {
@@ -564,7 +564,7 @@ class DT_Webform_Utilities {
                     padding-bottom:5px;
                 }
                 .results-table {
-                    
+
                 }
                 .results-table td {
                     padding-bottom: 15px;
@@ -882,12 +882,12 @@ class DT_Webform_Utilities {
         }
 
         // add assigned to
-        if ( ! isset( $args['meta_input']['assigned_to'] ) && ! empty( $form_meta ) ) {
+        if ( ! isset( $args['meta_input']['assigned_to'] ) && ! empty( $form_meta ) && isset( $form_meta['assigned_to'] ) ) {
             $args['meta_input']['assigned_to'] = $form_meta['assigned_to'];
         }
 
         // add source
-        if ( ! isset( $args['meta_input']['source'] ) && ! empty( $form_meta ) ) {
+        if ( ! isset( $args['meta_input']['source'] ) && ! empty( $form_meta ) && isset( $form_meta['source'] ) ) {
             $args['meta_input']['source'] = $form_meta['source'];
         }
 
@@ -903,17 +903,17 @@ class DT_Webform_Utilities {
 
 }
 
-//if ( ! function_exists( 'dt_sanitize_array' ) ) {
-function dt_sanitize_array( &$array ) {
-    foreach ($array as &$value) {
-        if ( !is_array( $value ) ) {
-            $value = sanitize_text_field( wp_unslash( $value ) );
-        } else {          dt_sanitize_array( $value );
+if ( ! function_exists( 'dt_sanitize_array' ) ) {
+    function dt_sanitize_array( &$array ) {
+        foreach ($array as &$value) {
+            if ( !is_array( $value ) ) {
+                $value = sanitize_text_field( wp_unslash( $value ) );
+            } else {          dt_sanitize_array( $value );
+            }
         }
+        return $array;
     }
-    return $array;
 }
-//}
 
 
 

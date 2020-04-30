@@ -9,10 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  */
 
 
-/**
- * Initialize instance
- */
-DT_Webform_Remote_Endpoints::instance();
+
 /**
  * Class DT_Webform_Remote_Endpoints
  */
@@ -39,7 +36,6 @@ class DT_Webform_Remote_Endpoints
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
         }
-
         return self::$_instance;
     } // End instance()
 
@@ -51,6 +47,7 @@ class DT_Webform_Remote_Endpoints
      */
     public function __construct(){
         add_action( 'rest_api_init', [ $this, 'add_api_routes' ] );
+
     } // End __construct()
 
     public function add_api_routes(){
@@ -65,6 +62,8 @@ class DT_Webform_Remote_Endpoints
                 ],
             ]
         );
+        error_log('here');
+
     }
 
     /**
@@ -113,4 +112,7 @@ class DT_Webform_Remote_Endpoints
 
 
 }
-
+/**
+ * Initialize instance
+ */
+DT_Webform_Remote_Endpoints::instance();

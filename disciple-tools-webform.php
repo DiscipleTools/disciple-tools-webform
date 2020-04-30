@@ -193,7 +193,9 @@ class DT_Webform {
         require_once( 'includes/endpoints-remote.php' );
         require_once( 'includes/site-link-post-type.php' );
         Site_Link_System::instance();
-        Site_Link_System::add_cors_sites();
+
+        add_action( 'init', [ $this, 'dt_set_permalink_structure' ] );
+        add_action( 'update_option_permalink_structure', [ $this, 'dt_permalink_structure_changed_callback' ] );
 
     }
 
@@ -216,7 +218,6 @@ class DT_Webform {
         }
 
 
-
         if ( is_admin() ) {
             // Admin and tabs menu
             require_once( 'includes/tables.php' );
@@ -228,6 +229,35 @@ class DT_Webform {
             }
 
             require_once( 'includes/menu-and-tabs.php' ); // main wp-admin menu and ui
+        }
+    }
+
+    public function dt_set_permalink_structure() {
+        global $wp_rewrite;
+        $wp_rewrite->set_permalink_structure( '/%postname%/' );
+        flush_rewrite_rules();
+    }
+
+    /**
+     *
+     */
+    function dt_warn_user_about_permalink_settings() {
+        ?>
+        <div class="error notices">
+            <p>You may only set your permalink settings to "Post name"'</p>
+        </div>
+        <?php
+    }
+
+    /**
+     * Notification that 'posttype' is the only permalink structure available.
+     *
+     * @param $permalink_structure
+     */
+    function dt_permalink_structure_changed_callback( $permalink_structure ) {
+        global $wp_rewrite;
+        if ( $permalink_structure !== '/%postname%/' ) {
+            add_action( 'admin_notices', [ $this, 'dt_warn_user_about_permalink_settings' ] );
         }
     }
 

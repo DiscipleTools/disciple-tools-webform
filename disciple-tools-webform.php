@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
- * Version:  2.3
+ * Version:  2.3.2
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Requires at least: 4.7.0
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * @license GPL-2.0 or later
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
-$dt_webform_required_dt_theme_version = '0.29.0';
+$dt_webform_required_dt_theme_version = '0.27.0';
 
 /*******************************************************************************************************************
  * MIGRATION ENGINE
@@ -144,6 +144,7 @@ class DT_Webform {
                 case 'remote':
                     $instance->includes();
                     $instance->remote();
+
                     break;
                 default: // if no option exists, then the plugin is forced to selection screen.
                     $instance->initialize_plugin_state();
@@ -190,6 +191,9 @@ class DT_Webform {
     private function remote() {
 
         require_once( 'includes/endpoints-remote.php' );
+        require_once( 'includes/site-link-post-type.php' );
+        Site_Link_System::instance();
+        Site_Link_System::add_cors_sites();
 
     }
 
@@ -210,6 +214,8 @@ class DT_Webform {
             require_once( 'includes/post-type-active-forms.php' );
             require_once( 'includes/post-type-new-leads.php' );
         }
+
+
 
         if ( is_admin() ) {
             // Admin and tabs menu
@@ -253,7 +259,7 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '2.3';
+        $this->version             = '2.3.2';
     }
 
     /**

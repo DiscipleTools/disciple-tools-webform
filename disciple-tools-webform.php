@@ -202,6 +202,7 @@ class DT_Webform {
      */
     private function includes() {
 
+
         $is_rest = dt_is_rest();
         if ( $is_rest || is_admin() ) {
             require_once( 'includes/utilities.php' );
@@ -499,5 +500,33 @@ if ( ! function_exists( 'dt_is_child_theme_of_disciple_tools' ) ) {
         return false;
     }
 }
-
+if ( !function_exists( 'dt_is_rest' ) ) {
+    /**
+     * Checks if the current request is a WP REST API request.
+     *
+     * Case #1: After WP_REST_Request initialisation
+     * Case #2: Support "plain" permalink settings
+     * Case #3: URL Path begins with wp-json/ (your REST prefix)
+     *          Also supports WP installations in subfolders
+     *
+     * @returns boolean
+     * @author matzeeable
+     */
+    function dt_is_rest( $namespace = null ) {
+        $prefix = rest_get_url_prefix();
+        if ( defined( 'REST_REQUEST' ) && REST_REQUEST
+            || isset( $_GET['rest_route'] )
+            && strpos( trim( sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ), '\\/' ), $prefix, 0 ) === 0 ) {
+            return true;
+        }
+        $rest_url    = wp_parse_url( site_url( $prefix ) );
+        $current_url = wp_parse_url( add_query_arg( array() ) );
+        $is_rest = strpos( $current_url['path'], $rest_url['path'], 0 ) === 0;
+        if ( $namespace ){
+            return $is_rest && strpos( $current_url['path'], $namespace ) != false;
+        } else {
+            return $is_rest;
+        }
+    }
+}
 

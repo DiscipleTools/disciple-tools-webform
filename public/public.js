@@ -94,7 +94,7 @@ function get_data() {
     if (stored) {
       message += 'Your data was saved and will be submitted once you come back online.';
 
-      document.querySelector("#offlineWarningBanner").innerText = offlineCountMessage(offlineCount())
+      document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount())
     }
 
     console.log(message);
@@ -166,7 +166,7 @@ async function checkStorage() {
             submit_form(JSON.stringify(item)).then(function(res) {
                 if (res === 200) {
                   localStorage.removeItem(key);
-                  document.querySelector("#offlineWarningBanner").innerText = offlineCountMessage(offlineCount());
+                  document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount());
                 }
               });
         }

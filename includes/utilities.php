@@ -511,14 +511,7 @@ class DT_Webform_Utilities {
 
                     // ERROR CLASSES
                     label.error {}
-                    .offlineWarning {
-                        color: #9F6000;
-                        background-color: #FEEFB3;
-                        padding: 1em;
-                        font-size: 1.2em;
-                        margin: 1em 0;
-                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
-                    }
+                    .offlineWarning {}
                     // EXTRA SECTIONS AND INPUTS
                     ';
 

@@ -8,6 +8,11 @@ require( $_SERVER[ 'DOCUMENT_ROOT' ] . '/wp-load.php' ); // loads the wp framewo
 if ( ! isset( $_GET['token'] ) ) {
     die( 'missing token' );
 }
+require_once( '../includes/utilities.php' );
+require_once( '../includes/site-link-customize.php' );
+require_once( '../includes/post-type-active-forms.php' );
+require_once( '../includes/post-type-new-leads.php' );
+
 $dt_webform_token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
 $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token );

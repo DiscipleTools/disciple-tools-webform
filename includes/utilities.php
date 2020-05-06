@@ -12,7 +12,8 @@ class DT_Webform_Utilities {
         if ( empty( $token ) ) {
             return false;
         }
-        if ( $meta = wp_cache_get( 'get_form_meta', $token ) ) {
+        $meta = wp_cache_get( 'get_form_meta', $token );
+        if ( $meta) {
             return maybe_unserialize( $meta );
         }
 
@@ -39,7 +40,8 @@ class DT_Webform_Utilities {
             return false;
         }
 
-        if ( $meta = wp_cache_get( 'get_custom_css', $token ) ) {
+        $meta = wp_cache_get( 'get_custom_css', $token );
+        if ( $meta ) {
             return $meta;
         }
 
@@ -908,12 +910,12 @@ class DT_Webform_Utilities {
         }
 
         // add assigned to
-        if ( ! isset( $args['meta_input']['assigned_to'] ) && ! empty( $form_meta ) ) {
+        if ( ! isset( $args['meta_input']['assigned_to'] ) && ! empty( $form_meta ) && isset( $form_meta['assigned_to'] ) ) {
             $args['meta_input']['assigned_to'] = $form_meta['assigned_to'];
         }
 
         // add source
-        if ( ! isset( $args['meta_input']['source'] ) && ! empty( $form_meta ) ) {
+        if ( ! isset( $args['meta_input']['source'] ) && ! empty( $form_meta ) && isset( $form_meta['source'] ) ) {
             $args['meta_input']['source'] = $form_meta['source'];
         }
 
@@ -922,27 +924,24 @@ class DT_Webform_Utilities {
             $args['meta_input']['form_state'] = get_option( 'dt_webform_state' );
         }
 
-        dt_write_log( $args );
-
         // Insert
         $status = wp_insert_post( $args, true );
         return $status;
     }
 
-
 }
 
-//if ( ! function_exists( 'dt_sanitize_array' ) ) {
-function dt_sanitize_array( &$array ) {
-    foreach ($array as &$value) {
-        if ( !is_array( $value ) ) {
-            $value = sanitize_text_field( wp_unslash( $value ) );
-        } else {          dt_sanitize_array( $value );
+if ( ! function_exists( 'dt_sanitize_array' ) ) {
+    function dt_sanitize_array( &$array ) {
+        foreach ($array as &$value) {
+            if ( !is_array( $value ) ) {
+                $value = sanitize_text_field( wp_unslash( $value ) );
+            } else {          dt_sanitize_array( $value );
+            }
         }
+        return $array;
     }
-    return $array;
 }
-//}
 
 
 
@@ -954,7 +953,8 @@ function dt_sanitize_array( &$array ) {
 if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
     function dt_get_simple_post_meta( $post_id ) {
 
-        if ( $map = wp_cache_get( __METHOD__, $post_id ) ) {
+        $map = wp_cache_get( __METHOD__, $post_id );
+        if ( $map ) {
             return $map;
         }
 
@@ -979,7 +979,8 @@ if ( ! function_exists( 'dt_get_location_grid_mirror' ) ) {
      */
     function dt_get_location_grid_mirror( $url_only = false ) {
 
-        if ( $mirror = wp_cache_get( __METHOD__, $url_only ) ) {
+        $mirror = wp_cache_get( __METHOD__, $url_only );
+        if ( $mirror ) {
             return $url_only ? $mirror["url"] : $mirror;
         }
 

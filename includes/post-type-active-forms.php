@@ -784,7 +784,8 @@ class DT_Webform_Active_Form_Post_Type
 
     public function get_core_fields( int $post_id ) : array {
 
-        if ( $cache = wp_cache_get( __METHOD__, $post_id ) ) {
+        $cache = wp_cache_get( __METHOD__, $post_id );
+        if ( $cache ) {
             return $cache;
         }
 

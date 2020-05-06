@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
- * Version:  2.2
+ * Version:  2.3.2
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Requires at least: 4.7.0
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * @license GPL-2.0 or later
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
-$dt_webform_required_dt_theme_version = '0.22.2';
+$dt_webform_required_dt_theme_version = '0.27.0';
 
 /*******************************************************************************************************************
  * MIGRATION ENGINE
@@ -144,6 +144,7 @@ class DT_Webform {
                 case 'remote':
                     $instance->includes();
                     $instance->remote();
+
                     break;
                 default: // if no option exists, then the plugin is forced to selection screen.
                     $instance->initialize_plugin_state();
@@ -190,6 +191,11 @@ class DT_Webform {
     private function remote() {
 
         require_once( 'includes/endpoints-remote.php' );
+        require_once( 'includes/site-link-post-type.php' );
+        Site_Link_System::instance();
+
+        add_action( 'init', [ $this, 'dt_set_permalink_structure' ] );
+        add_action( 'update_option_permalink_structure', [ $this, 'dt_permalink_structure_changed_callback' ] );
 
     }
 
@@ -201,18 +207,57 @@ class DT_Webform {
      * @return void
      */
     private function includes() {
-        require_once( 'includes/mapbox-api.php' ); // @todo duplicate of same class in Disciple Tools
-        require_once( 'includes/site-link-customize.php' );
 
-        require_once( 'includes/utilities.php' );
-        require_once( 'includes/post-type-active-forms.php' );
-        require_once( 'includes/post-type-new-leads.php' ); // post type for the new leads post type
-        require_once( 'includes/tables.php' );
 
-        // @todo evaluate what needs to be in the is_admin. Issue is how much is needed to be available for the public REST API and CRON sync and UI interactions.
+        $is_rest = dt_is_rest();
+        if ( $is_rest || is_admin() ) {
+            require_once( 'includes/utilities.php' );
+            require_once( 'includes/site-link-customize.php' );
+            require_once( 'includes/post-type-active-forms.php' );
+            require_once( 'includes/post-type-new-leads.php' );
+        }
+
+
         if ( is_admin() ) {
             // Admin and tabs menu
+            require_once( 'includes/tables.php' );
+
+            if ( file_exists( trailingslashit( get_stylesheet_directory() ) . 'dt-mapping/geocode-api/mapbox-api.php' ) ) {
+                require_once( trailingslashit( get_stylesheet_directory() ) . 'dt-mapping/geocode-api/mapbox-api.php' );
+            } else {
+                require_once( 'dt-mapping/geocode-api/mapbox-api.php' );
+            }
+
             require_once( 'includes/menu-and-tabs.php' ); // main wp-admin menu and ui
+        }
+    }
+
+    public function dt_set_permalink_structure() {
+        global $wp_rewrite;
+        $wp_rewrite->set_permalink_structure( '/%postname%/' );
+        flush_rewrite_rules();
+    }
+
+    /**
+     *
+     */
+    public function dt_warn_user_about_permalink_settings() {
+        ?>
+        <div class="error notices">
+            <p>You may only set your permalink settings to "Post name"'</p>
+        </div>
+        <?php
+    }
+
+    /**
+     * Notification that 'posttype' is the only permalink structure available.
+     *
+     * @param $permalink_structure
+     */
+    public function dt_permalink_structure_changed_callback( $permalink_structure ) {
+        global $wp_rewrite;
+        if ( $permalink_structure !== '/%postname%/' ) {
+            add_action( 'admin_notices', [ $this, 'dt_warn_user_about_permalink_settings' ] );
         }
     }
 
@@ -244,7 +289,7 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '2.2';
+        $this->version             = '2.3.2';
     }
 
     /**
@@ -491,5 +536,33 @@ if ( ! function_exists( 'dt_is_child_theme_of_disciple_tools' ) ) {
         return false;
     }
 }
-
+if ( !function_exists( 'dt_is_rest' ) ) {
+    /**
+     * Checks if the current request is a WP REST API request.
+     *
+     * Case #1: After WP_REST_Request initialisation
+     * Case #2: Support "plain" permalink settings
+     * Case #3: URL Path begins with wp-json/ (your REST prefix)
+     *          Also supports WP installations in subfolders
+     *
+     * @returns boolean
+     * @author matzeeable
+     */
+    function dt_is_rest( $namespace = null ) {
+        $prefix = rest_get_url_prefix();
+        if ( defined( 'REST_REQUEST' ) && REST_REQUEST
+            || isset( $_GET['rest_route'] )
+            && strpos( trim( sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ), '\\/' ), $prefix, 0 ) === 0 ) {
+            return true;
+        }
+        $rest_url    = wp_parse_url( site_url( $prefix ) );
+        $current_url = wp_parse_url( add_query_arg( array() ) );
+        $is_rest = strpos( $current_url['path'], $rest_url['path'], 0 ) === 0;
+        if ( $namespace ){
+            return $is_rest && strpos( $current_url['path'], $namespace ) != false;
+        } else {
+            return $is_rest;
+        }
+    }
+}
 

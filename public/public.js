@@ -24,6 +24,7 @@ function check_form() {
     if( status ) {
         get_data();
     }
+    translate_form_strings()
 }
 
 function storeData(data) {
@@ -173,15 +174,16 @@ async function checkStorage() {
 
 }
 
+
 jQuery(document).ready(function () {
 
-  if ( getUrlParameter('success') ) {
-    jQuery('#report').empty().append( window.TRANSLATION.success + '<br>');
-  }
+    if ( getUrlParameter('success') ) {
+      jQuery('#report').empty().append( window.TRANSLATION.success + '<br>');
+    }
 
 
     check_form()
-    translate_form_strings()
+
 
     let button = jQuery('#submit-button')
     button.html( window.TRANSLATION.submit ).prop('disabled', false)

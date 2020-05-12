@@ -457,6 +457,13 @@ class DT_Webform_Active_Form_Post_Type
                 return $post_id;
             }
         }
+        if ( get_post_status( $post_id ) === "draft" ){
+            wp_update_post( [
+                'ID' => $post_id,
+                'post_status' => 'publish'
+            ] );
+        }
+
 
         $field_data = $this->get_custom_fields_settings();
         $fields = array_keys( $field_data );
@@ -779,7 +786,7 @@ class DT_Webform_Active_Form_Post_Type
 
     public static function get_core_fields_by_token( $token ) : array {
         $post_id = self::get_form_id_by_token( $token );
-        return self::instance()->get_core_fields( $post_id );
+        return self::instance()->get_core_fields( (int) $post_id );
     }
 
     public function get_core_fields( int $post_id ) : array {

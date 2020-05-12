@@ -151,7 +151,14 @@ class DT_Webform_Utilities {
 
                     .hr {}
                     .hr-divider {}
-
+                    .offlineWarning {
+                        color: #9F6000;
+                        background-color: #FEEFB3;
+                        padding: 1em;
+                        font-size: 1.2em;
+                        margin: 1em 0;
+                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+                    },
                     label.error {
                         color: red;
                         font-size: .8em;
@@ -254,7 +261,14 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-
+                    .offlineWarning {
+                        color: #9F6000;
+                        background-color: #FEEFB3;
+                        padding: 1em;
+                        font-size: 1.2em;
+                        margin: 1em 0;
+                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+                    },
                     .hr {}
                     .hr-divider {}
 
@@ -417,7 +431,14 @@ class DT_Webform_Utilities {
                     .label-map-instructions {
                         color: grey;
                     }
-
+                    .offlineWarning {
+                        color: #9F6000;
+                        background-color: #FEEFB3;
+                        padding: 1em;
+                        font-size: 1.2em;
+                        margin: 1em 0;
+                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+                    },
                     .hr {}
                     .hr-divider {}
 
@@ -490,7 +511,7 @@ class DT_Webform_Utilities {
 
                     // ERROR CLASSES
                     label.error {}
-
+                    .offlineWarning {}
                     // EXTRA SECTIONS AND INPUTS
                     ';
 

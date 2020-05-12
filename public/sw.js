@@ -27,7 +27,7 @@ self.addEventListener('fetch', function(event) {
 
         if (response) {
           console.log('Found response in cache:', response);
-
+          update(event.request);
           return response;
         }
         console.log('Fetching request from the network');

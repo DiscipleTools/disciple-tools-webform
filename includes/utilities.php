@@ -908,7 +908,8 @@ if ( ! function_exists( 'dt_sanitize_array' ) ) {
         foreach ($array as &$value) {
             if ( !is_array( $value ) ) {
                 $value = sanitize_text_field( wp_unslash( $value ) );
-            } else {          dt_sanitize_array( $value );
+            } else {
+                dt_sanitize_array( $value );
             }
         }
         return $array;

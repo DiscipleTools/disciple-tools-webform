@@ -95,19 +95,15 @@ class DT_Webform_Remote_Endpoints
         }
 
         // Insert new lead
-        $status = DT_Webform_Utilities::insert_post( $params );
+        dt_write_log( $params );
+//        $status = DT_Webform_Utilities::insert_post( $params );
 
         // Handle error and add form title
-        if ( is_wp_error( $status ) ) {
-            return $status;
-        } else {
-
-            // Increment the lead for for receiving
-            DT_Webform_Active_Form_Post_Type::increment_lead_received( $form_id );
-            return 1;
-        }
+//        if ( is_wp_error( $status ) ) {
+//            return $status;
+//        }
+        return 1;
     }
-
 
 }
 /**

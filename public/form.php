@@ -32,7 +32,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
     <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery.min.js"></script>
     <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery-migrate.min.js"></script>
     <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery.validate.min.js"></script>
-    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>public.js?ver=1.1"></script>
+    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>public.js?ver=1.2"></script>
 
     <?php $swurl = esc_url( plugin_dir_url( __FILE__ ) ) . 'sw.js'?>
     <script>

@@ -95,13 +95,13 @@ class DT_Webform_Remote_Endpoints
         }
 
         // Insert new lead
-        dt_write_log( $params );
-//        $status = DT_Webform_Utilities::insert_post( $params );
+//        dt_write_log( $params );
+        $status = DT_Webform_Utilities::insert_post( $params );
 
         // Handle error and add form title
-//        if ( is_wp_error( $status ) ) {
-//            return $status;
-//        }
+        if ( is_wp_error( $status ) ) {
+            return $status;
+        }
         return 1;
     }
 

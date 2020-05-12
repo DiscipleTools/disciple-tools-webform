@@ -31,7 +31,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="jquery-migrate.min.js"></script>
     <script type="text/javascript" src="jquery.validate.min.js"></script>
-    <script type="text/javascript" src="public.js?ver=1.1"></script>
+    <script type="text/javascript" src="public.js?ver=1.2"></script>
     <script>
         window.TRANSLATION = {
             'required': '<?php echo $dt_webform_meta['js_string_required'] ?? esc_html__( 'Required', 'dt_webform' ) ?>',
@@ -122,7 +122,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
     <?php if ( isset( $dt_webform_core_fields['phone_field'] ) && $dt_webform_core_fields['phone_field']['hidden'] !== 'yes' ) : ?>
         <div id="section-phone" class="section">
             <label for="phone" class="input-label"><?php echo esc_html( $dt_webform_core_fields['phone_field']['label'] ) ?? '' ?></label><br>
-            <input type="tel" id="phone" name="phone" class="input-text input-phone" value="" <?php echo ( $dt_webform_core_fields['phone_field']['required'] === 'yes' ) ? 'required' : '' ?>/>
+            <input type="tel" id="phone" name="phone" class="input-text input-phone" value="" <?php echo ( $dt_webform_core_fields['phone_field']['required'] == 'yes' ) ? 'required' : '' ?>/>
         </div>
     <?php endif; ?>
 

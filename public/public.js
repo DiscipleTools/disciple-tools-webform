@@ -26,7 +26,6 @@ function check_form() {
     if( status ) {
         submit_form()
     }
-
 }
 
 function submit_form() {
@@ -64,46 +63,17 @@ function get_url() {
     return window.location.protocol + '//' + window.location.hostname
 }
 
+function translate_form_strings() {
+  jQuery("label:contains('This field is required.')").html(window.TRANSLATION.required)
+}
+
 jQuery(document).ready(function () {
 
-    let validator = jQuery('#contact-form').validate({
-        errorPlacement: function(error, element) {
-            error.appendTo( element.parent("div") );
-        },
-        rules: {
-            name: {
-                required: true,
-                minlength: 2,
-            },
-            phone: {
-                required: true,
-                minlength: 10
-            },
-            l: {
-                required: false,
-                email: true
-
-            }
-        },
-        messages: {
-            name: {
-                required: window.TRANSLATION.required,
-                minlength: jQuery.validator.format(window.TRANSLATION.characters_required)
-            },
-            phone: {
-                required: window.TRANSLATION.required,
-                minlength: jQuery.validator.format(window.TRANSLATION.characters_required)
-            }
-        },
-        submitHandler: function(form) {
-            submit_form()
-        }
-
-    });
-    validator.form()
+    check_form()
+    translate_form_strings()
 
     // This is a form delay to discourage robots
-    let counter = 7;
+    let counter = 5;
     let myInterval = setInterval(function () {
         let button = jQuery('#submit-button')
 
@@ -116,6 +86,4 @@ jQuery(document).ready(function () {
         }
 
     }, 1000);
-
-
 })

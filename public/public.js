@@ -216,20 +216,20 @@ jQuery(document).ready(function () {
     let button = jQuery('#submit-button')
     button.html( window.TRANSLATION.submit ).prop('disabled', false)
 
-    // // This is a form delay to discourage robots
-    // let counter = 7;
-    // let myInterval = setInterval(function () {
-    //     let button = jQuery('#submit-button')
+    // This is a form delay to discourage robots
+    let counter = 7;
+    let myInterval = setInterval(function () {
+        let button = jQuery('#submit-button')
 
-    //     button.html( window.TRANSLATION.submit_in + ' ' + counter)
-    //     --counter;
+        button.html( window.TRANSLATION.submit_in + ' ' + counter)
+        --counter;
 
-    //     if ( counter === 0 ) {
-    //         clearInterval(myInterval);
-    //         button.html( window.TRANSLATION.submit ).prop('disabled', false)
-    //     }
+        if ( counter === 0 ) {
+            clearInterval(myInterval);
+            button.html( window.TRANSLATION.submit ).prop('disabled', false)
+        }
 
-    // }, 1000);
+    }, 1000);
 
 
 })

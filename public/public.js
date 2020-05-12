@@ -14,12 +14,6 @@ let getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-jQuery(document).ready(function() {
-  if ( getUrlParameter('success') ) {
-    jQuery('#report').empty().append( window.TRANSLATION.success + '<br>');
-  }
-})
-
 function check_form() {
     let validator = jQuery('#contact-form').validate();
     let status = validator.form()
@@ -68,6 +62,10 @@ function translate_form_strings() {
 }
 
 jQuery(document).ready(function () {
+
+  if ( getUrlParameter('success') ) {
+    jQuery('#report').empty().append( window.TRANSLATION.success + '<br>');
+  }
 
     check_form()
     translate_form_strings()

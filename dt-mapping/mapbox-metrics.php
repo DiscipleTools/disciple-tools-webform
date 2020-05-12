@@ -336,8 +336,8 @@ if ( !defined( 'ABSPATH' ) ) {
 //            FROM $wpdb->dt_location_grid_meta as lgm
 //            LEFT JOIN $wpdb->posts as po ON po.ID=lgm.post_id
 //            WHERE lgm.post_type ='groups'
-//            	AND lgm.grid_id IS NOT NULL
-//            	ORDER BY po.post_title
+//              AND lgm.grid_id IS NOT NULL
+//              ORDER BY po.post_title
 //            ;", ARRAY_A );
 //
 //        $list = [];

@@ -28,10 +28,25 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
      * to load an entire site header. Therefore these files are to ignore standards.
      */
     // @codingStandardsIgnoreStart ?>
-    <script type="text/javascript" src="jquery.min.js"></script>
-    <script type="text/javascript" src="jquery-migrate.min.js"></script>
-    <script type="text/javascript" src="jquery.validate.min.js"></script>
-    <script type="text/javascript" src="public.js?ver=1.1"></script>
+    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery.min.js"></script>
+    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery-migrate.min.js"></script>
+    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery.validate.min.js"></script>
+    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>public.js?ver=1.1"></script>
+
+    <?php $swurl = esc_url( plugin_dir_url( __FILE__ ) ) . 'sw.js'?>
+    <script>
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('<?php echo $swurl ?>').then(function(registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+        }
+    </script>
     <script>
         window.TRANSLATION = {
             'required': '<?php echo $dt_webform_meta['js_string_required'] ?? esc_html__( 'Required', 'dt_webform' ) ?>',
@@ -503,6 +518,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
 </form>
 
 <div id="report"></div>
+<div id="offlineWarningContainer"></div>
 </div> <!-- wrapper-->
 </body>
 </html>

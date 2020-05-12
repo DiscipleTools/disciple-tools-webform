@@ -1,3 +1,7 @@
+//check online status
+window.addEventListener('online', checkStorage);
+window.addEventListener('load', checkStorage);
+
 //Get URL Parameters
 let getUrlParameter = function getUrlParameter(sParam) {
     let sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -24,44 +28,151 @@ function check_form() {
     let validator = jQuery('#contact-form').validate();
     let status = validator.form()
     if( status ) {
-        submit_form()
+        get_data();
     }
 
 }
 
-function submit_form() {
-    jQuery('#submit-button').attr('disabled', 'disabled')
-    jQuery('#submit-button-container').append(window.SETTINGS.spinner)
+function storeData(data) {
+  // save data in localStorage
 
-    let url = get_url()
-    let data = {};
+  if (typeof Storage !== 'undefined') {
+    const formToken = new URLSearchParams(location.search).get('token');
+    const time = + new Date()
+    const key = `${formToken}_${time}`;
 
-    jQuery(':input:not([type=checkbox])').each(function() {
-        data[this.name] = jQuery(this).val();
-    });
-    jQuery(':input[type=checkbox]:checked').each(function() {
-      data[this.name] = jQuery(this).val();
-    });
-
-    return jQuery.ajax({
-        type: "POST",
-        data: JSON.stringify(data),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        url: url + '/wp-json/dt-public/v1/webform/form_submit',
-    })
-        .done(function (data) {
-          window.location = window.location + '&success=true'
-
-        })
-        .fail(function (err) {
-          console.log(err)
-            jQuery('#report').html('Failed')
-        });
+    localStorage.setItem(key, JSON.stringify(data));
+    //reenable the submit button if the data is saved.
+    document.querySelector('#submit-button').disabled = false;
+    document.querySelector("#submit-button-container .spinner").remove()
+    return true;
+  }
+  return false;
 }
 
+async function submit_form(data) {
+  let url = get_url();
+  console.log(data);
+  return fetch(url + '/wp-json/dt-public/v1/webform/form_submit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: data
+  })
+  .then((data) => {
+    if (data.status == 200) {
+      return data.status;
+    } else {
+      throw new Error(data.status);
+    }
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+}
+
+function get_data() {
+  var submitButtonContainer = document.querySelector('#submit-button-container');
+  var submitButton = document.querySelector('#submit-button');
+
+  submitButton.disabled = true;
+  submitButtonContainer.insertAdjacentHTML("beforeend", window.SETTINGS.spinner);
+  let data = {};
+
+  jQuery(':input:not([type=checkbox])').each(function() {
+      data[this.name] = jQuery(this).val();
+  });
+  jQuery(':input[type=checkbox]:checked').each(function() {
+    data[this.name] = jQuery(this).val();
+  });
+
+  if (!navigator.onLine) {
+    // user is offline, store data locally
+    const stored = storeData(data);
+    let message = '<strong>You appear to be offline right now. </strong>';
+    if (stored) {
+      message += 'Your data was saved and will be submitted once you come back online.';
+
+      document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount())
+    }
+
+    console.log(message);
+    document.querySelector("form").reset();
+
+    removeOfflineWarning();
+
+    submitButtonContainer.insertAdjacentHTML("beforeend", `<div class="offlineWarning">${message}</div>`);
+    setTimeout(removeOfflineWarning, 2000);
+
+  } else {
+    submit_form(JSON.stringify(data)).then((response) => {
+      console.log(response);
+      submitButton.disabled = false;
+      document.querySelector("#submit-button-container .spinner").remove()
+     });
+
+  }
+}
+
+function removeOfflineWarning() {
+  if (document.querySelector(".offlineWarning")) {
+    document.querySelector(".offlineWarning").remove();
+  }
+}
+
+function offlineCount() {
+  const token = new URLSearchParams(location.search).get('token');
+  let offlineCount = 0;
+
+  for (let i=0; i< localStorage.length; i++) {
+    let key = localStorage.key(i);
+    if (key.includes(token)) {
+      offlineCount++
+    }
+  }
+
+  return offlineCount;
+}
+
+function offlineCountMessage(offlineCount) {
+  let message;
+  if (offlineCount == 1) {
+    message = `You have ${offlineCount} contact stored offline, reconnect to the internet to save this contacts`
+  }
+  else if (offlineCount > 1) {
+    message = `You have ${offlineCount} contacts stored offline, reconnect to the internet to save these contacts`
+  }
+  return message ? message : "";
+}
 function get_url() {
     return window.location.protocol + '//' + window.location.hostname
+}
+
+async function checkStorage() {
+  // check if we have saved data in localStorage
+  if (typeof Storage !== 'undefined') {
+    const token = new URLSearchParams(location.search).get('token');
+
+
+    for (let i=0; i< localStorage.length; i++) {
+      let key = localStorage.key(i);
+      if (key.includes(token)) {
+        const fromLocalStore = localStorage.getItem(key);
+        if (fromLocalStore) {
+            // we have saved form data, try to submit it
+            const item = JSON.parse(fromLocalStore);
+
+            submit_form(JSON.stringify(item)).then(function(res) {
+                if (res === 200) {
+                  localStorage.removeItem(key);
+                  document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount());
+                }
+              });
+        }
+      }
+    }
+  }
 }
 
 jQuery(document).ready(function () {
@@ -76,7 +187,7 @@ jQuery(document).ready(function () {
                 minlength: 2,
             },
             phone: {
-                required: true,
+                required: false,
                 minlength: 10
             },
             l: {
@@ -101,6 +212,9 @@ jQuery(document).ready(function () {
 
     });
     validator.form()
+
+    let button = jQuery('#submit-button')
+    button.html( window.TRANSLATION.submit ).prop('disabled', false)
 
     // This is a form delay to discourage robots
     let counter = 7;

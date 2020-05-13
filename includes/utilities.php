@@ -85,6 +85,55 @@ class DT_Webform_Utilities {
 
 
 
+
+
+    public static function get_contact_defaults( $force = false ) {
+
+        if ( is_dt() ) {
+            // add required capability for retrieving defaults
+            $current_user = wp_get_current_user();
+            $current_user->add_cap( 'create_contacts' );
+            return DT_Posts::get_post_settings( 'contacts' );
+        }
+//          @todo reenable caching before v3 release
+//        $contact_defaults = get_transient('dt_webform_contact_defaults' );
+//        if ( $contact_defaults && ! $force ) {
+//            return $contact_defaults;
+//        }
+
+        $site_id = dt_get_webform_site_link();
+        if ( ! $site_id ) {
+            return new WP_Error( __METHOD__, 'Not site link set.' );
+        }
+
+        $site = Site_Link_System::get_site_connection_vars( $site_id );
+        if ( ! $site ) {
+            return new WP_Error( __METHOD__, 'Missing site to site data' );
+        }
+
+        $args = [
+            'method' => 'GET',
+            'body' => [],
+            'headers' => [
+                'Authorization' => 'Bearer ' . $site['transfer_token'],
+            ],
+        ];
+
+        $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts/settings', $args );
+        if ( is_wp_error( $result ) ) {
+            return new WP_Error( __METHOD__, $result->get_error_message() );
+        }
+
+        $contact_defaults = json_decode( $result['body'], true );
+        if ( isset( $contact_defaults['sources'] ) ) {
+            set_transient( 'dt_webform_contact_defaults', $contact_defaults, 60 *60 *24 );
+            return $contact_defaults;
+        } else {
+            return new WP_Error( __METHOD__, 'Remote response from DT server malformed.' );
+        }
+
+    }
+
     public static function get_theme( string $theme, string $token = null ) {
 
         $meta = self::get_form_meta( $token );
@@ -924,91 +973,3 @@ class DT_Webform_Utilities {
 
 }
 
-if ( ! function_exists( 'dt_sanitize_array' ) ) {
-    function dt_sanitize_array( &$array ) {
-        foreach ($array as &$value) {
-            if ( !is_array( $value ) ) {
-                $value = sanitize_text_field( wp_unslash( $value ) );
-            } else {
-                dt_sanitize_array( $value );
-            }
-        }
-        return $array;
-    }
-}
-
-
-
-/**
- * This returns a simple array versus the multi dimensional array
- *
- * @return array
- */
-if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
-    function dt_get_simple_post_meta( $post_id ) {
-
-        $map = wp_cache_get( __METHOD__, $post_id );
-        if ( $map ) {
-            return $map;
-        }
-
-        $map = [];
-        if ( ! empty( $post_id ) ) {
-            $map         = array_map( function( $a ) {
-                return maybe_unserialize( $a[0] );
-            }, get_post_meta( $post_id ) ); // map the post meta
-            $map['ID'] = $post_id; // add the id to the array
-        }
-
-        wp_cache_set( __METHOD__, $map, $post_id );
-
-        return $map;
-    }
-}
-
-if ( ! function_exists( 'dt_get_location_grid_mirror' ) ) {
-    /**
-     * Best way to call for the mapping polygon
-     * @return array|string
-     */
-    function dt_get_location_grid_mirror( $url_only = false ) {
-
-        $mirror = wp_cache_get( __METHOD__, $url_only );
-        if ( $mirror ) {
-            return $url_only ? $mirror["url"] : $mirror;
-        }
-
-        $mirror = get_option( 'dt_location_grid_mirror' );
-        if ( empty( $mirror ) ) {
-            $array = [
-                'key'   => 'google',
-                'label' => 'Google',
-                'url'   => 'https://storage.googleapis.com/location-grid-mirror/',
-            ];
-            update_option( 'dt_location_grid_mirror', $array, true );
-            $mirror = $array;
-        }
-
-        wp_cache_set( __METHOD__, $mirror, $url_only );
-
-        if ( $url_only ) {
-            return $mirror['url'];
-        }
-
-        return $mirror;
-    }
-}
-
-if ( ! function_exists( 'dt_get_mapbox_endpoint' ) ) {
-    function dt_get_mapbox_endpoint( $type = 'places' ) : string {
-        switch ( $type ) {
-            case 'permanent':
-                return 'https://api.mapbox.com/geocoding/v5/mapbox.places-permanent/';
-                break;
-            case 'places':
-            default:
-                return 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
-                break;
-        }
-    }
-}

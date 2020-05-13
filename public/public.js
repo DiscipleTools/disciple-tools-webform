@@ -104,6 +104,7 @@ function get_data() {
       console.log(response);
       submitButton.disabled = false;
       document.querySelector("#submit-button-container .spinner").remove()
+      jQuery('#contact-form').html(window.TRANSLATION.success)
      });
 
   }

@@ -540,7 +540,7 @@ class DT_Webform_Active_Form_Post_Type
         'name'        => __( 'Width', 'dt_webform' ),
         'description' => __( 'ex. 400px or 100%', 'dt_webform' ),
         'type'        => 'text',
-        'default'     => '400px',
+        'default'     => '100%',
         'section'     => 'appearance',
         ];
         $fields['height'] = [

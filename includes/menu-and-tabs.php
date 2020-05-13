@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * DT_Webform_Menu class for the admin page
  *
  * @class       DT_Webform_Menu
- * @version     0.1.0
+ * @version     3.0.0
  * @since       0.1.0
  */
 
@@ -15,11 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 DT_Webform_Menu::instance(); // Initialize class
 class DT_Webform_Menu
 {
-
-    public $token;
-    public $state;
-
-    private static $_instance = null;
+    public $token = 'dt_webform';
+    public $permissions = [ 'manage_dt' ];
 
     /**
      * DT_Webform_Menu Instance
@@ -29,11 +26,11 @@ class DT_Webform_Menu
      * @static
      * @return DT_Webform_Menu instance
      */
+    private static $_instance = null;
     public static function instance() {
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
         }
-
         return self::$_instance;
     } // End instance()
 
@@ -44,26 +41,20 @@ class DT_Webform_Menu
      * @since   0.1.0
      */
     public function __construct() {
-
-        if ( is_admin() ) {
-            global $pagenow;
-
-            $this->token = DT_Webform::$token;
-            $this->state = get_option( 'dt_webform_state' );
-
-            add_action( "admin_menu", [ $this, "register_menu" ] );
-            if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) && is_admin() ) {
-                add_action( "admin_enqueue_scripts", [ $this, 'scripts' ] );
-                add_action( 'admin_head', [ $this, 'custom_admin_head' ] );
-
-                // load mapbox resources
-                if ( $this->state === 'combined' || $this->state === 'home' ) {
-
-                    DT_Mapbox_API::load_admin_header();
-                }
-                // end mapbox
-            }
+        if ( ! is_admin() ) {
+            return;
         }
+        if ( ! dt_has_permissions( $this->permissions ) ) {
+            return;
+        }
+
+        global $pagenow;
+        add_action( "admin_menu", [ $this, "register_menu" ] );
+        if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) {
+            add_action( "admin_enqueue_scripts", [ $this, 'scripts' ] );
+            add_action( 'admin_head', [ $this, 'custom_admin_head' ] );
+        }
+
     } // End __construct()
 
     /**
@@ -72,33 +63,21 @@ class DT_Webform_Menu
      * @since 0.1.0
      */
     public function register_menu() {
-
-        // Process state change form
-        if ( ( isset( $_POST['initialize_plugin_state'] ) && ! empty( $_POST['initialize_plugin_state'] ) ) && ( isset( $_POST['dt_webform_select_state_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_POST['dt_webform_select_state_nonce'] ) ), 'dt_webform_select_state' ) ) ) {
-            update_option( 'dt_webform_state', sanitize_key( wp_unslash( $_POST['initialize_plugin_state'] ) ), true );
+        $is_site_set = dt_get_webform_site_link();
+        if ( $is_site_set ) {
+            $is_site_set = $this->verify_site_active( $is_site_set );
         }
 
         // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
-        $current_theme = get_option( 'current_theme' );
-        if ( 'Disciple Tools' != $current_theme ) {
-            update_option( 'dt_webform_state', 'remote', true );
-            add_menu_page( __( 'Webform (DT)', 'disciple_tools' ), __( 'Webform (DT)', 'disciple_tools' ), 'manage_dt', $this->token, [ $this, 'remote' ], 'dashicons-admin-generic', 59 );
-        } else {
-            // Load menus
+        if ( is_dt() ) {
             add_menu_page( __( 'Extensions (DT)', 'disciple_tools' ), __( 'Extensions (DT)', 'disciple_tools' ), 'manage_dt', 'dt_extensions', [ $this, 'extensions_menu' ], 'dashicons-admin-generic', 59 );
-
-            $state = get_option( 'dt_webform_state' );
-            switch ( $state ) {
-                case 'combined':
-                    add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'combined' ] );
-                    break;
-                case 'home':
-                    add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'home' ] );
-                    break;
-                default: // if no option exists, then the plugin is forced to selection screen.
-                    add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'initialize_plugin_state' ] );
-                    break;
-            }
+            add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'tab_setup' ] );
+        }
+        else if ( ! $is_site_set ) {
+            add_menu_page( __( 'Webform (DT)', 'disciple_tools' ), __( 'Webform (DT)', 'disciple_tools' ), 'manage_dt', $this->token, [ $this, 'initialize_plugin_state' ], 'dashicons-admin-links', 99 );
+        }
+        else {
+            add_menu_page( __( 'Webform (DT)', 'disciple_tools' ), __( 'Webform (DT)', 'disciple_tools' ), 'manage_dt', $this->token, [ $this, 'tab_setup' ], 'dashicons-admin-links', 99 );
         }
     }
 
@@ -106,149 +85,6 @@ class DT_Webform_Menu
      * Menu stub. Replaced when Disciple Tools Theme fully loads.
      */
     public function extensions_menu() {
-    }
-
-    /**
-     * Combined tabs preprocessor
-     */
-    public function combined() {
-
-        if ( ! current_user_can( 'manage_dt' ) ) {
-            wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
-        }
-        $title = __( 'DISCIPLE TOOLS - WEBFORM (COMBINED)' );
-
-        $link = 'admin.php?page=' . $this->token . '&tab=';
-
-        $tab_bar = [
-            [
-                'key'   => 'new_leads',
-                'label' => __( 'New Leads', 'dt_webform' ),
-            ],
-            [
-                'key' => 'remote_forms',
-                'label' => __( 'Forms', 'dt_webform' ),
-            ],
-            [
-                'key' => 'home_settings',
-                'label' => __( 'Settings', 'dt_webform' ),
-            ],
-        ];
-
-        //nonce check
-        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ) ) ) {
-            die( "Nonce Fail" );
-        }
-
-        // determine active tabs
-        $active_tab = 'new_leads';
-
-        $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
-        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] && !isset( $_POST['dt_webform_auto_approve_nonce'] ) ) {
-            unset( $tab_bar[0] );
-            $active_tab = $tab_bar[1]['key'];
-        }
-
-        if ( isset( $_GET["tab"] ) ) {
-            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
-        }
-
-        $this->tab_loader( $title, $active_tab, $tab_bar, $link );
-    }
-
-    /**
-     * Home tabs preprocessor
-     */
-    public function home() {
-
-        if ( ! current_user_can( 'manage_dt' ) ) {
-            wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
-        }
-
-
-        $title = __( 'DISCIPLE TOOLS - WEBFORM (HOME)' );
-
-        $link = 'admin.php?page=' . $this->token . '&tab=';
-
-        $tab_bar = [
-            [
-                'key'   => 'new_leads',
-                'label' => __( 'New Leads', 'dt_webform' ),
-            ],
-            [
-                'key' => 'home_settings',
-                'label' => __( 'Settings', 'dt_webform' ),
-            ],
-        ];
-
-        //nonce check
-        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ) ) ) {
-            die( "Nonce Fail" );
-        }
-
-        // determine active tabs
-        $active_tab = 'home_settings';
-
-        $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
-        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] && !isset( $_POST['dt_webform_auto_approve_nonce'] ) ) {
-            unset( $tab_bar[0] );
-            $active_tab = $tab_bar[1]['key'];
-        }
-
-        if ( isset( $_GET["tab"] ) ) {
-            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
-        }
-
-        $this->tab_loader( $title, $active_tab, $tab_bar, $link );
-
-    }
-
-    /**
-     * Remote tabs preprocessor
-     */
-    public function remote() {
-
-        if ( ! current_user_can( 'manage_dt' ) ) {
-            wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
-        }
-
-        $title = __( 'DISCIPLE TOOLS - WEBFORM (REMOTE)' );
-
-        $link = 'admin.php?page=' . $this->token . '&tab=';
-
-        $tab_bar = [
-            [
-                'key'   => 'new_leads',
-                'label' => __( 'New Leads', 'dt_webform' ),
-            ],
-            [
-                'key' => 'remote_forms',
-                'label' => __( 'Forms', 'dt_webform' ),
-            ],
-            [
-                'key' => 'remote_settings',
-                'label' => __( 'Settings', 'dt_webform' ),
-            ],
-        ];
-
-        //nonce check
-        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ) ) ) {
-            die( "Nonce Fail" );
-        }
-
-        // determine active tabs
-        $active_tab = 'new_leads';
-
-        $options = get_option( 'dt_webform_options' ); // if auto approve, reset tab array
-        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] && !isset( $_POST['dt_webform_auto_approve_nonce'] ) ) {
-            unset( $tab_bar[0] );
-            $active_tab = $tab_bar[1]['key'];
-        }
-        if ( isset( $_GET["tab"] ) ) {
-            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
-        }
-
-        $this->tab_loader( $title, $active_tab, $tab_bar, $link );
     }
 
     public function initialize_plugin_state() {
@@ -263,7 +99,7 @@ class DT_Webform_Menu
 
             <?php $this->template( 'begin' ) ?>
 
-            <?php self::initialize_plugin_state_metabox() ?>
+            <?php self::metabox_select_site(); ?>
 
             <?php $this->template( 'right_column' ) ?>
 
@@ -274,14 +110,8 @@ class DT_Webform_Menu
     }
 
     public function scripts() {
-        global $pagenow;
-
-        if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) && is_admin() ) {
-
-            wp_enqueue_script( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js', [ 'jquery','lodash' ], '1.1.0', false );
-            wp_enqueue_style( 'mapbox-gl-css', 'https://api.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css', [], '1.1.0' );
-
-        }
+        DT_Mapbox_API::load_mapbox_header_scripts();
+        DT_Mapbox_API::load_mapbox_search_widget();
     }
 
     public function custom_admin_head() {
@@ -304,6 +134,42 @@ class DT_Webform_Menu
             }
         </style>
         <?php
+    }
+
+    public function tab_setup() {
+
+        if ( ! current_user_can( 'manage_dt' ) ) {
+            wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
+        }
+
+        $title = __( 'DISCIPLE TOOLS - WEBFORM' );
+
+        $link = 'admin.php?page=' . $this->token . '&tab=';
+
+        $tab_bar = [
+            [
+                'key' => 'forms',
+                'label' => __( 'Forms', 'dt_webform' ),
+            ],
+            [
+                'key' => 'settings',
+                'label' => __( 'Settings', 'dt_webform' ),
+            ],
+            [
+                'key' => 'tutorial',
+                'label' => __( 'Tutorial', 'dt_webform' ),
+            ],
+        ];
+
+
+        // determine active tabs
+        $active_tab = 'forms';
+
+        if ( isset( $_GET["tab"] ) ) {
+            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
+        }
+
+        $this->tab_loader( $title, $active_tab, $tab_bar, $link );
     }
 
     /**
@@ -332,20 +198,14 @@ class DT_Webform_Menu
             <?php
             switch ( $active_tab ) {
 
-                case "home_settings":
-                    $this->tab_home_settings();
+                case "tutorial":
+                    $this->tab_tutorial();
                     break;
-                case 'site_links':
-                    $this->tab_home_site_links();
+                case "settings":
+                    $this->tab_settings();
                     break;
-                case "remote_settings":
-                    $this->tab_remote_settings();
-                    break;
-                case "remote_forms":
-                    $this->tab_remote_forms();
-                    break;
-                case "new_leads":
-                    $this->tab_new_leads();
+                case "forms":
+                    $this->tab_forms();
                     break;
                 default:
                     break;
@@ -357,44 +217,15 @@ class DT_Webform_Menu
         <?php
     }
 
-    public function tab_new_leads() {
-
-        // begin columns template
-        $this->template( 'begin', 1 );
-
-        $options = get_option( 'dt_webform_options' );
-        if ( isset( $options['auto_approve'] ) && $options['auto_approve'] ) {
-            echo esc_attr__( 'Tab no longer valid because you have selected "Auto Approve"', 'dt_webform' );
-        } else {
-            DT_Webform_New_Leads_List::list_box();
-        }
-
-        // end columns template
-        $this->template( 'end', 1 );
-    }
-
-    public function tab_home_settings() {
-        // begin columns template
-        $this->template( 'begin', 1 );
-
-        $this->metabox_select_home_site();
-        $this->metabox_auto_approve();
-        $this->initialize_plugin_state_metabox();
-
-        if ( $this->state === 'combined' ) {
-            $this->box_geocoding_source();
-        }
-
-        $this->template( 'end', 1 );
-    }
-
-    public function tab_remote_settings() {
+    public function tab_settings() {
         // begin columns template
         $this->template( 'begin' );
 
-        $this->metabox_select_home_site();
-        $this->metabox_auto_approve();
-        $this->initialize_plugin_state_metabox();
+        DT_Mapbox_API::metabox_for_admin();
+
+        if ( ! is_dt() ) {
+            $this->metabox_select_site();
+        }
 
         // begin right column template
         $this->template( 'right_column' );
@@ -402,9 +233,11 @@ class DT_Webform_Menu
         $this->template( 'end' );
     }
 
-    public function tab_home_site_links() {
+    public function tab_tutorial() {
         // begin columns template
         $this->template( 'begin' );
+
+        $this->metabox_tutorial();
 
         // begin right column template
         $this->template( 'right_column' );
@@ -412,7 +245,7 @@ class DT_Webform_Menu
         $this->template( 'end' );
     }
 
-    public function tab_remote_forms() {
+    public function tab_forms() {
 
         // begin columns template
         $this->template( 'begin', 1 );
@@ -423,19 +256,35 @@ class DT_Webform_Menu
         $this->template( 'end', 1 );
     }
 
-    public function metabox_select_home_site() {
+    public function verify_site_active( $site_id ) : bool {
+        $sites = Site_Link_System::get_list_of_sites_by_type( [ 'create_contacts', 'create_update_contacts' ], 'post_ids' );
+        if ( empty( $sites ) ) {
+            return false;
+        }
+        foreach ( $sites as $site ) {
+            if ( $site == $site_id ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function metabox_select_site() {
+
         if ( isset( $_POST['select_home_site_nonce'] ) && isset( $_POST['site-link'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['select_home_site_nonce'] ) ), 'select_home_site' . get_current_user_id() ) ) {
             $post_id = sanitize_text_field( wp_unslash( $_POST['site-link'] ) );
             if ( empty( $post_id ) ) {
                 delete_option( 'dt_webform_site_link' );
+
             } else {
                 update_option( 'dt_webform_site_link', $post_id );
             }
+            ?><script>window.location.href = '<?php echo esc_url( admin_url() ) ?>admin.php?page=dt_webform&tab=settings'</script><?php
         }
 
-        $sites = Site_Link_System::get_list_of_sites_by_type( [ 'Webform' ] );
+        $sites = Site_Link_System::get_list_of_sites_by_type( [ 'create_contacts', 'create_update_contacts' ] );
 
-        $selected_site = get_option( 'dt_webform_site_link' );
+        $selected_site = dt_get_webform_site_link();
 
         ?>
 
@@ -445,7 +294,7 @@ class DT_Webform_Menu
                 <thead>
                 <tr>
                     <td colspan="2">
-                        <strong>Link to Home Site</strong><br>
+                        <strong>Link to Disciple Tools Site</strong><br>
                     </td>
                 </tr>
                 </thead>
@@ -454,9 +303,10 @@ class DT_Webform_Menu
                     <td width="100px">
                         <?php
                         if ( empty( $sites ) ) {
-                            echo 'No site links found for this webform. Go to <a href="'. esc_url( admin_url() ) . 'edit.php?post_type=site_link_system">Site Links</a>.';
+                            echo 'No site links found for this webform. You must create a site link to Disciple Tools to unlock the rest of this plugin. Go to <a href="'. esc_url( admin_url() ) . 'edit.php?post_type=site_link_system">Site Links</a>.';
                         } else {
                             ?>
+                            You must select a site link to unlock the webform plugin.<br>
                             <select class="regular-text" name="site-link">
                                 <?php
 
@@ -493,249 +343,26 @@ class DT_Webform_Menu
         <?php
     }
 
-    public function metabox_auto_approve() {
-        // Check for post
-        if ( isset( $_POST['dt_webform_auto_approve_nonce'] ) && ! empty( $_POST['dt_webform_auto_approve_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dt_webform_auto_approve_nonce'] ) ), 'dt_webform_auto_approve' ) ) {
-
-            $options = get_option( 'dt_webform_options' );
-            if ( isset( $_POST['auto_approve'] ) ) {
-                $options['auto_approve'] = true;
-                //if the option is true then it will hide the tab "New leads"
-                ?>
-                <script>
-                    jQuery("a:contains('New Leads')").remove();
-                </script>
-                <?php
-            } else {
-                //show the tab
-                $options['auto_approve'] = false;
-            }
-
-            update_option( 'dt_webform_options', $options, false );
-        }
-
-        // Get status of auto approve
-        $options = get_option( 'dt_webform_options' );
-        if ( $this->state ==='remote' && ! get_option( 'dt_webform_site_link' ) ) {
-            DT_Webform::set_auto_approve_to_false();
-            $options['auto_approve'] = false;
-        }
-
-        ?>
-        <form method="post" action="">
-            <?php wp_nonce_field( 'dt_webform_auto_approve', 'dt_webform_auto_approve_nonce', false, true ) ?>
-            <!-- Box -->
-            <table class="widefat striped">
-                <thead>
-                <th>Auto Approve</th>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <label for="auto_approve">Auto Approve: </label>
-                        <input type="checkbox" id="auto_approve" name="auto_approve" value="1" <?php echo ( $options['auto_approve'] ) ? 'checked' : ''; ?> />
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <button class="button" type="submit">Update</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <br>
-            <!-- End Box -->
-        </form>
-        <?php
-    }
-
-    public function box_geocoding_source() {
-        if ( isset( $_POST['mapbox_key'] )
-             && ( isset( $_POST['geocoding_key_nonce'] )
-                  && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['geocoding_key_nonce'] ) ), 'geocoding_key' . get_current_user_id() ) ) ) {
-
-            $key = sanitize_text_field( wp_unslash( $_POST['mapbox_key'] ) );
-            if ( empty( $key ) ) {
-                delete_option( 'dt_mapbox_api_key' );
-            } else {
-                update_option( 'dt_mapbox_api_key', $key, true );
-            }
-        }
-        $key = get_option( 'dt_mapbox_api_key' );
-        $hidden_key = '**************' . substr( $key, -5, 5 );
-
-        set_error_handler( [ $this, "warning_handler" ], E_WARNING );
-        $list = file_get_contents( dt_get_mapbox_endpoint() . 'Denver.json?access_token=' . $key );
-        restore_error_handler();
-
-        if ( $list ) {
-            $status_class = 'connected';
-            $message = 'Successfully connected to selected source.';
-        } else {
-            $status_class = 'not-connected';
-            $message = 'API NOT AVAILABLE';
-        }
+    public function metabox_tutorial() {
         ?>
         <form method="post">
             <table class="widefat striped">
                 <thead>
-                <tr><th>MapBox.com</th></tr>
+                <tr><th>Tutorial</th></tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <?php wp_nonce_field( 'geocoding_key' . get_current_user_id(), 'geocoding_key_nonce' ); ?>
-                        Mapbox API Token: <input type="text" class="regular-text" name="mapbox_key" value="<?php echo ( $key ) ? esc_attr( $hidden_key ) : ''; ?>" /> <button type="submit" class="button">Update</button>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p id="reachable_source" class="<?php echo esc_attr( $status_class ) ?>">
-                            <?php echo esc_html( $message ); ?>
-                        </p>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </form>
         <br>
-
-        <?php if ( empty( get_option( 'dt_mapbox_api_key' ) ) ) : ?>
-            <table class="widefat striped">
-                <thead>
-                <tr><th>MapBox.com Instructions</th></tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <ol>
-                            <li>
-                                Go to <a href="https://www.mapbox.com/">MapBox.com</a>.
-                            </li>
-                            <li>
-                                Register for a new account (<a href="https://account.mapbox.com/auth/signup/">MapBox.com</a>)<br>
-                                <em>(email required, no credit card required)</em>
-                            </li>
-                            <li>
-                                Once registered, go to your account home page. (<a href="https://account.mapbox.com/">Account Page</a>)<br>
-                            </li>
-                            <li>
-                                Inside the section labeled "Access Tokens", either create a new token or use the default token provided. Copy this token.
-                            </li>
-                            <li>
-                                Paste the token into the "Mapbox API Token" field in the box above.
-                            </li>
-                        </ol>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <br>
-        <?php endif;
-    }
-
-    public function warning_handler( $errno, $errstr ) {
-        ?>
-        <div class="notice notice-error notice-dt-mapping-source" data-notice="dt-demo">
-            <p><?php echo "MIRROR SOURCE NOT AVAILABLE" ?></p>
-            <p><?php echo "Error Message: " . esc_attr( $errstr ) ?></p>
-        </div>
-        <?php
-    }
-
-    /**
-     * Re-usable form to edit state of the plugin.
-     */
-    public static function initialize_plugin_state_metabox() {
-        // Set selections
-        $options = [
-            [
-                'key'   => 'combined',
-                'label' => __( 'Combined', 'dt_webform' ),
-            ],
-            [
-                'key'   => 'home',
-                'label' => __( 'Home', 'dt_webform' ),
-            ],
-        ];
-
-        // Check if Disciple Tools Theme is present. If not, limit select to remote server.
-        $current_theme = get_option( 'current_theme' );
-        if ( !( 'Disciple Tools' == $current_theme || 'Disciple Tools Child theme of disciple-tools-theme' == $current_theme )) {
-            $options = [
-                [
-                    'key'   => 'remote',
-                    'label' => __( 'Remote', 'dt_webform' ),
-                ],
-            ];
-        }
-
-        // Get current selection
-        $state = get_option( 'dt_webform_state' );
-        ?>
-        <form method="post" action="">
-            <?php wp_nonce_field( 'dt_webform_select_state', 'dt_webform_select_state_nonce', true, true ) ?>
-            <!-- Box -->
-            <table class="widefat striped">
-                <thead>
-                <th>Plugin State</th>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <label for="initialize_plugin_state">Configure the state of the plugin: </label><br>
-                        <select name="initialize_plugin_state" id="initialize_plugin_state">
-                            <option value="">Select</option>
-                            <option value="" disabled>---</option>
-                            <?php
-                            foreach ( $options as $option ) {
-                                echo '<option value="' . esc_attr( $option['key'] ) . '" ';
-                                if ( $option['key'] == $state ) {
-                                    echo 'selected';
-                                }
-                                echo '>' . esc_attr( $option['label'] ) . '</option>';
-                            }
-                            ?>
-                        </select>
-                        <span><button class="button-like-link" type="button" onclick="jQuery('#state-help').toggle();">explain settings</button></span>
-                    </td>
-                </tr>
-                <tr id="state-help" style="display: none;">
-                    <td>
-                        Three different configurations:
-                        <p>
-                            <strong>Home</strong><br>
-                            Home configuration sets up just the half of the plugin that integrates with Disciple Tools.
-                            Choosing this option assumes that you have a remote server running separatedly with the
-                            'remote' setting on the plugin configured.
-                        </p>
-                        <p>
-                            <strong>Remote</strong><br>
-                            The 'Remote' configuration sets up only the remote webform server. Choosing this option
-                            assumes that you have a Disciple Tools server running elsewhere with the Webform plugin
-                            installed and configured as 'home'. If Disciple Tools Theme is not installed, Remote will be
-                            the only installation option.
-                        </p>
-                        <p>
-                            <strong>Combined</strong><br>
-                            The 'Combined' configuration sets up the Webform plugin to run the webform server from the
-                            same system as the Disciple Tools System. Choosing this option assumes that you have a
-                            remote server running separatedly with the 'remote' setting on the plugin configured.
-                        </p>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button class="button" type="submit">Update</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <br>
-            <!-- End Box -->
-        </form>
         <?php
     }
 
@@ -797,4 +424,6 @@ class DT_Webform_Menu
                 break;
         }
     }
+
+
 }

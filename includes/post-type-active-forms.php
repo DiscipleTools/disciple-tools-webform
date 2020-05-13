@@ -1038,7 +1038,7 @@ class DT_Webform_Active_Form_Post_Type
                 <table class="widefat striped" id="new_<?php echo esc_attr( $unique_key ) ?>">
                 <thead>
                     <tr>
-                        <th style="width:50px;">Order</th><th style="width:50px;">Required</th><th>Type</th><th>Label(s)</th><th>Value(s)</th><th>Map To DT Field</th><th>Actions</th>
+                        <th style="width:50px;">Order</th><th style="width:50px;">Required</th><th>Type</th><th>Map To DT Field</th><th>Label(s)</th><th>Value(s)</th><th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1071,9 +1071,9 @@ class DT_Webform_Active_Form_Post_Type
                                     <option value="multi_radio"><?php echo esc_attr__( 'Multi-Select Radio', 'dt_webform' ) ?></option>
                                </select>
                             </td>
+                            <td id="new-dt-field-<?php echo esc_attr( $unique_key ) ?>"></td>
                             <td id="new-labels-<?php echo esc_attr( $unique_key ) ?>"></td>
                             <td id="new-values-<?php echo esc_attr( $unique_key ) ?>"></td>
-                            <td id="new-dt-field-<?php echo esc_attr( $unique_key ) ?>"></td>
                             <td>
                                 <button class="button" type="submit"><?php echo esc_attr__( 'Save', 'dt_webform' ) ?></button>
                                 <button class="button" onclick="remove_new_custom_fields()"><?php echo esc_attr__( 'Clear', 'dt_webform' ) ?></button>

@@ -93,10 +93,10 @@ class DT_Webform_Utilities {
         }
 
         // caching
-        $contact_defaults = get_transient( 'dt_webform_contact_defaults' );
-        if ( $contact_defaults && ! $force ) {
-            return $contact_defaults;
-        }
+//        $contact_defaults = get_transient( 'dt_webform_contact_defaults' );
+//        if ( $contact_defaults && ! $force ) {
+//            return $contact_defaults;
+//        }
 
         $site_id = dt_get_webform_site_link();
         if ( ! $site_id ) {

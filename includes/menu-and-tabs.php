@@ -241,6 +241,8 @@ class DT_Webform_Menu
 
         // begin right column template
         $this->template( 'right_column' );
+
+        $this->metabox_tutorial_menu();
         // end columns template
         $this->template( 'end' );
     }
@@ -351,12 +353,170 @@ class DT_Webform_Menu
                 <tr><th>Tutorial</th></tr>
                 </thead>
                 <tbody>
-                <tr>
+                <tr id="assign-to-user">
                     <td>
+                        <a name=""></a>
+                        <strong>How to use "Assign to User"</strong>
                     </td>
                 </tr>
                 <tr>
                     <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <br>
+        <?php
+    }
+
+    public function metabox_tutorial_menu() {
+        ?>
+        <form method="post">
+            <table class="widefat striped">
+                <thead>
+                <tr><th>Topics</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <a href="#assign-to-user">How to use "Assign to User"</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong></strong>
                     </td>
                 </tr>
                 </tbody>

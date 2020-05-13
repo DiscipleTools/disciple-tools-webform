@@ -126,15 +126,14 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function meta_box_setup() {
         add_meta_box( $this->post_type . '_info_box', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
-
         add_meta_box( $this->post_type . '_appearance_box', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_core_fields', __( 'Core Fields', 'dt_webform' ), [ $this, 'load_core_fields_metabox' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_localize', __( 'Localize', 'dt_webform' ), [ $this, 'load_localize_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'high' );
-        add_meta_box( $this->post_type . '_statistics', __( 'Statistics', 'dt_webform' ), [ $this, 'load_statistics_meta_box' ], $this->post_type, 'side', 'low' );
         add_meta_box( $this->post_type . '_css', __( 'Form Styles', 'dt_webform' ), [ $this, 'load_form_styles_meta_box' ], $this->post_type, 'side', 'low' );
+        add_meta_box( $this->post_type . '_dt_fields_list', __( 'DT Fields List', 'dt_webform' ), [ $this, 'load_dt_fields_list_meta_box' ], $this->post_type, 'side', 'low' );
 
     }
 
@@ -152,6 +151,26 @@ class DT_Webform_Active_Form_Post_Type
 
     }
 
+    public function load_dt_fields_list_meta_box( $post ) {
+        // get contact defaults
+        $contact_defaults = DT_Webform_Utilities::get_contact_defaults();
+        if ( ! isset( $contact_defaults['fields'] ) ) {
+            return;
+        }
+        foreach ($contact_defaults['fields'] as $key => $value) {
+            echo '<strong>' . esc_attr( $key ) . '</strong> (' . esc_attr( $value['type'] ) . ')<br>';
+            if ( ! empty( $value['default'] ) && is_array( $value['default'] ) ) {
+                foreach ( $value['default'] as $k => $v) {
+                    if ('connection_types' === $key) {
+                        echo ' &nbsp;&nbsp; ' . esc_html( $v ) . '<br>';
+                    } else {
+                        echo ' &nbsp;&nbsp; ' . esc_html( $k ) . '<br>';
+                    }
+                }
+            }
+        }
+    }
+
     public function load_localize_meta_box() {
         global $pagenow;
         if ( 'post-new.php' == $pagenow ) {
@@ -164,7 +183,6 @@ class DT_Webform_Active_Form_Post_Type
         } else {
             $this->meta_box_content( 'localize' ); // prints
         }
-
     }
 
     /**
@@ -186,71 +204,22 @@ class DT_Webform_Active_Form_Post_Type
     }
 
     /**
-     * Load type metabox
+     * Load demo metabox
      */
-    public function load_statistics_meta_box( $post ) {
+    public function load_demo_meta_box( $post ) {
         global $pagenow;
 
         if ( 'post-new.php' == $pagenow ) {
-
-            echo esc_attr__( 'Leads list will display after you save the new form', 'dt_webform' );
-
-        } else {
-
-            $received = esc_attr( get_post_meta( $post->ID, 'leads_received', true ) );
-            if ( ! $received ) {
-                $received = 0;
-                update_post_meta( $post->ID, 'leads_received', $received );
-            }
-            $transferred = esc_attr( get_post_meta( $post->ID, 'leads_transferred', true ) );
-            if ( ! $transferred ) {
-                $transferred = 0;
-                update_post_meta( $post->ID, 'leads_transferred', $transferred );
-            }
-            echo esc_attr__( 'Leads Received: ', 'dt_webform' ) . esc_attr( $received ) . '<br> ';
-            echo esc_attr__( 'Leads Transferred: ', 'dt_webform' ) . esc_attr( $transferred ) . '<br> ';
-
+            echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
         }
-    }
-
-    /**
-     * Load type metabox
-     */
-    public function load_new_leads_meta_box( $post ) {
-        global $pagenow;
-
-        if ( 'post-new.php' == $pagenow ) {
-            echo esc_attr__( 'Leads list will display after you save the new form', 'dt_webform' );
-        } else {
-            // table of waiting leads
-            $token = get_post_meta( $post->ID, 'token', true );
-            $args = [
-            'post_type' => 'dt_webform_new_leads',
-            'meta_value' => $token,
-            ];
-            $results = new WP_Query( $args );
-
-            if ( $results->found_posts > 0 && ! is_wp_error( $results ) ) {
-
-                echo '<table class="widefat striped">';
-                echo '<tr><td>Name</td><td>Phone</td><td>Email</td><td>Date</td></tr>';
-                foreach ( $results->posts as $record ) {
-
-                    echo '<tr>';
-                    echo '<td>' . esc_attr( get_post_meta( $record->ID, 'name', true ) ) . '</td>';
-                    echo '<td>' . esc_attr( get_post_meta( $record->ID, 'phone', true ) ) . '</td>';
-                    echo '<td>' . esc_attr( get_post_meta( $record->ID, 'email', true ) ) . '</td>';
-                    echo '<td>' . esc_attr( $record->post_date ) . '</td>';
-                    echo '</tr>';
-
-                }
-                echo '</table>';
-
-                echo '<p ><a href="">refresh</a></p>';
-
-            } else {
-                echo esc_attr__( 'No leads found', 'dt_webform' );
-            }
+        else {
+            // WordPress.XSS.EscapeOutput.OutputNotEscaped
+            // @phpcs:ignore
+            echo $this->embed_code( $post->ID );
+            ?>
+            <hr>
+            <?php
+            $this->direct_link();
         }
     }
 
@@ -267,18 +236,25 @@ class DT_Webform_Active_Form_Post_Type
         else {
             ?>
             <label for="embed-code">Copy and Paste this embed code</label><br>
-            <textarea cols="30" rows="10"><?php
+            <textarea style="width:100%; height:200px;"><?php
                 // WordPress.XSS.EscapeOutput.OutputNotEscaped
                 // @phpcs:ignore
                 echo $this->embed_code( $post->ID );
-            ?></textarea>
-
-            or Directly access the offline capable form at <?php
-                // WordPress.XSS.EscapeOutput.OutputNotEscaped
-                // @phpcs:ignore
-                echo $this->direct_link( $post->ID );?>
+            ?></textarea><br>
             <?php
+            $this->direct_link();
         }
+    }
+
+    public function direct_link() {
+        global $post;
+        $token = get_metadata( 'post', $post->ID, 'token', true );
+        $site = dt_webform()->public_uri;
+        ?>
+        <div style="text-align:center;">
+            <a href="<?php echo esc_url( $site ) ?>form.php?token=<?php echo esc_attr( $token ) ?>" target="_blank">Open form in its own window.</a>
+        </div>
+        <?php
     }
 
     public function embed_code( $post_id ) {
@@ -299,30 +275,6 @@ class DT_Webform_Active_Form_Post_Type
             .'" style="width:'. esc_attr( $width ) .';height:'. esc_attr( $height ) .';" frameborder="0"></iframe>';
     }
 
-    public function direct_link( $post_id ) {
-        $token = get_metadata( 'post', $post_id, 'token', true );
-        $site = dt_webform()->public_uri;
-
-        $href = esc_url( $site ) .'form.php?token='. esc_attr( $token );
-        $link = '<a href="' . $href . '">' . $href . '</a>';
-        return $link;
-    }
-
-    /**
-     * Load demo metabox
-     */
-    public function load_demo_meta_box( $post ) {
-        global $pagenow;
-
-        if ( 'post-new.php' == $pagenow ) {
-            echo esc_attr__( 'Embed code will display after you save the new form', 'dt_webform' );
-        }
-        else {
-            // WordPress.XSS.EscapeOutput.OutputNotEscaped
-            // @phpcs:ignore
-            echo $this->embed_code( $post->ID );
-        }
-    }
 
 
     /**
@@ -358,6 +310,28 @@ class DT_Webform_Active_Form_Post_Type
                         case 'text':
                             echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td><input name="' . esc_attr( $k ) . '" type="text" id="' . esc_attr( $k ) . '" class="regular-text" value="' . esc_attr( $data ) . '" />' . "\n";
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
+                            echo '</td><tr/>' . "\n";
+                            break;
+                        case 'source':
+                            $contact_defaults = DT_Webform_Utilities::get_contact_defaults();
+                            if ( ! isset( $contact_defaults['sources'] ) ) {
+                                break;
+                            }
+                            dt_write_log( $contact_defaults );
+                            echo '<tr class="' . esc_attr( $v['section'] ) . '" id="row_' . esc_attr( $k ) . '" valign="top"><th scope="row">
+                                <label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th>
+                                <td>
+                                <select name="' . esc_attr( $k ) . '" id="' . esc_attr( $k ) . '" class="regular-text">';
+                            // Iterate the options
+                            foreach ( $contact_defaults['sources']  as $kk => $vv ) {
+                                echo '<option value="' . esc_attr( $kk ) . '" ';
+                                if ( $kk == $data ) {
+                                    echo 'selected';
+                                }
+                                echo '>' . esc_attr( $vv['label'] ) . '</option>';
+                            }
+                            echo '</select>' . "\n";
+                            echo '<p class="description">' . esc_attr( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
                             break;
                         case 'number':
@@ -464,7 +438,6 @@ class DT_Webform_Active_Form_Post_Type
             ] );
         }
 
-
         $field_data = $this->get_custom_fields_settings();
         $fields = array_keys( $field_data );
 
@@ -531,7 +504,7 @@ class DT_Webform_Active_Form_Post_Type
         $fields['source'] = [
             'name'        => __( 'Source', 'dt_webform' ),
             'description' => __( 'Source refers to the sources established in Disciple Tools. Must be exact spelling.', 'dt_webform' ),
-            'type'        => 'text',
+            'type'        => 'source',
             'default'     => '',
             'section'     => 'appearance',
         ];
@@ -659,77 +632,42 @@ class DT_Webform_Active_Form_Post_Type
             'hidden'      => 'no',
             'section'     => 'core',
         ];
-
-
-
         return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()
 
     public function form_types() {
         $list = [
             'default_lead' => 'Lead Form',
-            'location_lead' => 'Lead Form with Location Field',
+//            'location_lead' => 'Lead Form with Location Field',
         ];
 
         return apply_filters( 'dt_webform_form_types', $list );
     }
 
     public function scripts() {
-        global $pagenow;
-
-        if ( get_current_screen()->post_type == $this->post_type ) {
-            $state = get_option( 'dt_webform_state' );
-            $label = esc_attr__( 'Return to List', 'dt_webform' );
-
-            switch ( $state ) {
-                case 'home':
-                case 'combined':
-                    echo '<script type="text/javascript">
-                            jQuery(document).ready( function($) {
-
-                                jQuery("#toplevel_page_dt_extensions").addClass("wp-has-current-submenu wp-menu-open");
-                                jQuery("li:contains(\'Webform\')").addClass("current");
-                                $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">' . esc_attr( $label ) . '</a>\');
-
-                            });
-                        </script>';
-                    break;
-                default: // covers remote and unset states
-                    echo '<script type="text/javascript">
-                            jQuery(document).ready( function($) {
-
-                                $("#toplevel_page_dt_webform").addClass("current wp-has-current-submenu wp-menu-open");
-                                $("h1.wp-heading-inline").append(\' <a href="'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms" class="page-title-action">' . esc_attr( $label ) . '</a>\');
-
-                            });
-                        </script>';
-                    break;
-            }
+        global $pagenow, $post;
+        if ( isset( $post->post_type ) && $post->post_type === $this->post_type ) {
+            ?>
+        <script type="text/javascript">
+            jQuery(document).ready( function($) {
+                $("#toplevel_page_dt_webform").addClass("current wp-has-current-submenu wp-menu-open");
+                $("h1.wp-heading-inline").append(`
+                    <a href="<?php echo esc_url( admin_url() ) ?>admin.php?page=dt_webform&tab=forms" class="page-title-action">Forms</a>
+                    <a href="<?php echo esc_url( admin_url() ) ?>admin.php?page=dt_webform&tab=settings" class="page-title-action">Settings</a>
+                    <a href="<?php echo esc_url( admin_url() ) ?>admin.php?page=dt_webform&tab=tutorial" class="page-title-action">Tutorial</a>
+                `);
+            });
+        </script>
+            <?php
         }
         // Catches post delete redirect to standard custom post type list, and redirects to the form list in the plugin.
         if ( $pagenow == 'edit.php' && isset( $_GET['post_type'] ) && esc_attr( sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) == $this->post_type ) {
-            echo '<script type="text/javascript">
-                    window.location.href = "'.esc_attr( admin_url() ).'admin.php?page=dt_webform&tab=remote_forms";
-                </script>';
+            ?>
+            <script type="text/javascript">
+                window.location.href = "<?php echo esc_url( admin_url() ) ?>admin.php?page=dt_webform&tab=forms";
+            </script>
+            <?php
         }
-    }
-
-    public static function increment_lead_received( $form_id ) {
-        $current_number = get_post_meta( $form_id, 'leads_received', true );
-        if ( ! $current_number ) {
-            $current_number = 0;
-        }
-        $current_number++;
-        update_post_meta( $form_id, 'leads_received', (int) $current_number );
-    }
-
-    public static function increment_lead_transferred( $form_id ) {
-        $current_number = get_post_meta( $form_id, 'leads_transferred', true );
-        if ( ! $current_number ) {
-            $current_number = 0;
-        }
-        $current_number++;
-        update_post_meta( $form_id, 'leads_transferred', (int) $current_number );
     }
 
     public static function check_if_valid_token( $token ) {
@@ -751,9 +689,6 @@ class DT_Webform_Active_Form_Post_Type
             'meta_value' => $token
         ] );
         if ( $results->post_count < 1) {
-            dt_write_log( __METHOD__ );
-            dt_write_log( $results );
-            dt_write_log( $results->post_count );
             return __( 'Unknown', 'dt_webform' );
         }
         return $results->post->post_title;
@@ -918,7 +853,7 @@ class DT_Webform_Active_Form_Post_Type
             <table class="widefat striped">
                 <thead>
                 <tr>
-                    <th style="width:50px;">Order</th><th style="width:50px;">Required</th><th>Type</th><th>Label(s)</th><th>Value(s)</th><th>Map To DT Field</th><th>Actions</th>
+                    <th style="width:50px;">Order</th><th style="width:50px;">Required</th><th>Type</th><th>Map To DT Field</th><th>Label(s)</th><th>Value(s)</th><th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -959,6 +894,9 @@ class DT_Webform_Active_Form_Post_Type
                                 case 'dropdown':
                                 case 'multi_radio':
                                     ?>
+                                    <td>
+                                        <input type="text" style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" placeholder="field key" value="<?php echo esc_attr( $data['dt_field'] ?? '' ) ?>" />
+                                    </td>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                                         <input type="text" style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[title]" placeholder="Give a title to the series" value="<?php echo esc_html( $data['title'] ?? '' ) ?>" /><br>
                                         <textarea type="text"
@@ -978,9 +916,6 @@ class DT_Webform_Active_Form_Post_Type
                                                   name="<?php echo esc_attr( $unique_key ) ?>[values]"
                                                   placeholder="One value per line. Underscores allowed. No spaces or special characters." /><?php echo esc_html( $data['values'] ?? '' ) ?></textarea>
                                     </td>
-                                    <td>
-                                        <input type="text" style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" placeholder="field key" value="<?php echo esc_attr( $data['dt_field'] ?? '' ) ?>" />
-                                    </td>
                                     <?php
                                     break;
 
@@ -990,39 +925,41 @@ class DT_Webform_Active_Form_Post_Type
                                 case 'email':
                                 case 'text':
                                     ?>
+                                    <td>
+                                        <input type="text" style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" placeholder="field key" value="<?php echo esc_attr( $data['dt_field'] ?? '' ) ?>" />
+                                    </td>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                                         <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
                                     </td>
                                     <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
                                         <input type="text" style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[values]" placeholder="Value(s)" value="<?php echo esc_html( $data['values'] ?? '' ) ?>" />
                                     </td>
-                                    <td>
-                                        <input type="text" style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" placeholder="field key" value="<?php echo esc_attr( $data['dt_field'] ?? '' ) ?>" />
-                                    </td>
                                     <?php
                                     break;
 
                                 case 'note':
                                     ?>
+                                    <td>Saves to Comments</td>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                                         <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
                                     </td>
                                     <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
-                                    <td>Saves to Comments</td>
                                     <?php
                                     break;
                                 case 'custom_label':
                                 case 'header':
                                     ?>
+                                    <td></td>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                                         <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
                                     </td>
                                     <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
-                                    <td></td>
+
                                     <?php
                                     break;
                                 case 'description':
                                     ?>
+                                    <td></td>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                                         <textarea type="text"
                                                   id="label_<?php echo esc_attr( $unique_key ) ?>"
@@ -1032,11 +969,11 @@ class DT_Webform_Active_Form_Post_Type
                                                   placeholder="One label per line. Same order as values." /><?php echo esc_html( $data['labels'] ?? '' ) ?></textarea>
                                     </td>
                                     <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
-                                    <td></td>
                                     <?php
                                     break;
                                 case 'map':
                                     ?>
+                                    <td></td>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                                         <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
                                     </td>
@@ -1045,7 +982,6 @@ class DT_Webform_Active_Form_Post_Type
                                             <option value="click_map" selected>Click Map</option>
                                         </select>
                                     </td>
-                                    <td></td>
                                     <?php
                                     break;
 
@@ -1054,9 +990,9 @@ class DT_Webform_Active_Form_Post_Type
                                 case 'spacer':
                                 default:
                                     ?>
+                                    <td></td>
                                     <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
                                     <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
-                                    <td></td>
                                     <?php
                                     break;
                             }
@@ -1273,7 +1209,6 @@ class DT_Webform_Active_Form_Post_Type
         $array = $this->filter_for_core_fields( $_POST );
 
         foreach ( $array as $key => $value ) {
-
             if ( ! get_post_meta( $post_id, $key ) ) {
                 add_post_meta( $post_id, $key, $value, true );
             } elseif ( $value == '' ) {

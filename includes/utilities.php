@@ -83,10 +83,6 @@ class DT_Webform_Utilities {
         return $ordered_fields;
     }
 
-
-
-
-
     public static function get_contact_defaults( $force = false ) {
 
         if ( is_dt() ) {
@@ -95,11 +91,12 @@ class DT_Webform_Utilities {
             $current_user->add_cap( 'create_contacts' );
             return DT_Posts::get_post_settings( 'contacts' );
         }
-//          @todo reenable caching before v3 release
-//        $contact_defaults = get_transient('dt_webform_contact_defaults' );
-//        if ( $contact_defaults && ! $force ) {
-//            return $contact_defaults;
-//        }
+
+        // caching
+        $contact_defaults = get_transient( 'dt_webform_contact_defaults' );
+        if ( $contact_defaults && ! $force ) {
+            return $contact_defaults;
+        }
 
         $site_id = dt_get_webform_site_link();
         if ( ! $site_id ) {

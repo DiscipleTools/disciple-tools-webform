@@ -645,6 +645,16 @@ class DT_Webform_Active_Form_Post_Type
             'hidden'      => 'yes',
             'section'     => 'hidden',
         ];
+        $fields['overall_status'] = [
+            'name'        => 'Overall Status',
+            'description' => '',
+            'type'        => 'text',
+            'default'     => '',
+            'label'       => 'Source',
+            'required'    => 'no',
+            'hidden'      => 'yes',
+            'section'     => 'hidden',
+        ];
 
         return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()
@@ -920,6 +930,31 @@ class DT_Webform_Active_Form_Post_Type
                     Description
                 </td>
             </tr>
+            <tr>
+                <td>
+                    Overall Status
+                </td>
+                <td>
+                    <select name="overall_status" style="width:100%;">
+                        <?php
+                        $contact_defaults = $this->contact_fields;
+                        $selected_value = get_post_meta( $post->ID, 'overall_status', true );
+
+                        echo '<option value="new">'.$contact_defaults['fields']['overall_status']['default']['new']['label'].'</option><option disabled>-----</option>';
+                        foreach ( $contact_defaults['fields']['overall_status']['default']  as $kk => $vv ) {
+                            echo '<option value="' . esc_attr( $kk ) . '" ';
+                            if ( $kk === $selected_value ) {
+                                echo 'selected';
+                            }
+                            echo '>' . esc_attr( $vv['label'] ) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </td>
+                <td>
+                    Description
+                </td>
+            </tr>
             </tbody>
         </table>
         <div>
@@ -1182,13 +1217,58 @@ class DT_Webform_Active_Form_Post_Type
 
         <div>
             <br>
-            <a href="javascript:void(0)" class="button" onclick="add_new_custom_fields()" id="add_field_button">Add</a>
+            <a href="javascript:void(0)" class="button" onclick="add_dt_select_field()" id="add_field_button">Add</a>
             <span style="float:right;" id="update_fields_button"><button type="submit" class="button">Update</button> </span>
         </div>
         <br clear="all" />
 
 
         <script>
+            function add_dt_select_field() {
+                jQuery('#add_field_button').hide()
+                jQuery('#new-fields').html(`
+                <br><hr><br>
+                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[key]" placeholder="key" value="field_<?php echo esc_attr( $unique_key ) ?>"/>
+                <table class="widefat striped" id="new_<?php echo esc_attr( $unique_key ) ?>">
+                <thead>
+                    <tr>
+                        <th>Map To DT Field</th><th>Type</th><th style="width:50px;">Order</th><th style="width:50px;">Required</th><th>Label(s)</th><th>Value(s)</th><th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="new-dt-field-<?php echo esc_attr( $unique_key ) ?>">
+                                <select name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" >
+                                    <option value=""></option>
+                                    <option disabled>------</option>
+                                    <option disabled>COMMON</option>
+                                    <option value="sources" data-type="multi_select">Sources</option>
+                                    <option value="assigned_to" data-type="user_select">Assigned To</option>
+                                    <option value="overall_status" data-type="key_select">Overall Status</option>
+                                    <option disabled>------</option>
+                                    <option disabled>ALL</option>
+                                    <?php
+                                        $contact_fields = $this->filtered_contact_fields();
+                                        foreach( $contact_fields as $key => $field ) {
+                                            echo '<option value="'.$key.'" data-type="'.$field['type'].'">' . $field['name'] . '</option>';
+                                        }
+                                        ?>
+                                </select>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td id="new-labels-<?php echo esc_attr( $unique_key ) ?>"></td>
+                            <td id="new-values-<?php echo esc_attr( $unique_key ) ?>"></td>
+                            <td>
+                                <button class="button" type="submit"><?php echo esc_attr__( 'Save', 'dt_webform' ) ?></button>
+                                <button class="button" onclick="remove_new_custom_fields()"><?php echo esc_attr__( 'Clear', 'dt_webform' ) ?></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                `)
+            }
             function add_new_custom_fields() {
                 jQuery('#add_field_button').hide()
 

@@ -17,6 +17,8 @@ class DT_Webform_Active_Form_Post_Type
     public $post_type;
     public $form_type;
     public $post_id;
+    public $contact_fields;
+
     /**
      * DT_Webform_Active_Form_Post_Type The single instance of DT_Webform_Active_Form_Post_Type.
      *
@@ -52,6 +54,11 @@ class DT_Webform_Active_Form_Post_Type
                 $this->post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) );
             }
             $this->form_type = get_post_meta( $this->post_id, 'form_type', true );
+
+            $this->contact_fields = DT_Webform_Utilities::get_contact_defaults();
+            if ( is_wp_error( $this->contact_fields ) ) {
+                $this->contact_fields = [ 'sources' => [], 'fields' => [], 'channels' => [], 'address_types' => [], 'connection_types' => [] ];
+            }
 
             add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
             add_action( 'save_post', [ $this, 'meta_box_save' ] );
@@ -126,9 +133,9 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function meta_box_setup() {
         add_meta_box( $this->post_type . '_info_box', __( 'Form Details', 'dt_webform' ), [ $this, 'load_info_meta_box' ], $this->post_type, 'normal', 'high' );
-        add_meta_box( $this->post_type . '_appearance_box', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_core_fields', __( 'Core Fields', 'dt_webform' ), [ $this, 'load_core_fields_metabox' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_extra_fields', __( 'Extra Fields', 'dt_webform' ), [ $this, 'load_extra_fields_meta_box' ], $this->post_type, 'normal', 'high' );
+        add_meta_box( $this->post_type . '_appearance_box', __( 'Form Appearance', 'dt_webform' ), [ $this, 'load_appearance_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_localize', __( 'Localize', 'dt_webform' ), [ $this, 'load_localize_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'high' );
@@ -153,7 +160,7 @@ class DT_Webform_Active_Form_Post_Type
 
     public function load_dt_fields_list_meta_box( $post ) {
         // get contact defaults
-        $contact_defaults = DT_Webform_Utilities::get_contact_defaults();
+        $contact_defaults = $this->contact_fields;
         if ( ! isset( $contact_defaults['fields'] ) ) {
             return;
         }
@@ -312,28 +319,27 @@ class DT_Webform_Active_Form_Post_Type
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
                             break;
-                        case 'source':
-                            $contact_defaults = DT_Webform_Utilities::get_contact_defaults();
-                            if ( ! isset( $contact_defaults['sources'] ) ) {
-                                break;
-                            }
-                            dt_write_log( $contact_defaults );
-                            echo '<tr class="' . esc_attr( $v['section'] ) . '" id="row_' . esc_attr( $k ) . '" valign="top"><th scope="row">
-                                <label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th>
-                                <td>
-                                <select name="' . esc_attr( $k ) . '" id="' . esc_attr( $k ) . '" class="regular-text">';
-                            // Iterate the options
-                            foreach ( $contact_defaults['sources']  as $kk => $vv ) {
-                                echo '<option value="' . esc_attr( $kk ) . '" ';
-                                if ( $kk == $data ) {
-                                    echo 'selected';
-                                }
-                                echo '>' . esc_attr( $vv['label'] ) . '</option>';
-                            }
-                            echo '</select>' . "\n";
-                            echo '<p class="description">' . esc_attr( $v['description'] ) . '</p>' . "\n";
-                            echo '</td><tr/>' . "\n";
-                            break;
+//                        case 'sources':
+//                            $contact_defaults = $this->contact_fields;
+//                            if ( ! isset( $contact_defaults['sources'] ) ) {
+//                                break;
+//                            }
+//                            echo '<tr class="' . esc_attr( $v['section'] ) . '" id="row_' . esc_attr( $k ) . '" valign="top"><th scope="row">
+//                                <label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th>
+//                                <td>
+//                                <select name="' . esc_attr( $k ) . '" id="' . esc_attr( $k ) . '" class="regular-text">';
+//                            // Iterate the options
+//                            foreach ( $contact_defaults['sources']  as $kk => $vv ) {
+//                                echo '<option value="' . esc_attr( $kk ) . '" ';
+//                                if ( $kk == $data ) {
+//                                    echo 'selected';
+//                                }
+//                                echo '>' . esc_attr( $vv['label'] ) . '</option>';
+//                            }
+//                            echo '</select>' . "\n";
+//                            echo '<p class="description">' . esc_attr( $v['description'] ) . '</p>' . "\n";
+//                            echo '</td><tr/>' . "\n";
+//                            break;
                         case 'number':
                             echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td><input name="' . esc_attr( $k ) . '" type="number" id="' . esc_attr( $k ) . '" class="regular-text" value="' . esc_attr( $data ) . '" />' . "\n";
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
@@ -494,20 +500,7 @@ class DT_Webform_Active_Form_Post_Type
         ];
 
 
-        $fields['assigned_to'] = [
-            'name'        => __( 'Assign To User', 'dt_webform' ),
-            'description' => __( 'Add the Disciple Tools id number for the user that contacts for this form should be assigned to.', 'dt_webform' ),
-            'type'        => 'number',
-            'default'     => '',
-            'section'     => 'appearance',
-        ];
-        $fields['source'] = [
-            'name'        => __( 'Source', 'dt_webform' ),
-            'description' => __( 'Source refers to the sources established in Disciple Tools. Must be exact spelling.', 'dt_webform' ),
-            'type'        => 'source',
-            'default'     => '',
-            'section'     => 'appearance',
-        ];
+
 
         $fields['width'] = [
         'name'        => __( 'Width', 'dt_webform' ),
@@ -632,6 +625,27 @@ class DT_Webform_Active_Form_Post_Type
             'hidden'      => 'no',
             'section'     => 'core',
         ];
+        $fields['assigned_to'] = [
+            'name'        => 'Assign To User',
+            'description' => '',
+            'type'        => 'number',
+            'default'     => '',
+            'label'       => 'This field must be a number. This number is the user_id number from Disciple Tools. This can be found in the Admin > User section. See tutorial for more help.',
+            'required'    => 'no',
+            'hidden'      => 'yes',
+            'section'     => 'hidden',
+        ];
+        $fields['source'] = [
+            'name'        => 'Source',
+            'description' => '',
+            'type'        => 'source',
+            'default'     => '',
+            'label'       => 'Source',
+            'required'    => 'no',
+            'hidden'      => 'yes',
+            'section'     => 'hidden',
+        ];
+
         return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()
 
@@ -757,6 +771,39 @@ class DT_Webform_Active_Form_Post_Type
         return $core_fields;
     }
 
+    public function get_hidden_fields( int $post_id ) : array {
+
+        $cache = wp_cache_get( __METHOD__, $post_id );
+        if ( $cache ) {
+            return $cache;
+        }
+
+        $core_fields = [];
+        $custom_fields = $this->get_custom_fields_settings();
+        $meta = dt_get_simple_post_meta( $post_id );
+
+        foreach ( $custom_fields as $key => $field ) {
+            if ( $field['section'] === 'hidden' ) {
+                if ( isset( $meta[$key] ) ) {
+                    $values = maybe_unserialize( $meta[$key] );
+                } else {
+                    $values = [
+                        'name'  => $field['name'],
+                        'label' => $field['label'],
+                        'required' => $field['required'],
+                        'hidden' => $field['hidden'],
+                    ];
+                }
+
+                $core_fields[$key] = $values;
+            }
+        }
+
+        wp_cache_set( __METHOD__, $core_fields, $post_id );
+
+        return $core_fields;
+    }
+
     public function get_extra_fields_by_post_id( $post_id ) {
         $meta = dt_get_simple_post_meta( $post_id );
         $fields = self::filter_for_custom_fields( $meta );
@@ -778,9 +825,9 @@ class DT_Webform_Active_Form_Post_Type
             return;
         }
 
-        $fields = $this->get_core_fields( $post->ID );
-
+        $core_fields = $this->get_core_fields( $post->ID );
         ?>
+        <p><strong>Basic Form Fields</strong></p>
         <table class="widefat striped">
             <thead>
             <tr>
@@ -789,19 +836,19 @@ class DT_Webform_Active_Form_Post_Type
             </thead>
             <tbody>
             <?php
-            foreach ( $fields as $key => $field ) {
+            foreach ( $core_fields as $key => $field ) {
                 ?>
                     <tr>
                         <td><?php echo esc_html( $field['name'] ) ?><input type="hidden" style="width:100%;" name="<?php echo esc_attr( $key ) ?>[name]" value="<?php echo esc_html( $field['name'] ) ?>" /></td>
                         <td>
-                        <?php if ( 'header_description_field' === $key ) : ?>
+                            <?php if ( 'header_description_field' === $key ) : ?>
                                 <textarea style="width:100%;" name="<?php echo esc_attr( $key ) ?>[label]"><?php echo esc_html( $field['label'] ) ?></textarea>
                             <?php else : ?>
                                 <input style="width:100%;" type="text" name="<?php echo esc_attr( $key ) ?>[label]" placeholder="Enter a label" value="<?php echo esc_html( $field['label'] ) ?>" />
                             <?php endif; ?>
                         </td>
                         <td>
-                        <?php if ( 'header_description_field' === $key || 'header_title_field' === $key ) : ?>
+                            <?php if ( 'header_description_field' === $key || 'header_title_field' === $key || 'sources' === $key || 'assigned_to' === $key ) : ?>
                                 <input type="hidden" name="<?php echo esc_attr( $key ) ?>[required]" value="no" />
                             <?php else : ?>
                                 <select name="<?php echo esc_attr( $key ) ?>[required]">
@@ -811,15 +858,68 @@ class DT_Webform_Active_Form_Post_Type
                             <?php endif; ?>
                         </td>
                         <td>
+                            <?php if ( 'sources' === $key || 'assigned_to' === $key ) : ?>
+                            <span style="text-align:center;">Yes</span>
+                            <?php else: ?>
                             <select name="<?php echo esc_attr( $key ) ?>[hidden]">
                                 <option value="no" <?php echo ( $field['hidden'] === 'no' ) ? 'selected' : '' ?>>No</option>
                                 <option value="yes" <?php echo ( $field['hidden'] === 'yes' ) ? 'selected' : '' ?>>Yes</option>
                             </select>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php
             }
             ?>
+            </tbody>
+        </table>
+        <?php
+
+        ?>
+        <p><strong>Protected Disciple Tools Linking Fields</strong></p>
+        <table class="widefat striped">
+            <thead>
+            <tr>
+                <th style="width:100px;">Name</th><th style="width:45%">Field</th><th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    Assign To User
+                </td>
+                <td>
+                    <input name="assigned_to" type="number" value="<?php echo get_post_meta( $post->ID, 'assigned_to', true ) ?>" style="width:100%;" placeholder="user_id number from Disciple Tools system" />
+                </td>
+                <td>
+                    Description
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Sources
+                </td>
+                <td>
+                    <select name="source" style="width:100%;">
+                        <option value="web">Web</option>
+                        <option disabled>-----</option>
+                        <?php
+                        $contact_defaults = $this->contact_fields;
+                        $selected_value = get_post_meta( $post->ID, 'sources', true );
+                        foreach ( $contact_defaults['sources']  as $kk => $vv ) {
+                            echo '<option value="' . esc_attr( $kk ) . '" ';
+                            if ( $kk === $selected_value ) {
+                                echo 'selected';
+                            }
+                            echo '>' . esc_attr( $vv['label'] ) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </td>
+                <td>
+                    Description
+                </td>
+            </tr>
             </tbody>
         </table>
         <div>
@@ -830,6 +930,47 @@ class DT_Webform_Active_Form_Post_Type
 
         <?php
 
+    }
+
+    public function filtered_contact_fields() : array {
+        $contact_defaults = $this->contact_fields;
+
+        $ignore = [
+            'requires_update',
+            'reason_unassignable',
+            'reason_paused',
+            'reason_closed',
+            'accepted',
+            'quick_button_no_answer',
+            'quick_button_contact_established',
+            'quick_button_meeting_scheduled',
+            'quick_button_meeting_complete',
+            'quick_button_no_show',
+            'corresponds_to_user',
+            'last_modified',
+            'duplicate_data',
+            'tags',
+            'follow',
+            'unfollow',
+            'duplicate_of',
+            'location_grid',
+            'location_grid_meta',
+            'location_lnglat',
+            'tasks',
+        ];
+
+        // remove connections
+        foreach( $contact_defaults['fields'] as $key => $field ) {
+            if ( $field['type'] === 'connection' ) {
+               unset( $contact_defaults['fields'][$key] );
+            }
+            else if ( array_search( $key, $ignore ) !== false ) {
+                unset( $contact_defaults['fields'][$key] );
+            }
+        }
+        $fields = $contact_defaults['fields'];
+        ksort( $fields );
+        return $fields;
     }
 
     /**
@@ -853,7 +994,7 @@ class DT_Webform_Active_Form_Post_Type
             <table class="widefat striped">
                 <thead>
                 <tr>
-                    <th style="width:50px;">Order</th><th style="width:50px;">Required</th><th>Type</th><th>Map To DT Field</th><th>Label(s)</th><th>Value(s)</th><th>Actions</th>
+                    <th>Map To DT Field</th><th style="width:50px;">Order</th><th style="width:50px;">Required</th><th>Type</th><th>Map To DT Field</th><th>Label(s)</th><th>Value(s)</th><th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -867,6 +1008,26 @@ class DT_Webform_Active_Form_Post_Type
                 ?>
 
                     <tr id="<?php echo esc_attr( $unique_key ) ?>">
+
+                        <td>
+                            <select name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" >
+                                <option value=""></option>
+                                <option disabled>------</option>
+                                <option disabled>COMMON</option>
+                                <option value="sources" data-type="multi_select">Sources</option>
+                                <option value="assigned_to" data-type="user_select">Assigned To</option>
+                                <option value="overall_status" data-type="key_select">Overall Status</option>
+                                <option disabled>------</option>
+                                <option disabled>ALL</option>
+                                <?php
+                                $contact_fields = $this->filtered_contact_fields();
+                                foreach( $contact_fields as $key => $field ) {
+                                    echo '<option value="'.$key.'" data-type="'.$field['type'].'">' . $field['name'] . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </td>
+
                         <td>
                             <input type="number" style="width:50px;" name="<?php echo esc_attr( $unique_key ) ?>[order]" placeholder="number" value="<?php echo esc_attr( $data['order'] ?? 1 ) ?>" />
                             <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" placeholder="key"
@@ -1013,7 +1174,6 @@ class DT_Webform_Active_Form_Post_Type
             <?php
         } // end if
 
-
         $unique_key = bin2hex( random_bytes( 10 ) );
         ?>
 
@@ -1065,7 +1225,7 @@ class DT_Webform_Active_Form_Post_Type
                                     <option value="tel"><?php echo esc_attr__( 'Phone', 'dt_webform' ) ?></option>
                                     <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>
                                     <option value="checkbox"><?php echo esc_attr__( 'Checkbox', 'dt_webform' ) ?></option>
-                                    <?php if ( get_option( 'dt_webform_state' ) === 'combined') : ?><option value="map"><?php echo esc_attr__( 'Map', 'dt_webform' ) ?></option><?php endif; ?>
+                                    <option value="map"><?php echo esc_attr__( 'Map', 'dt_webform' ) ?></option>
                                     <option value="note"><?php echo esc_attr__( 'Note', 'dt_webform' ) ?></option>
                                     <option value="dropdown"><?php echo esc_attr__( 'Dropdown', 'dt_webform' ) ?></option>
                                     <option value="multi_radio"><?php echo esc_attr__( 'Multi-Select Radio', 'dt_webform' ) ?></option>
@@ -1164,7 +1324,6 @@ class DT_Webform_Active_Form_Post_Type
                             dt.empty().html(dt_field)
                             break;
                     }
-
                 })
             }
 
@@ -1178,13 +1337,10 @@ class DT_Webform_Active_Form_Post_Type
                 jQuery('#' + id).empty().submit()
             }
 
-
-
         </script>
 
         </form>
         <?php
-
     }
 
     public function save_core_fields( $post_id ) {

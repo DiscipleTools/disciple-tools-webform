@@ -89,6 +89,11 @@ class DT_Webform_Utilities {
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'create_contacts' );
+            if ( ! class_exists('DT_Posts' ) ) {
+                require_once( get_template_directory() . '/dt-posts/posts.php' );
+                require_once( get_template_directory() . '/dt-posts/custom-post-type.php' );
+                require_once( get_template_directory() . '/dt-posts/dt-posts.php' );
+            }
             return DT_Posts::get_post_settings( 'contacts' );
         }
 
@@ -152,6 +157,11 @@ class DT_Webform_Utilities {
                         font-size: .8em;
                         width: 100%;
                     }
+                    .input-date {
+                        padding: .2em;
+                        font-size: .8em;
+                        width: 100%;
+                    }
                     .input-textarea {
                         height:80px;
                         padding: .2em;
@@ -166,6 +176,22 @@ class DT_Webform_Utilities {
                     .span-radio {
                         float:left;
                         padding:5px;
+                    }
+                    .input-multi_select {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
+                    }
+                    .input-key_select {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
                     }
                     .input-dropdown {
                         font-size: 1.2em;
@@ -264,6 +290,11 @@ class DT_Webform_Utilities {
                         font-size: 1em;
                         width: 100%;
                     }
+                    .input-date {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
                     .input-textarea {
                         height:80px;
                         padding: .5em;
@@ -278,6 +309,22 @@ class DT_Webform_Utilities {
                         float:left;
                         padding:5px;
 
+                    }
+                    .input-multi_select {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
+                    }
+                    .input-key_select {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
                     }
                     .input-dropdown {
                         font-size: 1.2em;
@@ -387,6 +434,8 @@ class DT_Webform_Utilities {
                         padding: 10px 0;
                         width: 100%;
                     }
+                    .section-multi_select {}
+                    .section-key_select {}
                     .section-dropdown {}
                     .section-multi_radio {}
                     .section-checkbox {
@@ -395,6 +444,7 @@ class DT_Webform_Utilities {
                     .section-tel {}
                     .section-email {}
                     .section-text {}
+                    .section-date {}
                     .section-header {
                         font-size: 2em;
                         font-weight: bolder;
@@ -412,6 +462,11 @@ class DT_Webform_Utilities {
                     }
 
                     .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    .input-date {
                         padding: .5em;
                         font-size: 1em;
                         width: 100%;
@@ -441,6 +496,22 @@ class DT_Webform_Utilities {
                         padding: .5em;
                         font-size: 1em;
                         width: 100%;
+                    }
+                    .input-multi_select {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
+                    }
+                    .input-key_select {
+                        font-size: 1.2em;
+                        width: 50%;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        padding: 5px;
                     }
                     .input-dropdown {
                         font-size: 1.2em;
@@ -516,6 +587,8 @@ class DT_Webform_Utilities {
                     // SECTION CLASSES
                     .section {}
                     .section-dropdown {}
+                    .section-key_select {}
+                    .section-multi_select {}
                     .section-multi_radio {}
                     .section-checkbox {}
                     .section-tel {}
@@ -532,6 +605,8 @@ class DT_Webform_Utilities {
                     .input-textarea {}
                     .input-checkbox {}
                     .input-multi_radio {}
+                    .input-key_select {}
+                    .input-multi_select {}
                     .span-radio {}
                     .input-tel {}
                     .input-email {}
@@ -567,9 +642,12 @@ class DT_Webform_Utilities {
                         if ( empty( $value['labels'] ) ) {
                             $value['labels'] = 'Divider';
                         }
-                        $ids .= '// ' . esc_html( $value['labels'] ) . PHP_EOL;
-                        $ids .= '#section-' . esc_attr( $key ) . ' {}' . PHP_EOL;
-                        $ids .= '#' . esc_attr( $key ) . ' {}' . PHP_EOL . PHP_EOL;
+                        if ( ! is_array( $value['labels'] ) ) {
+                            $ids .= '// ' . esc_html( $value['labels'] ) . PHP_EOL;
+                            $ids .= '#section-' . esc_attr( $key ) . ' {}' . PHP_EOL;
+                            $ids .= '#' . esc_attr( $key ) . ' {}' . PHP_EOL . PHP_EOL;
+                        }
+
                     }
                 }
 

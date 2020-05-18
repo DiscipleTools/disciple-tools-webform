@@ -53,41 +53,20 @@ function dt_webform() {
                 add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
                 add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
             }
-
             return new WP_Error( 'current_theme_not_dt', 'Please upgrade Disciple Tools Theme to ' . $dt_webform_required_dt_theme_version . ' to use this plugin.' );
         }
     }
 
+    $is_rest = dt_is_rest();
+    if ( $is_rest && strpos( dt_get_url_path(), 'webform' ) !== false ){
+        return DT_Webform::get_instance();
+    }
 
-//    $wp_theme = wp_get_theme();
-//    $version = $wp_theme->version;
-//
-//    $current_theme = get_option( 'current_theme' );
-//    $state = get_option( 'dt_webform_state' );
-//
-//    /*
-//     * Check if the Disciple.Tools theme is loaded and is the latest required version
-//     */
-//
-//    if ( 'combined' == $state || 'home' == $state ) {
-//        if ( ! ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
-//            if ( ! is_multisite() ) {
-//                add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
-//            }
-//            return false;
-//        }
-//        if ( ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) && $version < $dt_webform_required_dt_theme_version ) {
-//            if ( ! is_multisite() ) {
-//                add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
-//                add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
-//            }
-//
-//            return new WP_Error( 'current_theme_not_dt', 'Please upgrade Disciple Tools Theme to ' . $dt_webform_required_dt_theme_version . ' to use this plugin.' );
-//        }
-//    }
+    if ( is_admin() ) {
+        return DT_Webform::get_instance();
+    }
 
-    return DT_Webform::get_instance();
-
+    return false;
 }
 add_action( 'after_setup_theme', 'dt_webform' );
 
@@ -615,5 +594,18 @@ if ( ! function_exists( 'dt_has_permissions' ) ) {
             }
         }
         return false;
+    }
+}
+
+if ( ! function_exists( 'dt_get_url_path' ) ) {
+    function dt_get_url_path() {
+        if ( isset( $_SERVER["HTTP_HOST"] ) ) {
+            $url  = ( !isset( $_SERVER["HTTPS"] ) || @( $_SERVER["HTTPS"] != 'on' ) ) ? 'http://'. sanitize_text_field( wp_unslash( $_SERVER["HTTP_HOST"] ) ) : 'https://'. sanitize_text_field( wp_unslash( $_SERVER["HTTP_HOST"] ) );
+            if ( isset( $_SERVER["REQUEST_URI"] ) ) {
+                $url .= sanitize_text_field( wp_unslash( $_SERVER["REQUEST_URI"] ) );
+            }
+            return trim( str_replace( get_site_url(), "", $url ), '/' );
+        }
+        return '';
     }
 }

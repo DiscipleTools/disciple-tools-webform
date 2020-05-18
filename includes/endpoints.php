@@ -1,9 +1,9 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
- * DT_Webform_Remote_Endpoints
+ * DT_Webform_Endpoints
  *
- * @class      DT_Webform_Remote_Endpoints
+ * @class      DT_Webform_Endpoints
  * @since      0.1.0
  * @package    DT_Webform
  */
@@ -11,12 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 
 
 /**
- * Class DT_Webform_Remote_Endpoints
+ * Class DT_Webform_Endpoints
  */
-class DT_Webform_Remote_Endpoints
+class DT_Webform_Endpoints
 {
     /**
-     * DT_Webform_Remote_Endpoints The single instance of DT_Webform_Remote_Endpoints.
+     * DT_Webform_Endpoints The single instance of DT_Webform_Endpoints.
      *
      * @var     object
      * @access    private
@@ -25,12 +25,12 @@ class DT_Webform_Remote_Endpoints
     private static $_instance = null;
 
     /**
-     * Main DT_Webform_Remote_Endpoints Instance
-     * Ensures only one instance of DT_Webform_Remote_Endpoints is loaded or can be loaded.
+     * Main DT_Webform_Endpoints Instance
+     * Ensures only one instance of DT_Webform_Endpoints is loaded or can be loaded.
      *
      * @since 0.1.0
      * @static
-     * @return DT_Webform_Remote_Endpoints instance
+     * @return DT_Webform_Endpoints instance
      */
     public static function instance(){
         if ( is_null( self::$_instance ) ) {
@@ -92,6 +92,8 @@ class DT_Webform_Remote_Endpoints
             if ( ! $form_id ) { // if token is not valid, then error
                 return new WP_Error( "token_failure", "Token not valid.", [ 'status' => 401 ] );
             }
+
+            $params['form_title'] = get_the_title( $form_id );
         }
 
         // Insert new lead
@@ -125,7 +127,7 @@ class DT_Webform_Remote_Endpoints
         $new_lead_meta = $params;
 
         dt_write_log( '$new_lead_meta' );
-        dt_write_log( $new_lead_meta );
+//        dt_write_log( $new_lead_meta );
 
         // check required fields
         if ( ! isset( $new_lead_meta['name'] ) || empty( $new_lead_meta['name'] ) ) {
@@ -139,7 +141,7 @@ class DT_Webform_Remote_Endpoints
 //            $form_meta = $new_lead_meta['form_meta'];
 //        }
         dt_write_log( '$form_meta' );
-        dt_write_log( $form_meta );
+//        dt_write_log( $form_meta );
 
         // name
         $fields['title'] = $new_lead_meta['name'];
@@ -189,7 +191,8 @@ class DT_Webform_Remote_Endpoints
 
         $contact_fields = DT_Webform_Utilities::get_contact_defaults();
         dt_write_log( '$contact_fields' );
-        dt_write_log( $contact_fields );
+//        dt_write_log( $contact_fields );
+        dt_write_log( $new_lead_meta );
 
         // custom fields
         foreach ( $new_lead_meta as $lead_key => $lead_value ) {
@@ -208,7 +211,10 @@ class DT_Webform_Remote_Endpoints
 
                 // prepare note
                 $label = ucfirst( $field['type'] );
-                $notes[$lead_key] = $label . ': ' . $lead_value;
+                if ( ! is_array( $lead_value ) ) {
+                    $notes[$lead_key] = $label . ': ' . $lead_value;
+                }
+
 
                 // prepare mapped fields
                 if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
@@ -220,16 +226,24 @@ class DT_Webform_Remote_Endpoints
                             }
                             $fields[$field['dt_field']]['values'][] = [ 'value' => $field['values'] ];
                             break;
-
                         case 'multi_radio':
+                        case 'key_select':
                         case 'dropdown':
                         case 'tel':
                         case 'email':
+                        case 'date':
                         case 'text':
-                            if ( isset( $contact_fields[$field['dt_field']]["type"] ) && $contact_fields[$field['dt_field']]["type"] === "multi_select" ) {
+                            if ( isset( $contact_fields[$field['dt_field']]["type"] ) && $contact_fields[$field['dt_field']]["type"] === "key_select" ) {
                                 $fields[$field['dt_field']]['values'][] = [ 'value' => $lead_value ];
                             } else {
                                 $fields[$field['dt_field']] = $lead_value;
+                            }
+                            break;
+                        case 'multi_select':
+                            if ( is_array( $lead_value ) ) {
+                                foreach ( $lead_value as $item ) {
+                                    $fields[$field['dt_field']]['values'][] = [ 'value' => $item ];
+                                }
                             }
                             break;
                         case 'note':
@@ -310,6 +324,9 @@ class DT_Webform_Remote_Endpoints
 
             $body = json_decode( $result['body'], true );
 
+            dt_write_log('Post Result');
+            dt_write_log( $body );
+
             if ( isset( $body['ID'] ) ) {
                 return $result;
             } else {
@@ -358,4 +375,4 @@ class DT_Webform_Remote_Endpoints
 /**
  * Initialize instance
  */
-DT_Webform_Remote_Endpoints::instance();
+DT_Webform_Endpoints::instance();

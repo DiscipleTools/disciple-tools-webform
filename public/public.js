@@ -22,7 +22,7 @@ function check_form() {
     let validator = jQuery('#contact-form').validate();
     let status = validator.form()
     if( status ) {
-        // get_data();
+        get_data();
     }
     translate_form_strings()
 }
@@ -44,27 +44,27 @@ function storeData(data) {
   return false;
 }
 
-// async function submit_form(data) {
-//   let url = get_url();
-//   console.log(data);
-//   return fetch(url + '/wp-json/dt-public/v1/webform/form_submit', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json;charset=utf-8'
-//     },
-//     body: data
-//   })
-//   .then((data) => {
-//     if (data.status == 200) {
-//       return data.status;
-//     } else {
-//       throw new Error(data.status);
-//     }
-//   })
-//   .catch((error) => {
-//     console.error('Error:', error);
-//   });
-// }
+async function submit_form(data) {
+  let url = get_url();
+  console.log(data);
+  return fetch(url + '/wp-json/dt-public/v1/webform/form_submit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: data
+  })
+  .then((data) => {
+    if (data.status == 200) {
+      return data.status;
+    } else {
+      throw new Error(data.status);
+    }
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+}
 
 function get_data() {
   var submitButtonContainer = document.querySelector('#submit-button-container');
@@ -100,12 +100,12 @@ function get_data() {
     setTimeout(removeOfflineWarning, 2000);
 
   } else {
-    // submit_form(JSON.stringify(data)).then((response) => {
-    //   console.log(response);
-    //   submitButton.disabled = false;
-    //   document.querySelector("#submit-button-container .spinner").remove()
-    //   jQuery('#contact-form').html(window.TRANSLATION.success)
-    //  });
+    submit_form(JSON.stringify(data)).then((response) => {
+      console.log(response);
+      submitButton.disabled = false;
+      document.querySelector("#submit-button-container .spinner").remove()
+      jQuery('#contact-form').html(window.TRANSLATION.success)
+     });
 
   }
 }
@@ -158,15 +158,15 @@ async function checkStorage() {
       if (key.includes(token)) {
         const fromLocalStore = localStorage.getItem(key);
         if (fromLocalStore) {
-            // we have saved form data, try to submit it
-            const item = JSON.parse(fromLocalStore);
+        // we have saved form data, try to submit it
+        const item = JSON.parse(fromLocalStore);
 
-            // submit_form(JSON.stringify(item)).then(function(res) {
-            //     if (res === 200) {
-            //       localStorage.removeItem(key);
-            //       document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount());
-            //     }
-            //   });
+        submit_form(JSON.stringify(item)).then(function(res) {
+            if (res === 200) {
+              localStorage.removeItem(key);
+              document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount());
+            }
+          });
         }
       }
     }
@@ -181,7 +181,8 @@ jQuery(document).ready(function () {
       jQuery('#report').empty().append( window.TRANSLATION.success + '<br>');
     }
 
-    check_form()
+    // check_form()
+    translate_form_strings()
 
     let button = jQuery('#submit-button')
     button.html( window.TRANSLATION.submit ).prop('disabled', false)

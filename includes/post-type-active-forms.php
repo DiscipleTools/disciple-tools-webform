@@ -1661,9 +1661,6 @@ class DT_Webform_Active_Form_Post_Type
         $fields = $contact_defaults['fields'];
         ksort( $fields );
 
-        dt_write_log(__METHOD__);
-        dt_write_log($fields);
-
         return $fields;
     }
 

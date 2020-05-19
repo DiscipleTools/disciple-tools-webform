@@ -126,8 +126,6 @@ class DT_Webform_Endpoints
         $notes = [];
         $new_lead_meta = $params;
 
-        dt_write_log( '$new_lead_meta' );
-//        dt_write_log( $new_lead_meta );
 
         // check required fields
         if ( ! isset( $new_lead_meta['name'] ) || empty( $new_lead_meta['name'] ) ) {
@@ -157,6 +155,11 @@ class DT_Webform_Endpoints
         }
 
         // locations
+        if ( isset( $new_lead_meta['location'] ) && ! empty( $new_lead_meta['location'] ) ) {
+            $fields['location_grid_meta'] = [
+                "values" => [ $new_lead_meta['location'] ]
+            ];
+        }
 //        $locations = [ "values" => [] ];
 //        $coordinates = [ "values" => [] ];
 //        foreach ( $new_lead_meta as $lead_key => $lead_value ) {
@@ -192,6 +195,7 @@ class DT_Webform_Endpoints
         $contact_fields = DT_Webform_Utilities::get_contact_defaults();
         dt_write_log( '$contact_fields' );
 //        dt_write_log( $contact_fields );
+        dt_write_log( '$new_lead_meta' );
         dt_write_log( $new_lead_meta );
 
         // custom fields

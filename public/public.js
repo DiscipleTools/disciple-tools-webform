@@ -46,7 +46,7 @@ function storeData(data) {
 
 async function submit_form(data) {
   let url = get_url();
-  console.log(data);
+  // console.log(data);
   return fetch(url + '/wp-json/dt-public/v1/webform/form_submit', {
     method: 'POST',
     headers: {
@@ -70,16 +70,30 @@ function get_data() {
   var submitButtonContainer = document.querySelector('#submit-button-container');
   var submitButton = document.querySelector('#submit-button');
 
+  jQuery('#submit-button').prop('disabled', true )
+
   submitButton.disabled = true;
   submitButtonContainer.insertAdjacentHTML("beforeend", window.SETTINGS.spinner);
   let data = {};
 
-  jQuery(':input:not([type=checkbox])').each(function() {
-      data[this.name] = jQuery(this).val();
-  });
   jQuery(':input[type=checkbox]:checked').each(function() {
     data[this.name] = jQuery(this).val();
   });
+  jQuery(':input:not([type=checkbox]):not(.ignore)').each(function() {
+      data[this.name] = jQuery(this).val();
+  });
+  let location = jQuery('.location')
+  if ( location.length ) {
+    data.location = {}
+    data.location.lat = ''
+    data.location.lng = ''
+    data.location.level = ''
+    data.location.label = ''
+    location.each(function() {
+      data.location[jQuery(this).data('type')] = jQuery(this).text()
+    })
+  }
+  console.log(data)
 
   if (!navigator.onLine) {
     // user is offline, store data locally

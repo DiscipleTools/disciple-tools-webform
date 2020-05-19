@@ -258,14 +258,16 @@ class DT_Webform_Active_Form_Post_Type
                             case 'text':
                                 $this->template_row_dt_field_single( $unique_key, $data );
                                 break;
+                            case 'location':
+                                $this->template_row_location_field( $unique_key, $data );
+                                break;
                         }
-
                     }
                     // is not a DT field
-
-
-
-
+                    else {
+                        dt_write_log('non dt field');
+                        // @todo add non-dt fields
+                    }
                 } // end foreach
                 ?>
                 </tbody></table>
@@ -305,7 +307,9 @@ class DT_Webform_Active_Form_Post_Type
                                     }
                                     ?>
                                     <option disabled>------</option>
+                                    <?php if ( DT_Mapbox_API::get_key() ) : ?>
                                     <option value="location">Location Search Field</option>
+                                    <?php endif; ?>
                                     <option value="design">Design Element</option>
                                     <option value="other">Other Field</option>
                                 </select>`
@@ -325,7 +329,9 @@ class DT_Webform_Active_Form_Post_Type
                                     name="field_<?php echo esc_attr( $unique_key ) ?>[values]"
                                     placeholder="One value per line. Underscores allowed. No spaces or special characters." /></textarea>`
             let map_select = `<select name="field_<?php echo esc_attr( $unique_key ) ?>[values]">
-                                    <option value="click_map" selected>Click Map</option></select>`
+                                    <option value="search_box" selected>Search Box</option>
+                                    <option value="click_map" <?php echo ( is_dt() ) ? '' : 'disabled' ?>>Click Map</option>
+                                    </select>`
 
             function add_dt_select_field() {
                 jQuery('#add_field_button').hide()
@@ -374,6 +380,15 @@ class DT_Webform_Active_Form_Post_Type
                     return
                 }
 
+                if ( 'location' === id ) {
+                    add_location_field()
+                    return
+                }
+
+                add_dt_fields(id)
+            }
+
+            function add_dt_fields( id ) {
                 jQuery.each(field_list, function(i,v){
                     if ( i === id ) {
                         let type = jQuery('#new-type')
@@ -417,6 +432,7 @@ class DT_Webform_Active_Form_Post_Type
                 jQuery('#new-fields').html(`
                 <br><hr><br>
                 <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[key]" placeholder="key" value="field_<?php echo esc_attr( $unique_key ) ?>"/>
+                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" />
                 <table class="widefat striped" id="new_<?php echo esc_attr( $unique_key ) ?>">
                 <thead>
                     <tr>
@@ -429,23 +445,7 @@ class DT_Webform_Active_Form_Post_Type
                                 ${dt_field}
                             </td>
                             <td id="new-type">
-                                <select id="type_<?php echo esc_attr( $unique_key ) ?>" name="field_<?php echo esc_attr( $unique_key ) ?>[type]">
-                                    <option value="text"><?php echo esc_attr__( 'Text', 'dt_webform' ) ?></option>
-                                    <option readonly>---</option>
-                                    <option value="header"><?php echo esc_attr__( 'Section Header', 'dt_webform' ) ?></option>
-                                    <option value="description"><?php echo esc_attr__( 'Section Description', 'dt_webform' ) ?></option>
-                                    <option value="divider"><?php echo esc_attr__( 'Section Divider', 'dt_webform' ) ?></option>
-                                    <option value="spacer"><?php echo esc_attr__( 'Section Spacer', 'dt_webform' ) ?></option>
-                                    <option value="custom_label"><?php echo esc_attr__( 'Custom Label', 'dt_webform' ) ?></option>
-                                    <option value="text"><?php echo esc_attr__( 'Text', 'dt_webform' ) ?></option>
-                                    <option value="tel"><?php echo esc_attr__( 'Phone', 'dt_webform' ) ?></option>
-                                    <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>
-                                    <option value="checkbox"><?php echo esc_attr__( 'Checkbox', 'dt_webform' ) ?></option>
-                                    <option value="map"><?php echo esc_attr__( 'Map', 'dt_webform' ) ?></option>
-                                    <option value="note"><?php echo esc_attr__( 'Note', 'dt_webform' ) ?></option>
-                                    <option value="dropdown"><?php echo esc_attr__( 'Dropdown', 'dt_webform' ) ?></option>
-                                    <option value="multi_radio"><?php echo esc_attr__( 'Multi-Select Radio', 'dt_webform' ) ?></option>
-                               </select>
+
                             </td>
                             <td id="new-labels-<?php echo esc_attr( $unique_key ) ?>"></td>
                             <td id="new-values-<?php echo esc_attr( $unique_key ) ?>"></td>
@@ -473,7 +473,6 @@ class DT_Webform_Active_Form_Post_Type
 
                 labels.html(single_label)
                 values.html(single_value)
-                dt.html(dt_field)
 
                 jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').on('change', function(){
                     let type = jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').val()
@@ -533,6 +532,64 @@ class DT_Webform_Active_Form_Post_Type
                             break;
                     }
                 })
+                dt.on('change', function( e ) {
+                    change_selection(jQuery(this).val())
+                })
+            }
+
+            function add_location_field() {
+                jQuery('#add_field_button').hide()
+
+                jQuery('#new-fields').html(`
+                <br><hr><br>
+                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[key]" value="field_<?php echo esc_attr( $unique_key ) ?>"/>
+                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="1" />
+                <table class="widefat striped" id="new_<?php echo esc_attr( $unique_key ) ?>">
+                <thead>
+                    <tr>
+                        <th>Map To DT Field</th><th>Type</th><th>Label(s)</th><th>Value(s)</th><th style="width:50px;">Required</th><th style="width:50px;">Order</th><th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                             <td id="new-dt-field">
+                                ${dt_field}
+                            </td>
+                            <td id="new-type">
+                                Location
+                                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[type]" value="location" />
+                            </td>
+                            <td id="new-labels-<?php echo esc_attr( $unique_key ) ?>"></td>
+                            <td id="new-values-<?php echo esc_attr( $unique_key ) ?>"></td>
+                            <td>
+                                <select name="field_<?php echo esc_attr( $unique_key ) ?>[required]">
+                                    <option value="no"><?php echo esc_attr__( 'No', 'dt_webform' ) ?></option>
+                                    <option value="yes"><?php echo esc_attr__( 'Yes', 'dt_webform' ) ?></option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" style="width:50px;" name="field_<?php echo esc_attr( $unique_key ) ?>[order]" placeholder="number" value="1" />
+                            </td>
+                            <td>
+                                <button class="button" type="submit"><?php echo esc_attr__( 'Save', 'dt_webform' ) ?></button>
+                                <button class="button" onclick="remove_new_custom_fields()"><?php echo esc_attr__( 'Clear', 'dt_webform' ) ?></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                `)
+
+                let labels = jQuery('#new-labels-<?php echo esc_attr( $unique_key ) ?>')
+                let values = jQuery('#new-values-<?php echo esc_attr( $unique_key ) ?>')
+                let dt = jQuery('#dt-field-selector')
+
+                labels.html(single_label)
+                values.html(single_value)
+                dt.val('location')
+
+                labels.empty().html(single_label)
+                values.empty().html(map_select)
+
                 dt.on('change', function( e ) {
                     change_selection(jQuery(this).val())
                 })
@@ -766,6 +823,37 @@ class DT_Webform_Active_Form_Post_Type
             <!-- Values-->
             <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[values]" value="" />
+            </td>
+            <!-- Required -->
+            <?php $this->template_required_cell( $unique_key, $data ); ?>
+            <!-- Order -->
+            <?php $this->template_order_cell( $unique_key, $data ); ?>
+            <!-- Action -->
+            <?php $this->template_remove_cell( $unique_key, $data ); ?>
+
+        </tr>
+        <?php
+    }
+
+    public function template_row_location_field( $unique_key, $data ) {
+        ?>
+        <tr id="<?php echo esc_attr( $unique_key ) ?>">
+            <!--DT Field-->
+            <?php $this->template_dt_field_cell( $unique_key, $data ); ?>
+            <!-- Type -->
+            <?php $this->template_type_cell( $unique_key, $data ); ?>
+            <!-- Labels -->
+            <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
+                <?php
+                if( ! empty( $data['labels'] ) ) {
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" />';
+                }
+                ?>
+            </td>
+            <!-- Values-->
+            <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
+                <?php echo esc_html( ucwords( str_replace( '_', ' ', $data['values'] ) ) ) ?>
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[values]" value="<?php echo esc_html( $data['values'] ) ?>" />
             </td>
             <!-- Required -->
             <?php $this->template_required_cell( $unique_key, $data ); ?>
@@ -1637,7 +1725,7 @@ class DT_Webform_Active_Form_Post_Type
             'unfollow',
             'duplicate_of',
             'location_grid',
-            'location_grid_meta',
+            'location',
             'location_lnglat',
             'tasks',
             'assigned_to',

@@ -665,7 +665,7 @@ class DT_Webform_Utilities {
          */
         $location_styles = '';
         foreach ( $meta as $key => $value ) {
-            if ( substr( $key, 0, 5 ) === 'field' && $value['type'] === 'map' ) {
+            if ( substr( $key, 0, 5 ) === 'field' && $value['type'] === 'location' ) {
                 $location_styles = '
                 #geocoder {
                     padding-bottom: 10px;
@@ -717,6 +717,50 @@ class DT_Webform_Utilities {
                 .results-table td {
                     padding-bottom: 15px;
                 }
+
+                /* mapbox autocomplete elements*/
+                #mapbox-search {
+                    margin:0;
+                }
+                #mapbox-search-wrapper {
+                    margin: 0 0 1rem;
+                }
+                .mapbox-autocomplete {
+                    /*the container must be positioned relative:*/
+                    position: relative;
+                }
+                .mapbox-autocomplete-items {
+                    position: absolute;
+                    border: 1px solid #e6e6e6;
+                    border-bottom: none;
+                    border-top: none;
+                    z-index: 99;
+                    /*position the autocomplete items to be the same width as the container:*/
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                }
+                .mapbox-autocomplete-items div {
+                    padding: 10px;
+                    cursor: pointer;
+                    background-color: #fff;
+                    border-bottom: 1px solid #e6e6e6;
+                }
+                .mapbox-autocomplete-items div:hover {
+                    /*when hovering an item:*/
+                    background-color: #00aeff;
+                    color: #ffffff;
+                }
+                .mapbox-autocomplete-active {
+                    /*when navigating through the items using the arrow keys:*/
+                    background-color: #00aeff !important;
+                    color: #ffffff;
+                }
+                #mapbox-spinner-button {
+                    border-radius:0;
+                    display:none;
+                }
+                /* end mapbox elements*/
             ';
             }
         }

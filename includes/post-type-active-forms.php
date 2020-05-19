@@ -52,6 +52,7 @@ class DT_Webform_Active_Form_Post_Type
             add_action( 'save_post', [ $this, 'save_meta_box' ] );
             add_action( 'save_post', [ $this, 'save_core_fields' ] );
             add_action( 'save_post', [ $this, 'save_extra_fields' ] );
+            dt_write_log($_POST);
 
             global $pagenow, $post_type;
             if ( $pagenow === 'post.php' ) {
@@ -265,8 +266,37 @@ class DT_Webform_Active_Form_Post_Type
                     }
                     // is not a DT field
                     else {
-                        dt_write_log('non dt field');
-                        // @todo add non-dt fields
+                        switch ( $data['type'] ) {
+
+                            // multi labels, multi values
+                            case 'dropdown':
+                            case 'multi_radio':
+                                break;
+
+                            // single labels, single values
+                            case 'checkbox':
+                            case 'tel':
+                            case 'email':
+                            case 'text':
+                                break;
+
+                            case 'note':
+                                break;
+                            case 'custom_label':
+                            case 'header':
+                                $this->template_row_label_field( $unique_key, $data );
+                                break;
+                            case 'description':
+
+                                break;
+                            // empty elements
+                            case 'divider':
+                            case 'spacer':
+                            default:
+
+                                break;
+                        }
+
                     }
                 } // end foreach
                 ?>
@@ -279,7 +309,10 @@ class DT_Webform_Active_Form_Post_Type
 
         <div>
             <br>
-            <a href="javascript:void(0)" class="button" onclick="add_dt_select_field()" id="add_field_button">Add</a>
+            <a href="javascript:void(0)" class="button" onclick="add_dt_select_field()" id="add_dt_field_button">Add DT Field</a>
+            <a href="javascript:void(0)" class="button" onclick="add_location_field()" id="add_location_button">Add Location Field</a>
+            <a href="javascript:void(0)" class="button" onclick="add_design_field()" id="add_design_button">Add Design Element</a>
+            <a href="javascript:void(0)" class="button" onclick="add_other_fields()" id="add_other_button">Add Other Fields</a>
             <span style="float:right;" id="update_fields_button"><button type="submit" class="button">Update</button> </span>
         </div>
         <br clear="all" />
@@ -297,7 +330,7 @@ class DT_Webform_Active_Form_Post_Type
         <script>
             let field_list = [<?php echo json_encode( $this->filtered_contact_fields() ) ?>][0]
             let unique_key = '<?php echo esc_attr( $unique_key ) ?>'
-            let dt_field = `<select id="dt-field-selector" name="field_<?php echo esc_attr( $unique_key ) ?>[dt_field]" >
+            let dt_field = `<select id="dt-field-selector" name="field_<?php echo esc_attr( $unique_key ) ?>[dt_field]" required>
                                     <option value=""></option>
                                     <option disabled>------</option>
                                     <?php
@@ -306,21 +339,20 @@ class DT_Webform_Active_Form_Post_Type
                                         echo '<option value="'. esc_attr( $key ).'" data-type="'. esc_attr( $field['type'] ).'">' . esc_attr( $field['name'] ) . '</option>';
                                     }
                                     ?>
-                                    <option disabled>------</option>
-                                    <?php if ( DT_Mapbox_API::get_key() ) : ?>
-                                    <option value="location">Location Search Field</option>
-                                    <?php endif; ?>
-                                    <option value="design">Design Element</option>
-                                    <option value="other">Other Field</option>
                                 </select>`
             let multi_title = `<input type="text" style="width:100%;" name="field_<?php echo esc_attr( $unique_key ) ?>[title]" placeholder="Give a title to the series" id="field_<?php echo esc_attr( $unique_key ) ?>_title" />`
-            let first_line_default = `<select style="width:100%;" name="field_<?php echo esc_attr( $unique_key ) ?>[selected]"><option value="no" checked>Not Pre-Selected</option><option value="yes">Selected First Line</option></select>`
+            let first_line_default = `<select type="text" style="width:100%;" name="field_<?php echo esc_attr( $unique_key ) ?>[selected]"><option value="no" checked>Not Pre-Selected</option><option value="yes">Selected First Line</option></select>`
             let single_label = `<input type="text" style="width:100%;" name="field_<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" required/>`
             let multi_label = `<textarea type="text"
                                     style="width:100%;"
                                     rows="5"
                                     name="field_<?php echo esc_attr( $unique_key ) ?>[labels]"
                                     placeholder="One label per line. Same order as values." /></textarea>`
+            let description = `<textarea type="text"
+                                    style="width:100%;"
+                                    rows="5"
+                                    name="field_<?php echo esc_attr( $unique_key ) ?>[labels]"
+                                    placeholder="Add description content." /></textarea>`
 
             let single_value = `<input type="text" style="width:100%;" name="field_<?php echo esc_attr( $unique_key ) ?>[values]" placeholder="Value(s)" />`
             let multi_value = `<textarea type="text"
@@ -328,10 +360,49 @@ class DT_Webform_Active_Form_Post_Type
                                     rows="5"
                                     name="field_<?php echo esc_attr( $unique_key ) ?>[values]"
                                     placeholder="One value per line. Underscores allowed. No spaces or special characters." /></textarea>`
-            let map_select = `<select name="field_<?php echo esc_attr( $unique_key ) ?>[values]">
+            let map_select = `<select name="field_<?php echo esc_attr( $unique_key ) ?>[values]" style="display:none">
                                     <option value="search_box" selected>Search Box</option>
                                     <option value="click_map" <?php echo ( is_dt() ) ? '' : 'disabled' ?>>Click Map</option>
                                     </select>`
+            let design_fields = `<select id="type_<?php echo esc_attr( $unique_key ) ?>" name="field_<?php echo esc_attr( $unique_key ) ?>[type]" required>
+                                    <option></option>
+                                    <option readonly>---</option>
+                                    <option value="header"><?php echo esc_attr__( 'Section Header', 'dt_webform' ) ?></option>
+                                    <option value="description"><?php echo esc_attr__( 'Section Description', 'dt_webform' ) ?></option>
+                                    <option value="divider"><?php echo esc_attr__( 'Section Divider', 'dt_webform' ) ?></option>
+                                    <option value="spacer"><?php echo esc_attr__( 'Section Spacer', 'dt_webform' ) ?></option>
+                                    <option value="custom_label"><?php echo esc_attr__( 'Custom Label', 'dt_webform' ) ?></option>
+                               </select>`
+            let other_fields = `<select id="type_<?php echo esc_attr( $unique_key ) ?>" name="field_<?php echo esc_attr( $unique_key ) ?>[type]" required>
+                                    <option></option>
+                                    <option readonly>---</option>
+                                    <option value="text"><?php echo esc_attr__( 'Text', 'dt_webform' ) ?></option>
+                                    <option value="tel"><?php echo esc_attr__( 'Phone', 'dt_webform' ) ?></option>
+                                    <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>
+                                    <option value="checkbox"><?php echo esc_attr__( 'Checkbox', 'dt_webform' ) ?></option>
+                                    <option value="dropdown"><?php echo esc_attr__( 'Dropdown', 'dt_webform' ) ?></option>
+                                    <option value="multi_radio"><?php echo esc_attr__( 'Multi-Select Radio', 'dt_webform' ) ?></option>
+                                    <option value="note"><?php echo esc_attr__( 'Note', 'dt_webform' ) ?></option>
+                               </select>`
+
+            function change_selection( id ) {
+                if ( 'other' === id ) {
+                    add_other_fields()
+                    return
+                }
+
+                if ( 'location' === id ) {
+                    add_location_field()
+                    return
+                }
+
+                if ( 'design' === id ) {
+                    add_design_field()
+                    return
+                }
+
+                add_dt_fields(id)
+            }
 
             function add_dt_select_field() {
                 jQuery('#add_field_button').hide()
@@ -374,19 +445,6 @@ class DT_Webform_Active_Form_Post_Type
                     change_selection(jQuery(this).val())
                 })
             }
-            function change_selection( id ) {
-                if ( 'other' === id ) {
-                    add_new_custom_fields()
-                    return
-                }
-
-                if ( 'location' === id ) {
-                    add_location_field()
-                    return
-                }
-
-                add_dt_fields(id)
-            }
 
             function add_dt_fields( id ) {
                 jQuery.each(field_list, function(i,v){
@@ -426,117 +484,6 @@ class DT_Webform_Active_Form_Post_Type
                 })
             }
 
-            function add_new_custom_fields() {
-                jQuery('#add_field_button').hide()
-
-                jQuery('#new-fields').html(`
-                <br><hr><br>
-                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[key]" placeholder="key" value="field_<?php echo esc_attr( $unique_key ) ?>"/>
-                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" />
-                <table class="widefat striped" id="new_<?php echo esc_attr( $unique_key ) ?>">
-                <thead>
-                    <tr>
-                        <th>Map To DT Field</th><th>Type</th><th>Label(s)</th><th>Value(s)</th><th style="width:50px;">Required</th><th style="width:50px;">Order</th><th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                             <td id="new-dt-field">
-                                ${dt_field}
-                            </td>
-                            <td id="new-type">
-
-                            </td>
-                            <td id="new-labels-<?php echo esc_attr( $unique_key ) ?>"></td>
-                            <td id="new-values-<?php echo esc_attr( $unique_key ) ?>"></td>
-                            <td>
-                                <select name="field_<?php echo esc_attr( $unique_key ) ?>[required]">
-                                    <option value="no"><?php echo esc_attr__( 'No', 'dt_webform' ) ?></option>
-                                    <option value="yes"><?php echo esc_attr__( 'Yes', 'dt_webform' ) ?></option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" style="width:50px;" name="field_<?php echo esc_attr( $unique_key ) ?>[order]" placeholder="number" value="1" />
-                            </td>
-                            <td>
-                                <button class="button" type="submit"><?php echo esc_attr__( 'Save', 'dt_webform' ) ?></button>
-                                <button class="button" onclick="remove_new_custom_fields()"><?php echo esc_attr__( 'Clear', 'dt_webform' ) ?></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                `)
-
-                let labels = jQuery('#new-labels-<?php echo esc_attr( $unique_key ) ?>')
-                let values = jQuery('#new-values-<?php echo esc_attr( $unique_key ) ?>')
-                let dt = jQuery('#dt-field-selector')
-
-                labels.html(single_label)
-                values.html(single_value)
-
-                jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').on('change', function(){
-                    let type = jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').val()
-
-                    switch ( type ) {
-                        case 'multi_radio':
-                            labels.empty().append(multi_title).append('<br>').append(multi_label)
-                            values.empty().append(first_line_default).append('<br>').append(multi_value)
-                            // dt.empty().html(dt_field)
-                            break;
-                        case 'key_select':
-                            labels.empty().append(multi_title).append('<br>').append(multi_label)
-                            values.empty().append(first_line_default).append('<br>').append(multi_value)
-                            // dt.empty().html(dt_field)
-                            break;
-                        case 'dropdown':
-                            labels.empty().append(multi_title).append('<br>').append(multi_label)
-                            values.empty().append(first_line_default).append('<br>').append(multi_value)
-                            // dt.empty().html(dt_field)
-                            break;
-                        case 'checkbox':
-                            labels.empty().html(single_label)
-                            values.empty().html(single_value)
-                            // dt.empty().html(dt_field)
-                            break;
-                        case 'custom_label':
-                        case 'note':
-                        case 'header':
-                            labels.empty().html(single_label)
-                            values.empty()
-                            // dt.empty()
-                            break;
-                        case 'description':
-                            labels.empty().html(multi_label)
-                            values.empty()
-                            // dt.empty()
-                            break;
-                        case 'divider':
-                            labels.empty()
-                            values.empty()
-                            // dt.empty()
-                            break;
-                        case 'spacer':
-                            labels.empty()
-                            values.empty()
-                            // dt.empty()
-                            break;
-                        case 'map':
-                            labels.empty().html(single_label)
-                            values.empty().html(map_select)
-                            // dt.empty()
-                            break;
-                        default:
-                            labels.empty().html(single_label)
-                            values.empty().html(single_value)
-                            dt.empty().html(dt_field)
-                            break;
-                    }
-                })
-                dt.on('change', function( e ) {
-                    change_selection(jQuery(this).val())
-                })
-            }
-
             function add_location_field() {
                 jQuery('#add_field_button').hide()
 
@@ -547,16 +494,15 @@ class DT_Webform_Active_Form_Post_Type
                 <table class="widefat striped" id="new_<?php echo esc_attr( $unique_key ) ?>">
                 <thead>
                     <tr>
-                        <th>Map To DT Field</th><th>Type</th><th>Label(s)</th><th>Value(s)</th><th style="width:50px;">Required</th><th style="width:50px;">Order</th><th>Actions</th>
+                        <th></th><th></th><th>Label</th><th></th><th style="width:50px;">Required</th><th style="width:50px;">Order</th><th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                         <tr>
                              <td id="new-dt-field">
-                                ${dt_field}
+                                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="location" />
                             </td>
                             <td id="new-type">
-                                Location
                                 <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[type]" value="location" />
                             </td>
                             <td id="new-labels-<?php echo esc_attr( $unique_key ) ?>"></td>
@@ -593,6 +539,146 @@ class DT_Webform_Active_Form_Post_Type
                 dt.on('change', function( e ) {
                     change_selection(jQuery(this).val())
                 })
+            }
+
+            function add_design_field() {
+                jQuery('#add_field_button').hide()
+
+                jQuery('#new-fields').html(`
+                <br><hr><br>
+                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[key]" placeholder="key" value="field_<?php echo esc_attr( $unique_key ) ?>"/>
+                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" />
+                <table class="widefat striped" id="new_<?php echo esc_attr( $unique_key ) ?>">
+                <thead>
+                    <tr>
+                        <th></th><th>Type</th><th>Label(s)</th><th>Value(s)</th><th style="width:50px;">Required</th><th style="width:50px;">Order</th><th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                             <td id="new-dt-field">
+                                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="design" />
+                            </td>
+                            <td id="new-type">
+                                ${design_fields}
+                            </td>
+                            <td id="new-labels-<?php echo esc_attr( $unique_key ) ?>"></td>
+                            <td id="new-values-<?php echo esc_attr( $unique_key ) ?>"></td>
+                            <td></td>
+                            <td>
+                                <input type="number" style="width:50px;" name="field_<?php echo esc_attr( $unique_key ) ?>[order]" placeholder="number" value="1" />
+                            </td>
+                            <td>
+                                <button class="button" type="submit"><?php echo esc_attr__( 'Save', 'dt_webform' ) ?></button>
+                                <button class="button" onclick="remove_new_custom_fields()"><?php echo esc_attr__( 'Clear', 'dt_webform' ) ?></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                `)
+
+                jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').on('change', function() {
+                    change_design_field(jQuery(this).val())
+                })
+
+            }
+
+            function change_design_field( type ) {
+                let labels = jQuery('#new-labels-<?php echo esc_attr( $unique_key ) ?>')
+                let values = jQuery('#new-values-<?php echo esc_attr( $unique_key ) ?>')
+
+                switch ( type ) {
+
+                    case 'custom_label':
+                    case 'header':
+                        labels.empty().html(single_label)
+                        values.empty()
+                        break;
+                    case 'description':
+                        labels.empty().html(description)
+                        values.empty()
+                        break;
+                    case 'divider':
+                    case 'spacer':
+                        labels.empty()
+                        values.empty()
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            function add_other_fields() {
+                jQuery('#add_field_button').hide()
+
+                jQuery('#new-fields').html(`
+                <br><hr><br>
+                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[key]" placeholder="key" value="field_<?php echo esc_attr( $unique_key ) ?>"/>
+                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" />
+                <table class="widefat striped" id="new_<?php echo esc_attr( $unique_key ) ?>">
+                <thead>
+                    <tr>
+                        <th></th><th>Type</th><th>Label(s)</th><th>Value(s)</th><th style="width:50px;">Required</th><th style="width:50px;">Order</th><th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                             <td id="new-dt-field">
+                                <input type="hidden" name="field_<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="other" />
+                            </td>
+                            <td id="new-type">
+                                ${other_fields}
+                            </td>
+                            <td id="new-labels-<?php echo esc_attr( $unique_key ) ?>"></td>
+                            <td id="new-values-<?php echo esc_attr( $unique_key ) ?>"></td>
+                            <td>
+                                <select name="field_<?php echo esc_attr( $unique_key ) ?>[required]">
+                                    <option value="no"><?php echo esc_attr__( 'No', 'dt_webform' ) ?></option>
+                                    <option value="yes"><?php echo esc_attr__( 'Yes', 'dt_webform' ) ?></option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" style="width:50px;" name="field_<?php echo esc_attr( $unique_key ) ?>[order]" placeholder="number" value="1" />
+                            </td>
+                            <td>
+                                <button class="button" type="submit"><?php echo esc_attr__( 'Save', 'dt_webform' ) ?></button>
+                                <button class="button" onclick="remove_new_custom_fields()"><?php echo esc_attr__( 'Clear', 'dt_webform' ) ?></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                `)
+
+                jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').on('change', function() {
+                    let type = jQuery('#type_<?php echo esc_attr($unique_key) ?>').val()
+                    change_other_field( type )
+                })
+            }
+
+            function change_other_field( type ) {
+                let labels = jQuery('#new-labels-<?php echo esc_attr( $unique_key ) ?>')
+                let values = jQuery('#new-values-<?php echo esc_attr( $unique_key ) ?>')
+
+                switch ( type ) {
+                    case 'multi_radio':
+                    case 'key_select':
+                    case 'dropdown':
+                    case 'checkbox':
+                        labels.empty().append(multi_title).append('<hr>').append(multi_label)
+                        values.empty().append(first_line_default).append('<hr>').append(multi_value)
+                        break;
+                    case 'text':
+                    case 'tel':
+                    case 'email':
+                    case 'note':
+                        labels.empty().html(single_label)
+                        break;
+
+                    default:
+                        // labels.empty().html(single_label)
+                        // values.empty().html(single_value)
+                        break;
+                }
             }
 
             function remove_new_custom_fields() {
@@ -857,6 +943,39 @@ class DT_Webform_Active_Form_Post_Type
             </td>
             <!-- Required -->
             <?php $this->template_required_cell( $unique_key, $data ); ?>
+            <!-- Order -->
+            <?php $this->template_order_cell( $unique_key, $data ); ?>
+            <!-- Action -->
+            <?php $this->template_remove_cell( $unique_key, $data ); ?>
+
+        </tr>
+        <?php
+    }
+
+    public function template_row_label_field( $unique_key, $data ) {
+        ?>
+        <tr id="<?php echo esc_attr( $unique_key ) ?>">
+            <!--DT Field-->
+            <td>
+                Design
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="design" readonly />
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
+            </td>
+            <!-- Type -->
+            <?php $this->template_type_cell( $unique_key, $data ); ?>
+            <!-- Labels -->
+            <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
+                <?php
+                if( ! empty( $data['labels'] ) ) {
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" />';
+                }
+                ?>
+            </td>
+            <!-- Values-->
+            <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
+            <!-- Required -->
+            <td></td>
             <!-- Order -->
             <?php $this->template_order_cell( $unique_key, $data ); ?>
             <!-- Action -->
@@ -1724,6 +1843,7 @@ class DT_Webform_Active_Form_Post_Type
             'follow',
             'unfollow',
             'duplicate_of',
+            'location_grid_meta',
             'location_grid',
             'location',
             'location_lnglat',

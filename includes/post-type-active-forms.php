@@ -52,17 +52,22 @@ class DT_Webform_Active_Form_Post_Type
             add_action( 'save_post', [ $this, 'save_meta_box' ] );
             add_action( 'save_post', [ $this, 'save_core_fields' ] );
             add_action( 'save_post', [ $this, 'save_extra_fields' ] );
-            dt_write_log($_POST);
 
             global $pagenow, $post_type;
             if ( $pagenow === 'post.php' ) {
                 $this->contact_fields = DT_Webform_Utilities::get_contact_defaults();
                 if ( is_wp_error( $this->contact_fields ) ) {
-                    $this->contact_fields = [ 'sources' => [], 'fields' => [], 'channels' => [], 'address_types' => [], 'connection_types' => [] ];
+                    $this->contact_fields = [
+                    'sources' => [],
+                    'fields' => [],
+                    'channels' => [],
+                    'address_types' => [],
+                    'connection_types' => []
+                    ];
                 }
                 add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
                 add_action( 'admin_head', [ $this, 'scripts' ], 20 );
-                add_action( 'do_meta_boxes', [ $this, 'remove_metaboxes'], 50, 1 );
+                add_action( 'do_meta_boxes', [ $this, 'remove_metaboxes' ], 50, 1 );
             }
         }
     }
@@ -150,12 +155,12 @@ class DT_Webform_Active_Form_Post_Type
     public function remove_metaboxes( $post ){
         global $post;
         if ( get_post_meta( $post->ID, 'form_type', true ) === 'custom_form' ) {
-            remove_meta_box($this->post_type . '_core_fields', $this->post_type, 'normal' );
-            remove_meta_box($this->post_type . '_extra_fields', $this->post_type, 'normal' );
-            remove_meta_box($this->post_type . '_appearance_box', $this->post_type, 'normal' );
-            remove_meta_box($this->post_type . '_localize', $this->post_type, 'normal' );
+            remove_meta_box( $this->post_type . '_core_fields', $this->post_type, 'normal' );
+            remove_meta_box( $this->post_type . '_extra_fields', $this->post_type, 'normal' );
+            remove_meta_box( $this->post_type . '_appearance_box', $this->post_type, 'normal' );
+            remove_meta_box( $this->post_type . '_localize', $this->post_type, 'normal' );
         } else {
-            remove_meta_box($this->post_type . '_custom_box', $this->post_type, 'normal' );
+            remove_meta_box( $this->post_type . '_custom_box', $this->post_type, 'normal' );
         }
     }
 
@@ -208,7 +213,7 @@ class DT_Webform_Active_Form_Post_Type
                     <td>
                         <?php if ( 'sources' === $key || 'assigned_to' === $key ) : ?>
                             <span style="text-align:center;">Yes</span>
-                        <?php else: ?>
+                        <?php else : ?>
                             <select name="<?php echo esc_attr( $key ) ?>[hidden]">
                                 <option value="no" <?php echo ( $field['hidden'] === 'no' ) ? 'selected' : '' ?>>No</option>
                                 <option value="yes" <?php echo ( $field['hidden'] === 'yes' ) ? 'selected' : '' ?>>Yes</option>
@@ -249,7 +254,7 @@ class DT_Webform_Active_Form_Post_Type
 
                     // is a DT field
                     if ( isset( $data['is_dt_field'] ) && ! empty( $data['is_dt_field'] ) ) {
-                        switch( $data['type'] ) {
+                        switch ( $data['type'] ) {
                             case 'dropdown':
                             case 'key_select':
                             case 'multi_select':
@@ -293,7 +298,6 @@ class DT_Webform_Active_Form_Post_Type
                             default:
                                 break;
                         }
-
                     }
                 } // end foreach
                 ?>
@@ -317,9 +321,7 @@ class DT_Webform_Active_Form_Post_Type
         <?php
     }
 
-    /**
-     * @throws Exception
-     */
+
     public function load_extra_fields_scripts() {
         $unique_key = bin2hex( random_bytes( 10 ) );
         ?>
@@ -332,7 +334,7 @@ class DT_Webform_Active_Form_Post_Type
                                     <option disabled>------</option>
                                     <?php
                                     $contact_fields = $this->filtered_contact_fields();
-                                    foreach( $contact_fields as $key => $field ) {
+                                    foreach ( $contact_fields as $key => $field ) {
                                         echo '<option value="'. esc_attr( $key ).'" data-type="'. esc_attr( $field['type'] ).'">' . esc_attr( $field['name'] ) . '</option>';
                                     }
                                     ?>
@@ -647,7 +649,7 @@ class DT_Webform_Active_Form_Post_Type
                 `)
 
                 jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').on('change', function() {
-                    let type = jQuery('#type_<?php echo esc_attr($unique_key) ?>').val()
+                    let type = jQuery('#type_<?php echo esc_attr( $unique_key ) ?>').val()
                     change_other_field( type )
                 })
             }
@@ -779,7 +781,7 @@ class DT_Webform_Active_Form_Post_Type
                 // WordPress.XSS.EscapeOutput.OutputNotEscaped
                 // @phpcs:ignore
                 echo $this->embed_code( $post->ID );
-                ?></textarea><br>
+            ?></textarea><br>
             <?php
             $this->direct_link();
             ?>
@@ -850,14 +852,14 @@ class DT_Webform_Active_Form_Post_Type
             <!-- Labels -->
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
-                if( ! empty( $data['title'] ) ) {
+                if ( ! empty( $data['title'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[title]" value="'.esc_html( $data['title'] ).'" style="width:100%;" />';
                 }
                 echo '<hr>';
-                if( ! empty( $data['labels'] ) ) {
-                    foreach( $data['labels'] as $key => $label ) {
-                        echo $label . '<br>';
-                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[labels]['.$key.']" value="'.$label.'" />';
+                if ( ! empty( $data['labels'] ) ) {
+                    foreach ( $data['labels'] as $key => $label ) {
+                        echo esc_html( $label ) . '<br>';
+                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[labels]['.esc_attr( $key ).']" value="'.esc_html( $label ).'" />';
                     }
                 }
                 ?>
@@ -867,10 +869,10 @@ class DT_Webform_Active_Form_Post_Type
                 <?php
                 $this->template_pre_selected_cell( $unique_key, $data );
                 echo '<hr>';
-                if( ! empty( $data['values'] ) ) {
-                    foreach( $data['values'] as $key => $value ) {
-                        echo $value . '<br>';
-                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[values]['.$key.']" value="'.$value.'" style="width:100%;" />';
+                if ( ! empty( $data['values'] ) ) {
+                    foreach ( $data['values'] as $key => $value ) {
+                        echo esc_html( $value ) . '<br>';
+                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[values]['.esc_attr( $key ).']" value="'.esc_attr( $value ).'" style="width:100%;" />';
                     }
                 }
                 ?>
@@ -896,7 +898,7 @@ class DT_Webform_Active_Form_Post_Type
             <!-- Labels -->
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
-                if( ! empty( $data['labels'] ) ) {
+                if ( ! empty( $data['labels'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
                 }
                 ?>
@@ -926,7 +928,7 @@ class DT_Webform_Active_Form_Post_Type
             <!-- Labels -->
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
-                if( ! empty( $data['labels'] ) ) {
+                if ( ! empty( $data['labels'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
                 }
                 ?>
@@ -952,7 +954,7 @@ class DT_Webform_Active_Form_Post_Type
         <tr id="<?php echo esc_attr( $unique_key ) ?>">
             <!--DT Field-->
             <td>
-                <?php echo esc_attr(  ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
+                <?php echo esc_attr( ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
@@ -962,7 +964,7 @@ class DT_Webform_Active_Form_Post_Type
             <!-- Labels -->
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
-                if( ! empty( $data['labels'] ) ) {
+                if ( ! empty( $data['labels'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
                 }
                 ?>
@@ -985,7 +987,7 @@ class DT_Webform_Active_Form_Post_Type
         <tr id="<?php echo esc_attr( $unique_key ) ?>">
             <!--DT Field-->
             <td>
-                <?php echo esc_attr(  ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
+                <?php echo esc_attr( ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
@@ -995,7 +997,7 @@ class DT_Webform_Active_Form_Post_Type
             <!-- Labels -->
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
-                if( ! empty( $data['labels'] ) ) {
+                if ( ! empty( $data['labels'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
                 }
                 ?>
@@ -1018,7 +1020,7 @@ class DT_Webform_Active_Form_Post_Type
         <tr id="<?php echo esc_attr( $unique_key ) ?>">
             <!--DT Field-->
             <td>
-                <?php echo esc_attr(  ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
+                <?php echo esc_attr( ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
@@ -1028,7 +1030,7 @@ class DT_Webform_Active_Form_Post_Type
             <!-- Labels -->
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
-                if( ! empty( $data['title'] ) ) {
+                if ( ! empty( $data['title'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[title]" value="'.esc_html( $data['title'] ).'" style="width:100%;" />';
                 }
                 ?>
@@ -1037,21 +1039,13 @@ class DT_Webform_Active_Form_Post_Type
                           style="width:100%;"
                           rows="5"
                           name="<?php echo esc_attr( $unique_key ) ?>[labels]"
-                          placeholder="One value per line. Underscores allowed. No spaces or special characters." /><?php echo $data['labels'] ?></textarea>
-                <?php
-                ?>
-            </td>
+                          placeholder="One value per line. Underscores allowed. No spaces or special characters." /><?php echo esc_textarea( $data['labels'] ) ?></textarea>
+                            </td>
             <!-- Values-->
             <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
                 $this->template_pre_selected_cell( $unique_key, $data );
                 echo '<hr>';
-//                if( ! empty( $data['values'] ) ) {
-//                    foreach( $data['values'] as $key => $value ) {
-//                        echo $value . '<br>';
-//                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[values]['.$key.']" value="'.$value.'" />';
-//                    }
-//                }
                 ?>
             </td>
             <!-- Required -->
@@ -1070,7 +1064,7 @@ class DT_Webform_Active_Form_Post_Type
         <tr id="<?php echo esc_attr( $unique_key ) ?>">
             <!--DT Field-->
             <td>
-                <?php echo esc_attr(  ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
+                <?php echo esc_attr( ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
@@ -1080,7 +1074,7 @@ class DT_Webform_Active_Form_Post_Type
             <!-- Labels -->
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
-                if( ! empty( $data['labels'] ) ) {
+                if ( ! empty( $data['labels'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
                 }
                 ?>
@@ -1115,12 +1109,12 @@ class DT_Webform_Active_Form_Post_Type
         $options = $this->select_options();
         ?>
         <select style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[selected]">
-            <option value="<?php echo esc_attr( $data['selected'] ) ?>" selected><?php echo $options[$data['selected']] ?? '' ?></option>
+            <option value="<?php echo esc_attr( $data['selected'] ) ?>" selected><?php echo esc_attr( $options[$data['selected']] ) ?? '' ?></option>
             <option disabled>---</option>
             <?php
-                foreach( $options as $index => $option ) {
-                    echo '<option value="'.esc_html( $index ).'">'.esc_html( $option ).'</option>';
-                }
+            foreach ( $options as $index => $option ) {
+                echo '<option value="'.esc_html( $index ).'">'.esc_html( $option ).'</option>';
+            }
             ?>
         </select>
         <?php
@@ -1148,7 +1142,7 @@ class DT_Webform_Active_Form_Post_Type
     public function template_dt_field_cell( $unique_key, $data ) {
         ?>
         <td>
-            <?php echo esc_attr( ucwords( str_replace( '_', ' ', $data['dt_field'] ) )  ) ?>
+            <?php echo esc_attr( ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
             <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
             <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="1" readonly />
             <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
@@ -1174,13 +1168,13 @@ class DT_Webform_Active_Form_Post_Type
     }
 
     public function template_row_non_dt_fields( $unique_key, $data ) {
-            if ( isset( $data['type'] ) && 'other' === $data['dt_field'] ) {
-                switch ( $data['type'] ) {
+        if ( isset( $data['type'] ) && 'other' === $data['dt_field'] ) {
+            switch ( $data['type'] ) {
 
-                    // multi labels, multi values
-                    case 'dropdown':
-                    case 'multi_radio':
-                        ?>
+                // multi labels, multi values
+                case 'dropdown':
+                case 'multi_radio':
+                    ?>
                         <td>
                             <input type="text" style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" placeholder="field key" value="<?php echo esc_attr( $data['dt_field'] ?? '' ) ?>" />
                         </td>
@@ -1206,12 +1200,12 @@ class DT_Webform_Active_Form_Post_Type
                         <?php
                         break;
 
-                    // single labels, single values
-                    case 'checkbox':
-                    case 'tel':
-                    case 'email':
-                    case 'text':
-                        ?>
+                // single labels, single values
+                case 'checkbox':
+                case 'tel':
+                case 'email':
+                case 'text':
+                    ?>
                         <td>
                             <input type="text" style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" placeholder="field key" value="<?php echo esc_attr( $data['dt_field'] ?? '' ) ?>" />
                         </td>
@@ -1224,8 +1218,8 @@ class DT_Webform_Active_Form_Post_Type
                         <?php
                         break;
 
-                    case 'note':
-                        ?>
+                case 'note':
+                    ?>
                         <td>Saves to Comments</td>
                         <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                             <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
@@ -1233,9 +1227,9 @@ class DT_Webform_Active_Form_Post_Type
                         <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
                         <?php
                         break;
-                    case 'custom_label':
-                    case 'header':
-                        ?>
+                case 'custom_label':
+                case 'header':
+                    ?>
                         <td></td>
                         <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                             <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
@@ -1244,8 +1238,8 @@ class DT_Webform_Active_Form_Post_Type
 
                         <?php
                         break;
-                    case 'description':
-                        ?>
+                case 'description':
+                    ?>
                         <td></td>
                         <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                                         <textarea type="text"
@@ -1258,8 +1252,8 @@ class DT_Webform_Active_Form_Post_Type
                         <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
                         <?php
                         break;
-                    case 'map':
-                        ?>
+                case 'map':
+                    ?>
                         <td></td>
                         <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                             <input type="text" style="width:100%;" id="label_<?php echo esc_attr( $unique_key ) ?>" name="<?php echo esc_attr( $unique_key ) ?>[labels]" placeholder="label" value="<?php echo esc_html( $data['labels'] ?? '' ) ?>"/>
@@ -1272,18 +1266,18 @@ class DT_Webform_Active_Form_Post_Type
                         <?php
                         break;
 
-                    // empty elements
-                    case 'divider':
-                    case 'spacer':
-                    default:
-                        ?>
+                // empty elements
+                case 'divider':
+                case 'spacer':
+                default:
+                    ?>
                         <td></td>
                         <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
                         <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
                         <?php
                         break;
-                }
             }
+        }
 
     }
 
@@ -1496,7 +1490,7 @@ class DT_Webform_Active_Form_Post_Type
                                         $contact_defaults = $this->contact_fields;
                                         $selected_value = get_post_meta( $post_id, 'overall_status', true );
 
-                                        echo '<option value="new">'.$contact_defaults['fields']['overall_status']['default']['new']['label'].'</option><option disabled>-----</option>';
+                                        echo '<option value="new">'.esc_attr( $contact_defaults['fields']['overall_status']['default']['new']['label'] ).'</option><option disabled>-----</option>';
                                         foreach ( $contact_defaults['fields']['overall_status']['default']  as $kk => $vv ) {
                                             echo '<option value="' . esc_attr( $kk ) . '" ';
                                             if ( $kk === $selected_value ) {
@@ -1971,9 +1965,9 @@ class DT_Webform_Active_Form_Post_Type
         ];
 
         // remove connections
-        foreach( $contact_defaults['fields'] as $key => $field ) {
+        foreach ( $contact_defaults['fields'] as $key => $field ) {
             if ( $field['type'] === 'connection' ) {
-               unset( $contact_defaults['fields'][$key] );
+                unset( $contact_defaults['fields'][$key] );
             }
             else if ( array_search( $key, $ignore ) !== false ) {
                 unset( $contact_defaults['fields'][$key] );

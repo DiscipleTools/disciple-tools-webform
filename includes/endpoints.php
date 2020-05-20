@@ -328,7 +328,7 @@ class DT_Webform_Endpoints
 
             $body = json_decode( $result['body'], true );
 
-            dt_write_log('Post Result');
+            dt_write_log( 'Post Result' );
             dt_write_log( $body );
 
             if ( isset( $body['ID'] ) ) {

@@ -89,7 +89,7 @@ class DT_Webform_Utilities {
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'create_contacts' );
-            if ( ! class_exists('DT_Posts' ) ) {
+            if ( ! class_exists( 'DT_Posts' ) ) {
                 require_once( get_template_directory() . '/dt-posts/posts.php' );
                 require_once( get_template_directory() . '/dt-posts/custom-post-type.php' );
                 require_once( get_template_directory() . '/dt-posts/dt-posts.php' );
@@ -638,7 +638,6 @@ class DT_Webform_Utilities {
                             $ids .= '#section-' . esc_attr( $key ) . ' {}' . PHP_EOL;
                             $ids .= '#' . esc_attr( $key ) . ' {}' . PHP_EOL . PHP_EOL;
                         }
-
                     }
                 }
 

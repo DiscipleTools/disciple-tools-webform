@@ -356,4 +356,4 @@ class DT_Webform {
 register_activation_hook( __FILE__, [ 'DT_Webform', 'activation' ] );
 register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
 
-require_once('includes/functions.php');
+require_once( 'includes/functions.php' );

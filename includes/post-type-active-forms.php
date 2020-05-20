@@ -271,29 +271,26 @@ class DT_Webform_Active_Form_Post_Type
                             // multi labels, multi values
                             case 'dropdown':
                             case 'multi_radio':
+                            case 'checkbox':
+                                $this->template_row_other_multi( $unique_key, $data );
                                 break;
 
                             // single labels, single values
-                            case 'checkbox':
                             case 'tel':
                             case 'email':
                             case 'text':
+                            case 'note':
+                                $this->template_row_other_label_field( $unique_key, $data );
                                 break;
 
-                            case 'note':
-                                break;
                             case 'custom_label':
                             case 'header':
-                                $this->template_row_label_field( $unique_key, $data );
-                                break;
                             case 'description':
-
-                                break;
-                            // empty elements
                             case 'divider':
                             case 'spacer':
+                                $this->template_row_other_label_not_required( $unique_key, $data );
+                                break;
                             default:
-
                                 break;
                         }
 
@@ -672,11 +669,9 @@ class DT_Webform_Active_Form_Post_Type
                     case 'email':
                     case 'note':
                         labels.empty().html(single_label)
+                        values.empty()
                         break;
-
                     default:
-                        // labels.empty().html(single_label)
-                        // values.empty().html(single_value)
                         break;
                 }
             }
@@ -856,7 +851,7 @@ class DT_Webform_Active_Form_Post_Type
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
                 if( ! empty( $data['title'] ) ) {
-                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[title]" value="'.esc_html( $data['title'] ).'" />';
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[title]" value="'.esc_html( $data['title'] ).'" style="width:100%;" />';
                 }
                 echo '<hr>';
                 if( ! empty( $data['labels'] ) ) {
@@ -875,7 +870,7 @@ class DT_Webform_Active_Form_Post_Type
                 if( ! empty( $data['values'] ) ) {
                     foreach( $data['values'] as $key => $value ) {
                         echo $value . '<br>';
-                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[values]['.$key.']" value="'.$value.'" />';
+                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[values]['.$key.']" value="'.$value.'" style="width:100%;" />';
                     }
                 }
                 ?>
@@ -902,7 +897,7 @@ class DT_Webform_Active_Form_Post_Type
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
                 if( ! empty( $data['labels'] ) ) {
-                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" />';
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
                 }
                 ?>
             </td>
@@ -932,7 +927,7 @@ class DT_Webform_Active_Form_Post_Type
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
                 if( ! empty( $data['labels'] ) ) {
-                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" />';
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
                 }
                 ?>
             </td>
@@ -952,13 +947,13 @@ class DT_Webform_Active_Form_Post_Type
         <?php
     }
 
-    public function template_row_label_field( $unique_key, $data ) {
+    public function template_row_other_label_not_required( $unique_key, $data ) {
         ?>
         <tr id="<?php echo esc_attr( $unique_key ) ?>">
             <!--DT Field-->
             <td>
-                Design
-                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="design" readonly />
+                <?php echo esc_attr(  ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
                 <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
             </td>
@@ -968,7 +963,125 @@ class DT_Webform_Active_Form_Post_Type
             <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
                 <?php
                 if( ! empty( $data['labels'] ) ) {
-                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" />';
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
+                }
+                ?>
+            </td>
+            <!-- Values-->
+            <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
+            <!-- Required -->
+            <td></td>
+            <!-- Order -->
+            <?php $this->template_order_cell( $unique_key, $data ); ?>
+            <!-- Action -->
+            <?php $this->template_remove_cell( $unique_key, $data ); ?>
+
+        </tr>
+        <?php
+    }
+
+    public function template_row_other_label_field( $unique_key, $data ) {
+        ?>
+        <tr id="<?php echo esc_attr( $unique_key ) ?>">
+            <!--DT Field-->
+            <td>
+                <?php echo esc_attr(  ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
+            </td>
+            <!-- Type -->
+            <?php $this->template_type_cell( $unique_key, $data ); ?>
+            <!-- Labels -->
+            <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
+                <?php
+                if( ! empty( $data['labels'] ) ) {
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
+                }
+                ?>
+            </td>
+            <!-- Values-->
+            <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>"></td>
+            <!-- Required -->
+            <?php $this->template_required_cell( $unique_key, $data ); ?>
+            <!-- Order -->
+            <?php $this->template_order_cell( $unique_key, $data ); ?>
+            <!-- Action -->
+            <?php $this->template_remove_cell( $unique_key, $data ); ?>
+
+        </tr>
+        <?php
+    }
+
+    public function template_row_other_multi( $unique_key, $data ) {
+        ?>
+        <tr id="<?php echo esc_attr( $unique_key ) ?>">
+            <!--DT Field-->
+            <td>
+                <?php echo esc_attr(  ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
+            </td>
+            <!-- Type -->
+            <?php $this->template_type_cell( $unique_key, $data ); ?>
+            <!-- Labels -->
+            <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
+                <?php
+                if( ! empty( $data['title'] ) ) {
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[title]" value="'.esc_html( $data['title'] ).'" style="width:100%;" />';
+                }
+                ?>
+                <hr>
+                <textarea type="text"
+                          style="width:100%;"
+                          rows="5"
+                          name="<?php echo esc_attr( $unique_key ) ?>[labels]"
+                          placeholder="One value per line. Underscores allowed. No spaces or special characters." /><?php echo $data['labels'] ?></textarea>
+                <?php
+                ?>
+            </td>
+            <!-- Values-->
+            <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
+                <?php
+                $this->template_pre_selected_cell( $unique_key, $data );
+                echo '<hr>';
+//                if( ! empty( $data['values'] ) ) {
+//                    foreach( $data['values'] as $key => $value ) {
+//                        echo $value . '<br>';
+//                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[values]['.$key.']" value="'.$value.'" />';
+//                    }
+//                }
+                ?>
+            </td>
+            <!-- Required -->
+            <?php $this->template_required_cell( $unique_key, $data ); ?>
+            <!-- Order -->
+            <?php $this->template_order_cell( $unique_key, $data ); ?>
+            <!-- Action -->
+            <?php $this->template_remove_cell( $unique_key, $data ); ?>
+
+        </tr>
+        <?php
+    }
+
+    public function template_row_label_field( $unique_key, $data ) {
+        ?>
+        <tr id="<?php echo esc_attr( $unique_key ) ?>">
+            <!--DT Field-->
+            <td>
+                <?php echo esc_attr(  ucwords( str_replace( '_', ' ', $data['dt_field'] ) ) ) ?>
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[dt_field]" value="<?php echo esc_attr( $data['dt_field'] ) ?>" readonly />
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[is_dt_field]" value="0" readonly />
+                <input type="hidden" name="<?php echo esc_attr( $unique_key ) ?>[key]" value="<?php echo esc_attr( $data['key'] ) ?>" readonly/>&nbsp;
+            </td>
+            <!-- Type -->
+            <?php $this->template_type_cell( $unique_key, $data ); ?>
+            <!-- Labels -->
+            <td id="labels-cell-<?php echo esc_attr( $unique_key ) ?>">
+                <?php
+                if( ! empty( $data['labels'] ) ) {
+                    echo '<input type="text" name="'.esc_attr( $unique_key ).'[labels]" value="'.esc_html( $data['labels'] ).'" style="width:100%;" />';
                 }
                 ?>
             </td>
@@ -1919,6 +2032,14 @@ class DT_Webform_Active_Form_Post_Type
         }
 
         return $list;
+    }
+
+    public static function make_labels_array( string $labels ) {
+        if ( empty( $labels ) ) {
+            return [];
+        }
+
+        return array_filter( explode( PHP_EOL, $labels ) );
     }
 
     public static function match_dt_field_labels_with_values( array $labels, array $values ) : array {

@@ -485,12 +485,10 @@ class DT_Webform_Utilities {
                     .span-radio {
                         float:left;
                         padding:5px;
-
                     }
                     .input-tel {
-                        padding: .5em;
-                        font-size: 1.2em;
-                        line-height: 1.5em;
+                       padding: .5em;
+                        font-size: 1em;
                         width: 100%;
                     }
                     .input-email {
@@ -499,30 +497,22 @@ class DT_Webform_Utilities {
                         width: 100%;
                     }
                     .input-multi_select {
-                        font-size: 1.2em;
-                        width: 50%;
-                        -webkit-appearance: none;
-                        -moz-appearance: none;
-                        appearance: none;
-                        padding: 5px;
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
                         border: 1px solid lightgray;
                     }
                     .input-key_select {
-                        font-size: 1.2em;
-                        width: 50%;
-                        -webkit-appearance: none;
-                        -moz-appearance: none;
-                        appearance: none;
-                        padding: 5px;
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
                         border: 1px solid lightgray;
                     }
                     .input-dropdown {
-                        font-size: 1.2em;
-                        width: 50%;
-                        -webkit-appearance: none;
-                        -moz-appearance: none;
-                        appearance: none;
-                        padding: 5px;
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
                     }
                     .input-note {
                         padding: .5em;
@@ -533,10 +523,8 @@ class DT_Webform_Utilities {
                         padding: 1em;
                         font-weight: bolder;
                     }
-
                     .input-label {
                         font-size: 1.2em;
-
                     }
                     .label-dropdown {}
                     .label-multi_radio {

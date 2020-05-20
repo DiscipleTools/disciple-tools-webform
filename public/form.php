@@ -415,7 +415,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                     // multi labels, multi values
                     case 'dropdown':
                     case 'key_select':
-                        $list = DT_Webform_Active_Form_Post_Type::match_labels_with_values( $dt_webform_value['labels'], $dt_webform_value['values'] );
+                        $list = DT_Webform_Active_Form_Post_Type::make_labels_array( $dt_webform_value['labels'] );
                         if ( count( $list ) > 0 ) {
                             ?>
                             <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
@@ -433,7 +433,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                         echo '<option></option>';
                                     }
                                     foreach ( $list as $item ) {
-                                        echo '<option value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</option>';
+                                        echo '<option value="' . esc_html( $item ) . '">' . esc_html( $item ) . '</option>';
                                     }
                                     ?>
                                 </select>
@@ -443,7 +443,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                         break;
                     case 'multi_radio':
                     case 'multi_select':
-                        $list = DT_Webform_Active_Form_Post_Type::match_labels_with_values( $dt_webform_value['labels'], $dt_webform_value['values'] );
+                        $list = DT_Webform_Active_Form_Post_Type::make_labels_array( $dt_webform_value['labels'] );
                         if ( count( $list ) > 0 ) {
                             ?>
                             <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
@@ -452,9 +452,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                        class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['title'] ) ?></label><br>
                                 <?php
                                 foreach ( $list as $item ) {
-                                    if ( isset( $item['label'] ) && isset( $item['value'] ) ) {
-                                        echo '<span class="span-radio"><input type="radio" class="input-' . esc_attr( $dt_webform_value['type'] ) . '" name="' . esc_attr( $dt_webform_value['key'] ) . '" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</span>';
-                                    }
+                                    echo '<span class="span-radio"><input type="radio" class="input-' . esc_attr( $dt_webform_value['type'] ) . '" name="' . esc_attr( $dt_webform_value['key'] ) . '" value="' . esc_html( $item ) . '">' . esc_html( $item ) . '</span>';
                                 }
                                 ?>
                                 <br style="clear: both;" /> </div>
@@ -470,7 +468,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                    id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                    name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                    class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
-                                   value="<?php echo esc_attr( $dt_webform_value['values'] ) ?>"
+                                   value="<?php echo esc_html( $dt_webform_value['labels'] ) ?>"
                                 <?php echo esc_attr( ( $dt_webform_value['required'] === 'yes' ) ? 'required' : '' ) ?>
                             />
                             <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"

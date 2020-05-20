@@ -119,6 +119,7 @@ class DT_Webform_Endpoints
      */
     public function create_contact_record( $params ) {
         dt_write_log( __METHOD__ );
+        dt_write_log($params);
 
         // set vars
         $check_permission = false;
@@ -139,7 +140,7 @@ class DT_Webform_Endpoints
 //            $form_meta = $new_lead_meta['form_meta'];
 //        }
         dt_write_log( '$form_meta' );
-//        dt_write_log( $form_meta );
+        dt_write_log( $form_meta );
 
         // name
         $fields['title'] = $new_lead_meta['name'];
@@ -160,41 +161,11 @@ class DT_Webform_Endpoints
                 "values" => [ $new_lead_meta['location'] ]
             ];
         }
-//        $locations = [ "values" => [] ];
-//        $coordinates = [ "values" => [] ];
-//        foreach ( $new_lead_meta as $lead_key => $lead_value ) {
-//            if ( 'location_lnglat_' === substr( $lead_key, 0, 16 ) ) {
-//                $array = explode( ',', $lead_value );
-//
-//                $longitude = $array[0] ?? '';
-//                $latitide = $array[1] ?? '';
-//                $grid_id = $array[2] ?? '';
-//
-//                $locations['values'][] = [
-//                    'value' => $grid_id
-//                ];
-//
-//                $coordinates['values'][] = [
-//                    'value' => [
-//                        'lng' => $longitude,
-//                        'lat' => $latitide,
-//                        'grid_id' => $grid_id,
-//                        'level' => '',
-//                        'place_name' => ''
-//                    ]
-//                ];
-//            }
-//        }
-//        if ( isset( $locations['values'] ) && ! empty( $locations['values'] ) ) {
-//            $fields['location_grid'] = $locations;
-//        }
-//        if ( isset( $coordinates['values'] ) && ! empty( $coordinates['values'] ) ) {
-//            $fields['location_lnglat'] = $coordinates;
-//        }
+
 
         $contact_fields = DT_Webform_Utilities::get_contact_defaults();
         dt_write_log( '$contact_fields' );
-//        dt_write_log( $contact_fields );
+        dt_write_log( $contact_fields );
         dt_write_log( '$new_lead_meta' );
         dt_write_log( $new_lead_meta );
 
@@ -224,17 +195,8 @@ class DT_Webform_Endpoints
                 if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
                     // set field value to custom field
                     switch ( $field['type'] ) {
-                        case 'checkbox':
-                            if ( ! isset( $fields[$field['dt_field']] ) ) {
-                                $fields[$field['dt_field']] = [ 'values' => [] ];
-                            }
-                            $fields[$field['dt_field']]['values'][] = [ 'value' => $field['values'] ];
-                            break;
-                        case 'multi_radio':
-                        case 'key_select':
-                        case 'dropdown':
-                        case 'tel':
-                        case 'email':
+
+                        // DT Fields
                         case 'date':
                         case 'text':
                             if ( isset( $contact_fields[$field['dt_field']]["type"] ) && $contact_fields[$field['dt_field']]["type"] === "key_select" ) {
@@ -243,6 +205,7 @@ class DT_Webform_Endpoints
                                 $fields[$field['dt_field']] = $lead_value;
                             }
                             break;
+                        case 'key_select': // @ ? is this used for both other and dt_fields
                         case 'multi_select':
                             if ( is_array( $lead_value ) ) {
                                 foreach ( $lead_value as $item ) {
@@ -250,6 +213,29 @@ class DT_Webform_Endpoints
                                 }
                             }
                             break;
+
+                            // other fields toward a dt field
+                        case 'tel':
+                            $fields['contact_phone'][] = [ "value" => $lead_value ];
+                            break;
+                        case 'email':
+                            $fields['contact_email'][] = [ "value" => $lead_value ];
+                            break;
+
+                        // other fields
+                        case 'dropdown':
+                        case 'multi_radio':
+                            if ( is_array( $lead_value ) ) {
+                                $concat_item = '';
+                                foreach ( $lead_value as $item ) {
+                                    $concat_item .= $item . ' | ';
+                                }
+                                $notes[$lead_key] = $field['label'] . ': ' . esc_html( $concat_item );
+                            } else {
+                                $notes[$lead_key] = $field['label'] . ': ' . esc_html( $lead_value );
+                            }
+                            break;
+                        case 'checkbox':
                         case 'note':
                             $notes[$lead_key] = $field['label'] . ': ' . esc_html( $lead_value );
                             break;

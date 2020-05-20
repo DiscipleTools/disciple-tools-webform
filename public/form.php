@@ -5,7 +5,7 @@ if ( ! isset( $_SERVER['DOCUMENT_ROOT'] ) ) {
 // @codingStandardsIgnoreLine
 require( $_SERVER[ 'DOCUMENT_ROOT' ] . '/wp-load.php' ); // loads the wp framework when called
 
-if ( ! isset( $_GET['token'] ) ) {
+if ( ! isset( $_GET['token'] ) || empty( $_GET['token'] ) ) {
     die( 'missing token' );
 }
 require_once( '../includes/utilities.php' );
@@ -102,7 +102,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
     // @codingStandardsIgnoreEnd ?>
 
     <style>
-        <?php echo esc_attr( DT_Webform_Utilities::get_theme( $dt_webform_meta['theme'] ?? '', $dt_webform_token ) ) ?>
+        <?php echo esc_attr( DT_Webform_Utilities::get_theme( $dt_webform_meta['theme'] ?? 'wide-heavy', $dt_webform_token ) ) ?>
         .email { display:none; }
     </style>
 
@@ -262,7 +262,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                 <br>
                                 <div id="mapbox-wrapper">
                                     <div id="mapbox-autocomplete" class="mapbox-autocomplete input-group" data-autosubmit="true">
-                                        <input id="mapbox-search" type="text" name="mapbox_search" placeholder="Search Location" class="input-text ignore" style="width:95%" /><span id="mapbox-spinner-button" style="display:none;width:5%;padding:8px;"><img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>spinner.svg" alt="spinner" style="width: 20px;" /></span>
+                                        <input id="mapbox-search" type="text" name="mapbox_search" placeholder="Search Location" class="input-text ignore" style="width:95%" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?> /><span id="mapbox-spinner-button" style="display:none;width:5%;padding:8px;"><img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>spinner.svg" alt="spinner" style="width: 20px;" /></span>
                                         <div id="mapbox-autocomplete-list" class="mapbox-autocomplete-items"></div>
                                         <div style="display:none;">
                                             <span id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>-lng" data-type="lng" class="location"></span>

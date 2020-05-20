@@ -227,6 +227,8 @@ class DT_Webform_Menu
             $this->metabox_select_site();
         }
 
+        $this->metabox_dt_fields();
+
         // begin right column template
         $this->template( 'right_column' );
         // end columns template
@@ -361,7 +363,7 @@ class DT_Webform_Menu
                 </tr>
                 <tr>
                     <td>
-                        <strong></strong>
+                        <strong>How to Refresh DT Fields</strong>
                     </td>
                 </tr>
                 <tr>
@@ -522,6 +524,45 @@ class DT_Webform_Menu
                 </tbody>
             </table>
         </form>
+        <br>
+        <?php
+    }
+
+    public function metabox_dt_fields() {
+        $contact_defaults = DT_Webform_Utilities::get_contact_defaults( true );
+        $object = DT_Webform_Active_Form_Post_Type::instance();
+        $fields = $object->filtered_contact_fields( $contact_defaults );
+        ?>
+        <table class="widefat striped">
+            <thead>
+            <tr>
+                <td colspan="2">
+                    <strong>DT Fields Available</strong><br>
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <?php
+                    foreach ($fields as $key => $value) {
+                        echo '<strong>' . esc_attr( $key ) . '</strong> (' . esc_attr( $value['type'] ) . ')<br>';
+                        if ( ! empty( $value['default'] ) && is_array( $value['default'] ) ) {
+                            foreach ( $value['default'] as $k => $v) {
+                                if ('connection_types' === $key) {
+                                    echo ' &nbsp;&nbsp; ' . esc_html( $v ) . '<br>';
+                                } else {
+                                    echo ' &nbsp;&nbsp; ' . esc_html( $k ) . '<br>';
+                                }
+                            }
+                        }
+                    }
+                    ?>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
         <br>
         <?php
     }

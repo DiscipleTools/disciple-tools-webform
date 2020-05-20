@@ -86,15 +86,8 @@ class DT_Webform_Utilities {
     public static function get_contact_defaults( $force = false ) {
 
         if ( is_dt() ) {
-            // add required capability for retrieving defaults
-            $current_user = wp_get_current_user();
-            $current_user->add_cap( 'create_contacts' );
-            if ( ! class_exists( 'DT_Posts' ) ) {
-                require_once( get_template_directory() . '/dt-posts/posts.php' );
-                require_once( get_template_directory() . '/dt-posts/custom-post-type.php' );
-                require_once( get_template_directory() . '/dt-posts/dt-posts.php' );
-            }
-            return DT_Posts::get_post_settings( 'contacts' );
+           Disciple_Tools::instance();
+           return DT_Posts::get_post_settings( 'contacts' );
         }
 
         // caching
@@ -136,7 +129,7 @@ class DT_Webform_Utilities {
 
     }
 
-    public static function get_theme( string $theme, string $token = null ) {
+    public static function get_theme( string $theme = 'wide-heavy', string $token = null ) {
 
         $meta = self::get_form_meta( $token );
         if ( empty( $meta ) ) {
@@ -407,6 +400,77 @@ class DT_Webform_Utilities {
                     }
                     ';
                 break;
+            case 'none':
+                $css = '';
+                break;
+            case 'minimum':
+                $css = '
+                    // FORM WRAPPER
+                    #wrapper {}
+                    #contact-form {}
+
+                    // CORE SECTION AND INPUTS
+                    #title {}
+                    #description {}
+                    #section-name {}
+                    #section-phone {}
+                    #section-email {}
+                    #name {}
+                    #phone {}
+                    #email {}
+
+                    // SECTION CLASSES
+                    .section {}
+                    .section-dropdown {}
+                    .section-key_select {}
+                    .section-multi_select {}
+                    .section-multi_radio {}
+                    .section-checkbox {}
+                    .section-tel {}
+                    .section-email {}
+                    .section-text {}
+                    .section-header {}
+                    .section-description {}
+                    .section-note {}
+                    .section-map {}
+                    .section-custom_label {}
+
+                    // INPUT CLASSES
+                    .input-text {}
+                    .input-textarea {}
+                    .input-checkbox {}
+                    .input-multi_radio {}
+                    .input-key_select {}
+                    .input-multi_select {}
+                    .span-radio {}
+                    .input-tel {}
+                    .input-email {}
+                    .input-dropdown {}
+                    .input-note {}
+                    button.submit-button {}
+
+                    // LABELS
+                    .input-label {}
+                    .label-dropdown {}
+                    .label-multi_radio {}
+                    .label-checkbox {}
+                    .label-tel {}
+                    .label-email {}
+                    .label-text {}
+                    .label-note {}
+                    .label-map {}
+                    .label-map-instructions {}
+
+                    // DIVIDER CLASSES
+                    .hr {}
+                    .hr-divider {}
+
+                    // ERROR CLASSES
+                    label.error {}
+                    .offlineWarning {}
+                    // EXTRA SECTIONS AND INPUTS
+                    ';
+                break;
             case 'wide-heavy':
                 $css = '
                     #wrapper {
@@ -556,18 +620,22 @@ class DT_Webform_Utilities {
                     }
                     ';
                 break;
-            case 'none':
-                $css = '';
-                break;
             default:
                 $css = '
-                    // FORM WRAPPER
-                    #wrapper {}
+                    #wrapper {
+                        margin: auto;
+                        max-width: 1000px;
+                    }
                     #contact-form {}
 
-                    // CORE SECTION AND INPUTS
-                    #title {}
-                    #description {}
+                    #title {
+                        font-size: 2em;
+                        font-weight: bolder;
+                        padding: .5em 0;
+                    }
+                   #description {
+                        padding: .5em 0;
+                    }
                     #section-name {}
                     #section-phone {}
                     #section-email {}
@@ -575,56 +643,130 @@ class DT_Webform_Utilities {
                     #phone {}
                     #email {}
 
-                    // SECTION CLASSES
-                    .section {}
-                    .section-dropdown {}
-                    .section-key_select {}
+                    .section {
+                        padding: 10px 0;
+                        width: 100%;
+                    }
                     .section-multi_select {}
+                    .section-key_select {}
+                    .section-dropdown {}
                     .section-multi_radio {}
-                    .section-checkbox {}
+                    .section-checkbox {
+                        padding:0;
+                    }
                     .section-tel {}
                     .section-email {}
                     .section-text {}
-                    .section-header {}
+                    .section-date {}
+                    .section-header {
+                        font-size: 2em;
+                        font-weight: bolder;
+
+                        padding-top: .5em;
+                    }
                     .section-description {}
                     .section-note {}
-                    .section-map {}
-                    .section-custom_label {}
+                    .section-map {
+                        padding-bottom: 10px;
+                    }
+                    .section-custom_label {
+                        font-size: 1.2em;
 
-                    // INPUT CLASSES
-                    .input-text {}
-                    .input-textarea {}
+                    }
+
+                    .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
+                    }
+                    .input-date {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    .input-textarea {
+                        height:80px;
+                        padding: .5em;
+                        font-size: 1.2em;
+                        border: .5px solid #ccc;
+                    }
                     .input-checkbox {}
-                    .input-multi_radio {}
-                    .input-key_select {}
-                    .input-multi_select {}
-                    .span-radio {}
-                    .input-tel {}
-                    .input-email {}
-                    .input-dropdown {}
-                    .input-note {}
-                    button.submit-button {}
-
-                    // LABELS
-                    .input-label {}
+                    .input-multi_radio {
+                        font-size:1.1em;
+                    }
+                    .span-radio {
+                        float:left;
+                        padding:5px;
+                    }
+                    .input-tel {
+                       padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    .input-email {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    .input-multi_select {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
+                    }
+                    .input-key_select {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
+                    }
+                    .input-dropdown {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
+                    }
+                    .input-note {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                    }
+                    button.submit-button {
+                        padding: 1em;
+                        font-weight: bolder;
+                    }
+                    .input-label {
+                        font-size: 1.2em;
+                    }
                     .label-dropdown {}
-                    .label-multi_radio {}
+                    .label-multi_radio {
+                        margin-bottom:10px;
+                    }
                     .label-checkbox {}
                     .label-tel {}
                     .label-email {}
                     .label-text {}
                     .label-note {}
                     .label-map {}
-                    .label-map-instructions {}
-
-                    // DIVIDER CLASSES
+                    .label-map-instructions {
+                        color: grey;
+                    }
+                    .offlineWarning {
+                        color: #9F6000;
+                        background-color: #FEEFB3;
+                        padding: 1em;
+                        font-size: 1.2em;
+                        margin: 1em 0;
+                        border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+                    },
                     .hr {}
                     .hr-divider {}
 
-                    // ERROR CLASSES
-                    label.error {}
-                    .offlineWarning {}
-                    // EXTRA SECTIONS AND INPUTS
+                    label.error {
+                        color: red;
+                        font-size: .8em;
+                    }
                     ';
 
                 $ids = '';
@@ -652,7 +794,7 @@ class DT_Webform_Utilities {
          */
         $location_styles = '';
         foreach ( $meta as $key => $value ) {
-            if ( substr( $key, 0, 5 ) === 'field' && $value['type'] === 'location' ) {
+            if ( substr( $key, 0, 5 ) === 'field' &&  $value['type'] === 'location' ) {
                 $location_styles = '
                 #geocoder {
                     padding-bottom: 10px;

@@ -53,18 +53,26 @@ class DT_Webform_Active_Form_Post_Type
             add_action( 'save_post', [ $this, 'save_core_fields' ] );
             add_action( 'save_post', [ $this, 'save_extra_fields' ] );
 
-            global $pagenow, $post_type;
+            global $pagenow;
             if ( $pagenow === 'post.php' ) {
                 $this->contact_fields = DT_Webform_Utilities::get_contact_defaults();
-                if ( is_wp_error( $this->contact_fields ) ) {
+
+                // if empty or error contact_fields
+                if ( is_wp_error( $this->contact_fields ) || empty( $this->contact_fields ) ) {
                     $this->contact_fields = [
                     'sources' => [],
-                    'fields' => [],
+                    'fields' => [
+                        'overall_status' => [
+                            'type' => '',
+                            'default' => []
+                        ]
+                    ],
                     'channels' => [],
                     'address_types' => [],
                     'connection_types' => []
                     ];
                 }
+
                 add_action( 'admin_menu', [ $this, 'meta_box_setup' ], 20 );
                 add_action( 'admin_head', [ $this, 'scripts' ], 20 );
                 add_action( 'do_meta_boxes', [ $this, 'remove_metaboxes' ], 50, 1 );
@@ -146,7 +154,6 @@ class DT_Webform_Active_Form_Post_Type
         add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'low' );
         add_meta_box( $this->post_type . '_description', __( 'Admin Notes', 'dt_webform' ), [ $this, 'load_description_meta_box' ], $this->post_type, 'side', 'low' );
         add_meta_box( $this->post_type . '_css', __( 'Form Styles', 'dt_webform' ), [ $this, 'load_form_styles_meta_box' ], $this->post_type, 'side', 'low' );
-        add_meta_box( $this->post_type . '_dt_fields_list', __( 'DT Fields List', 'dt_webform' ), [ $this, 'load_dt_fields_list_meta_box' ], $this->post_type, 'side', 'low' );
     }
 
     /**
@@ -169,6 +176,16 @@ class DT_Webform_Active_Form_Post_Type
      */
     public function load_info_meta_box( $post ) {
         $this->meta_box_content( 'info' ); // prints
+
+        // maintain token
+        $token = get_post_meta( $post->ID, 'token', true );
+        if ( ! $token ) {
+            $token = bin2hex( random_bytes( 16 ) );
+        }
+        ?>
+        <input type="hidden" name="token" value="<?php echo esc_attr( $token ) ?>" />
+        <?php
+
     }
 
     public function load_core_fields_metabox( $post ) {
@@ -789,7 +806,6 @@ class DT_Webform_Active_Form_Post_Type
             <div style="text-align:center;">
                 <p>Unique Form ID</p>
                 <?php echo esc_attr( get_post_meta( $post->ID, 'token', true ) ) ?>
-                <input type="hidden" name="token" value="<?php echo esc_attr( get_post_meta( $post->ID, 'token', true ) ) ?>" />
             </div>
             <?php
         }
@@ -817,30 +833,7 @@ class DT_Webform_Active_Form_Post_Type
 
     }
 
-    public function load_dt_fields_list_meta_box( $post ) {
 
-//        if ( get_post_meta( $post->ID, 'form_type', true ) === 'custom_form' ) {
-//            add_action( 'do_meta_boxes', [ $this, 'remove_dt_fields_metabox'] );
-//        }
-
-        // get contact defaults
-        $contact_defaults = $this->contact_fields;
-        if ( ! isset( $contact_defaults['fields'] ) ) {
-            return;
-        }
-        foreach ($contact_defaults['fields'] as $key => $value) {
-            echo '<strong>' . esc_attr( $key ) . '</strong> (' . esc_attr( $value['type'] ) . ')<br>';
-            if ( ! empty( $value['default'] ) && is_array( $value['default'] ) ) {
-                foreach ( $value['default'] as $k => $v) {
-                    if ('connection_types' === $key) {
-                        echo ' &nbsp;&nbsp; ' . esc_html( $v ) . '<br>';
-                    } else {
-                        echo ' &nbsp;&nbsp; ' . esc_html( $k ) . '<br>';
-                    }
-                }
-            }
-        }
-    }
 
     public function template_row_dt_field_multi( $unique_key, $data ) {
         ?>
@@ -1597,6 +1590,19 @@ class DT_Webform_Active_Form_Post_Type
         'section'     => 'info',
         ];
 
+        $fields['theme'] = [
+            'name'        => __( 'Theme', 'dt_webform' ),
+            'description' => '',
+            'type'        => 'key_select',
+            'default'     => [
+                'wide-heavy'    => __( 'Wide Heavy', 'dt_webform' ),
+                'simple'        => __( 'Simple', 'dt_webform' ),
+                'heavy'         => __( 'Heavy', 'dt_webform' ),
+                'none'          => __( 'None', 'dt_webform' ),
+                'inherit'       => __( 'Inherit', 'dt_webform' ),
+            ],
+            'section'     => 'appearance',
+        ];
         $fields['width'] = [
         'name'        => __( 'Width', 'dt_webform' ),
         'description' => __( 'ex. 400px or 100%', 'dt_webform' ),
@@ -1610,19 +1616,6 @@ class DT_Webform_Active_Form_Post_Type
         'type'        => 'text',
         'default'     => '550px',
         'section'     => 'appearance',
-        ];
-        $fields['theme'] = [
-            'name'        => __( 'Theme', 'dt_webform' ),
-            'description' => '',
-            'type'        => 'key_select',
-            'default'     => [
-                'simple' => __( 'Simple', 'dt_webform' ),
-                'heavy'   => __( 'Heavy', 'dt_webform' ),
-                'wide-heavy'   => __( 'Wide Heavy', 'dt_webform' ),
-                'none'   => __( 'None', 'dt_webform' ),
-                'inherit'   => __( 'Inherit', 'dt_webform' ),
-            ],
-            'section'     => 'appearance',
         ];
         $fields['custom_css'] = [
             'name'        => __( 'Custom CSS', 'dt_webform' ),
@@ -1929,8 +1922,11 @@ class DT_Webform_Active_Form_Post_Type
         return $custom_fields;
     }
 
-    public function filtered_contact_fields() : array {
-        $contact_defaults = $this->contact_fields;
+    public function filtered_contact_fields( $contact_defaults = null ) : array {
+
+        if ( empty( $contact_defaults ) ) {
+            $contact_defaults = $this->contact_fields;
+        }
 
         $ignore = [
             'requires_update',
@@ -2006,6 +2002,32 @@ class DT_Webform_Active_Form_Post_Type
             }
             return false;
         }, ARRAY_FILTER_USE_KEY );
+    }
+
+    public function refresh_dt_fields() {
+        dt_write_log(__METHOD__);
+        dt_write_log($_POST);
+
+        $this->contact_fields = DT_Webform_Utilities::get_contact_defaults( true );
+//
+//        if ( isset( $_POST['post_ID'] ) ) {
+//            $post_id = sanitize_text_field( wp_unslash( $_POST['post_ID'] ) );
+//            $fields = dt_get_simple_post_meta( $post_id );
+//            $custom_fields = self::filter_for_custom_fields( $fields );
+//            if ( ! empty( $custom_fields ) ) {
+//                $dt_fields = $this->filtered_contact_fields( $this->contact_fields );
+//                $keys = array_keys( $dt_fields );
+//                foreach ( $custom_fields as $key => $field ) {
+//                   if ( in_array( $field['dt_field'], $keys) ) {
+//                       dt_write_log($field);
+//                   }
+//                }
+//            }
+//
+//
+//        }
+
+        return $this->contact_fields;
     }
 
     public static function match_labels_with_values( string $labels, string $values ) : array {

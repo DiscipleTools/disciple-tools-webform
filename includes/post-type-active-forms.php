@@ -2004,32 +2004,6 @@ class DT_Webform_Active_Form_Post_Type
         }, ARRAY_FILTER_USE_KEY );
     }
 
-    public function refresh_dt_fields() {
-        dt_write_log(__METHOD__);
-        dt_write_log($_POST);
-
-        $this->contact_fields = DT_Webform_Utilities::get_contact_defaults( true );
-//
-//        if ( isset( $_POST['post_ID'] ) ) {
-//            $post_id = sanitize_text_field( wp_unslash( $_POST['post_ID'] ) );
-//            $fields = dt_get_simple_post_meta( $post_id );
-//            $custom_fields = self::filter_for_custom_fields( $fields );
-//            if ( ! empty( $custom_fields ) ) {
-//                $dt_fields = $this->filtered_contact_fields( $this->contact_fields );
-//                $keys = array_keys( $dt_fields );
-//                foreach ( $custom_fields as $key => $field ) {
-//                   if ( in_array( $field['dt_field'], $keys) ) {
-//                       dt_write_log($field);
-//                   }
-//                }
-//            }
-//
-//
-//        }
-
-        return $this->contact_fields;
-    }
-
     public static function match_labels_with_values( string $labels, string $values ) : array {
         if ( empty( $labels ) || empty( $values ) ) {
             return [];

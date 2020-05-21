@@ -86,8 +86,8 @@ class DT_Webform_Utilities {
     public static function get_contact_defaults( $force = false ) {
 
         if ( is_dt() ) {
-           Disciple_Tools::instance();
-           return DT_Posts::get_post_settings( 'contacts' );
+            Disciple_Tools::instance();
+            return DT_Posts::get_post_settings( 'contacts' );
         }
 
         // caching
@@ -795,7 +795,7 @@ class DT_Webform_Utilities {
          */
         $location_styles = '';
         foreach ( $meta as $key => $value ) {
-            if ( substr( $key, 0, 5 ) === 'field' &&  $value['type'] === 'location' ) {
+            if ( substr( $key, 0, 5 ) === 'field' && $value['type'] === 'location' ) {
                 $location_styles = '
                 #geocoder {
                     padding-bottom: 10px;

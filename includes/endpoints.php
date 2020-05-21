@@ -119,7 +119,7 @@ class DT_Webform_Endpoints
      */
     public function create_contact_record( $params ) {
         dt_write_log( __METHOD__ );
-        dt_write_log($params);
+        dt_write_log( $params );
 
         // set vars
         $check_permission = false;
@@ -154,7 +154,7 @@ class DT_Webform_Endpoints
 
         // locations
         if ( isset( $new_lead_meta['location'] ) && ! empty( $new_lead_meta['location'] ) ) {
-            if ( ! ( empty( $new_lead_meta['location']['lat'] ?? null ) || empty(  $new_lead_meta['location']['lat'] ?? null ) ) ) {
+            if ( ! ( empty( $new_lead_meta['location']['lat'] ?? null ) || empty( $new_lead_meta['location']['lat'] ?? null ) ) ) {
                 $fields['location_grid_meta'] = [
                     "values" => [
                         [
@@ -253,7 +253,6 @@ class DT_Webform_Endpoints
                                 break;
                         }
                     }
-
                 }
             }
         }
@@ -286,8 +285,8 @@ class DT_Webform_Endpoints
             $fields['overall_status'] = 'assigned';
         }
 
-        dt_write_log('Pre Submit Fields');
-        dt_write_log($fields);
+        dt_write_log( 'Pre Submit Fields' );
+        dt_write_log( $fields );
 
         // Post to contact
         if ( is_dt() ) { // Create contact if hosted in DT

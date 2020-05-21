@@ -379,7 +379,7 @@ class DT_Webform_Menu
                 <tr><th>Topics</th></tr>
                 </thead>
                 <tbody>
-                
+
                 </tbody>
             </table>
         </form>
@@ -414,11 +414,11 @@ class DT_Webform_Menu
                 </tr>
                 <tr>
                     <td>
-                        <?php wp_nonce_field('fail_email', 'fail_email_nonce' ) ?>
+                        <?php wp_nonce_field( 'fail_email', 'fail_email_nonce' ) ?>
                         <input type="text" name="fail_email" value="<?php echo esc_attr( $email ) ?>" class="regular-text" />
                         <?php if ( $email ): ?>
                             <button class="button" name="action-button" value="delete" type="submit">Delete</button>
-                        <?php else: ?>
+                        <?php else : ?>
                             <button class="button" name="action-button" value="save" type="submit">Save</button>
                         <?php endif; ?>
                     </td>

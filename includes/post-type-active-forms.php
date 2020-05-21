@@ -1624,6 +1624,16 @@ class DT_Webform_Active_Form_Post_Type
             'default'     => '',
             'section'     => 'appearance',
         ];
+        $fields['disable'] = [
+            'name'        => __( 'Disable the form', 'dt_webform' ),
+            'description' => '',
+            'type'        => 'key_select',
+            'default'     => [
+                'enabled'      => __( 'Enabled', 'dt_webform' ),
+                'disabled'     => __( 'Disabled', 'dt_webform' ),
+            ],
+            'section'     => 'appearance',
+        ];
 //        $fields['custom_form'] = [
 //            'name'        => __( 'Custom Form', 'dt_webform' ),
 //            'description' => '',
@@ -1757,7 +1767,7 @@ class DT_Webform_Active_Form_Post_Type
     public function form_types() {
         $list = [
             'default_lead' => 'Lead Form',
-            'custom_form' => 'Custom Form',
+//            'custom_form' => 'Custom Form',
         ];
 
         return apply_filters( 'dt_webform_form_types', $list );

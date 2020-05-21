@@ -17,6 +17,10 @@ $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token );
 $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
 
+if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['disable'] ) {
+    die( 'form is disabled' );
+}
+
 ?>
 <html lang="en">
 <head>

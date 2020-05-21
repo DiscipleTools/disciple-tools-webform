@@ -293,7 +293,6 @@ class DT_Webform_Active_Form_Post_Type
                             // multi labels, multi values
                             case 'dropdown':
                             case 'multi_radio':
-                            case 'checkbox':
                                 $this->template_row_other_multi( $unique_key, $data );
                                 break;
 
@@ -305,6 +304,7 @@ class DT_Webform_Active_Form_Post_Type
                                 $this->template_row_other_label_field( $unique_key, $data );
                                 break;
 
+                            case 'checkbox':
                             case 'custom_label':
                             case 'header':
                             case 'description':
@@ -679,10 +679,10 @@ class DT_Webform_Active_Form_Post_Type
                     case 'multi_radio':
                     case 'key_select':
                     case 'dropdown':
-                    case 'checkbox':
                         labels.empty().append(multi_title).append('<hr>').append(multi_label)
-                        values.empty().append(first_line_default).append('<hr>').append(multi_value)
+                        values.empty().append(first_line_default)
                         break;
+                    case 'checkbox':
                     case 'text':
                     case 'tel':
                     case 'email':

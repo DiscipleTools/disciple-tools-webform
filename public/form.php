@@ -191,7 +191,9 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                 <br>
                                 <select id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                         class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
-                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
+                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                    <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>
+                                >
                                     <?php
                                     if ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' ) {
                                         echo '<option></option>';
@@ -218,7 +220,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                 <br>
                                 <select id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                         class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
-                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" multiple>
+                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?> multiple>
                                     <?php
                                     if ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' ) {
                                         echo '<option></option>';
@@ -451,8 +453,12 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                 <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
                                        class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['title'] ) ?></label><br>
                                 <?php
-                                foreach ( $list as $item ) {
-                                    echo '<span class="span-radio"><input type="radio" class="input-' . esc_attr( $dt_webform_value['type'] ) . '" name="' . esc_attr( $dt_webform_value['key'] ) . '" value="' . esc_html( $item ) . '">' . esc_html( $item ) . '</span>';
+                                foreach ( $list as $index => $item ) {
+                                    $checked = '';
+                                    if ( 0 == $index ) {
+                                        $checked = 'checked';
+                                    }
+                                    echo '<span class="span-radio"><input type="radio" class="input-' . esc_attr( $dt_webform_value['type'] ) . '" name="' . esc_attr( $dt_webform_value['key'] ) . '" value="' . esc_html( $item ) . '" '. esc_attr( $checked ).'>' . esc_html( $item ) . '</span>';
                                 }
                                 ?>
                                 <br style="clear: both;" /> </div>
@@ -469,7 +475,6 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                                    name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                    class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
                                    value="<?php echo esc_html( $dt_webform_value['labels'] ) ?>"
-                                <?php echo esc_attr( ( $dt_webform_value['required'] === 'yes' ) ? 'required' : '' ) ?>
                             />
                             <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                    class="label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value['labels'] ) ?></label>
@@ -524,7 +529,7 @@ $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_web
                             <br>
                             <textarea id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                       name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
-                                      class="input-textarea input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"></textarea>
+                                      class="input-textarea input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>></textarea>
                         </div>
                         <?php
 

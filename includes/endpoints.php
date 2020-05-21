@@ -135,12 +135,9 @@ class DT_Webform_Endpoints
 
         // get form data: remote verse local form
         $form_meta = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
-//        $form_meta = [];
-//        if ( isset( $new_lead_meta['form_meta'] ) ) {
-//            $form_meta = $new_lead_meta['form_meta'];
-//        }
+
         dt_write_log( '$form_meta' );
-        dt_write_log( $form_meta );
+//        dt_write_log( $form_meta );
 
         // name
         $fields['title'] = $new_lead_meta['name'];
@@ -157,15 +154,20 @@ class DT_Webform_Endpoints
 
         // locations
         if ( isset( $new_lead_meta['location'] ) && ! empty( $new_lead_meta['location'] ) ) {
-            $fields['location_grid_meta'] = [
-                "values" => [ $new_lead_meta['location'] ]
-            ];
+            if ( ! ( empty( $new_lead_meta['location']['lat'] ?? null ) || empty(  $new_lead_meta['location']['lat'] ?? null ) ) ) {
+                $fields['location_grid_meta'] = [
+                    "values" => [
+                        [
+                            'lat' => $new_lead_meta['location']['lat'],
+                            'lng' => $new_lead_meta['location']['lng'],
+                            'level' => $new_lead_meta['location']['level'] ?? 'place',
+                            'label' => $new_lead_meta['location']['label'] ?? 'Unlabeled Place',
+                        ]
+                    ]
+                ];
+            }
         }
 
-
-        $contact_fields = DT_Webform_Utilities::get_contact_defaults();
-        dt_write_log( '$contact_fields' );
-        dt_write_log( $contact_fields );
         dt_write_log( '$new_lead_meta' );
         dt_write_log( $new_lead_meta );
 
@@ -190,59 +192,68 @@ class DT_Webform_Endpoints
                     $notes[$lead_key] = $label . ': ' . $lead_value;
                 }
 
-
                 // prepare mapped fields
                 if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
                     // set field value to custom field
-                    switch ( $field['type'] ) {
+                    if ( 'other' === $field['dt_field'] ) {
+                        // other field preparation
+                        switch ( $field['type'] ) {
 
-                        // DT Fields
-                        case 'date':
-                        case 'text':
-                            if ( isset( $contact_fields[$field['dt_field']]["type"] ) && $contact_fields[$field['dt_field']]["type"] === "key_select" ) {
-                                $fields[$field['dt_field']]['values'][] = [ 'value' => $lead_value ];
-                            } else {
+                            // other fields
+                            case 'tel':
+                                $fields['contact_phone'][] = [ "value" => $lead_value ];
+                                break;
+                            case 'email':
+                                $fields['contact_email'][] = [ "value" => $lead_value ];
+                                break;
+                            case 'key_select':
+                            case 'dropdown':
+                            case 'multi_radio':
+                            case 'multi_select':
+                                if ( is_array( $lead_value ) ) {
+                                    $concat_item = '';
+                                    foreach ( $lead_value as $item ) {
+                                        $concat_item .= $item . ' | ';
+                                    }
+                                    $notes[$lead_key] = $field['title'] . ': ' . esc_html( $concat_item );
+                                } else {
+                                    $notes[$lead_key] = $field['title'] . ': ' . esc_html( $lead_value );
+                                }
+                                break;
+                            case 'checkbox':
+                                $notes[$lead_key] = $field['labels'] . ': &#9989;';
+                                break;
+                            case 'text':
+                            case 'note':
+                                $notes[$lead_key] = $field['labels'] . ': ' . esc_html( $lead_value );
+                                break;
+                            default:
+                                continue 2;
+                                break;
+                        }
+                    } else {
+                        // dt field preparation
+                        switch ( $field['type'] ) {
+
+                            // DT Fields
+                            case 'date':
+                            case 'text':
+                            case 'key_select':
                                 $fields[$field['dt_field']] = $lead_value;
-                            }
-                            break;
-                        case 'key_select': // @ ? is this used for both other and dt_fields
-                        case 'multi_select':
-                            if ( is_array( $lead_value ) ) {
-                                foreach ( $lead_value as $item ) {
-                                    $fields[$field['dt_field']]['values'][] = [ 'value' => $item ];
+                                break;
+                            case 'multi_select':
+                                if ( is_array( $lead_value ) ) {
+                                    foreach ( $lead_value as $item ) {
+                                        $fields[$field['dt_field']]['values'][] = [ 'value' => $item ];
+                                    }
                                 }
-                            }
-                            break;
-
-                            // other fields toward a dt field
-                        case 'tel':
-                            $fields['contact_phone'][] = [ "value" => $lead_value ];
-                            break;
-                        case 'email':
-                            $fields['contact_email'][] = [ "value" => $lead_value ];
-                            break;
-
-                        // other fields
-                        case 'dropdown':
-                        case 'multi_radio':
-                            if ( is_array( $lead_value ) ) {
-                                $concat_item = '';
-                                foreach ( $lead_value as $item ) {
-                                    $concat_item .= $item . ' | ';
-                                }
-                                $notes[$lead_key] = $field['label'] . ': ' . esc_html( $concat_item );
-                            } else {
-                                $notes[$lead_key] = $field['label'] . ': ' . esc_html( $lead_value );
-                            }
-                            break;
-                        case 'checkbox':
-                        case 'note':
-                            $notes[$lead_key] = $field['label'] . ': ' . esc_html( $lead_value );
-                            break;
-                        default:
-                            continue 2;
-                            break;
+                                break;
+                            default:
+                                continue 2;
+                                break;
+                        }
                     }
+
                 }
             }
         }
@@ -275,11 +286,10 @@ class DT_Webform_Endpoints
             $fields['overall_status'] = 'assigned';
         }
 
+        dt_write_log('Pre Submit Fields');
+        dt_write_log($fields);
+
         // Post to contact
-        dt_write_log( '$fields' );
-        dt_write_log( $fields );
-
-
         if ( is_dt() ) { // Create contact if hosted in DT
 
             // add required capability for retrieving defaults

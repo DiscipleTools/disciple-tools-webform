@@ -77,9 +77,12 @@ function get_data() {
   let data = {};
 
   jQuery(':input[type=checkbox]:checked').each(function() {
+      data[this.name] = jQuery(this).val();
+  });
+  jQuery(':input[type=radio]:checked').each(function() {
     data[this.name] = jQuery(this).val();
   });
-  jQuery(':input:not([type=checkbox]):not(.ignore)').each(function() {
+  jQuery(':input:not([type=checkbox]):not([type=radio]):not(.ignore)').each(function() {
       data[this.name] = jQuery(this).val();
   });
   let location = jQuery('.location')
@@ -199,7 +202,7 @@ jQuery(document).ready(function () {
     translate_form_strings()
 
     let button = jQuery('#submit-button')
-    button.html( window.TRANSLATION.submit ).prop('disabled', false)
+    button.html( window.TRANSLATION.submit ).prop('disabled', true)
 
     // This is a form delay to discourage robots
     let counter = 5;

@@ -512,7 +512,6 @@ class DT_Webform_Utilities {
                     .section-header {
                         font-size: 2em;
                         font-weight: bolder;
-
                         padding-top: .5em;
                     }
                     .section-description {}
@@ -522,7 +521,6 @@ class DT_Webform_Utilities {
                     }
                     .section-custom_label {
                         font-size: 1.2em;
-
                     }
 
                     .input-text {
@@ -539,7 +537,8 @@ class DT_Webform_Utilities {
                     .input-textarea {
                         height:80px;
                         padding: .5em;
-                        font-size: 1.2em;
+                        font-size: 1.5em;
+                        font-family: Arial;
                         border: .5px solid #ccc;
                     }
                     .input-checkbox {}
@@ -580,8 +579,10 @@ class DT_Webform_Utilities {
                     }
                     .input-note {
                         padding: .5em;
-                        font-size: 1em;
+                        font-size: 1.2em;
+                        font-family: Arial;
                         width: 100%;
+                        border: .5px solid #ccc;
                     }
                     button.submit-button {
                         padding: 1em;

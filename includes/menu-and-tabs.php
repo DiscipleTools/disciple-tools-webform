@@ -227,6 +227,8 @@ class DT_Webform_Menu
             $this->metabox_select_site();
         }
 
+        $this->metabox_fail_email();
+
         $this->metabox_dt_fields();
 
         // begin right column template
@@ -357,80 +359,11 @@ class DT_Webform_Menu
                 <tbody>
                 <tr id="assign-to-user">
                     <td>
-                        <a name=""></a>
-                        <strong>How to use "Assign to User"</strong>
+                        <strong>Video Training</strong><br>
+                        <a href="https://www.youtube.com/channel/UCwQQSXUJunyqnj1bL_Fh6mQ/videos" target="_blank" >Go to the Disciple Tools youtube training site.</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <strong>How to Refresh DT Fields</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
+
                 </tbody>
             </table>
         </form>
@@ -446,80 +379,50 @@ class DT_Webform_Menu
                 <tr><th>Topics</th></tr>
                 </thead>
                 <tbody>
+                
+                </tbody>
+            </table>
+        </form>
+        <br>
+        <?php
+    }
+
+    public function metabox_fail_email() {
+        if ( isset( $_POST['fail_email_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['fail_email_nonce'] ) ), 'fail_email' ) && isset( $_POST['action-button'] ) ) {
+            $button = sanitize_text_field( wp_unslash( $_POST['action-button'] ) );
+            if ( ! isset( $_POST['fail_email'] ) ) {
+                delete_option( 'dt_webform_admin_fail_email' );
+            }
+            else if ( 'delete' === $button ) {
+                delete_option( 'dt_webform_admin_fail_email' );
+            }
+            else if ( 'save' === $button ) {
+                $email = sanitize_email( wp_unslash( $_POST['fail_email'] ) );
+                update_option( 'dt_webform_admin_fail_email', $email, false );
+            }
+        }
+        $email = get_option( 'dt_webform_admin_fail_email' );
+        ?>
+        <form method="post">
+            <table class="widefat striped">
+                <thead>
+                <tr><th>Email to send failed forms</th></tr>
+                </thead>
+                <tbody>
                 <tr>
-                    <td>
-                        <a href="#assign-to-user">How to use "Assign to User"</a>
-                    </td>
+                    <td>If a form is filled out, but he system fails to create a record in Disciple Tools, the failed form can be emailed to an administrator. </td>
                 </tr>
                 <tr>
                     <td>
-                        <strong></strong>
+                        <?php wp_nonce_field('fail_email', 'fail_email_nonce' ) ?>
+                        <input type="text" name="fail_email" value="<?php echo esc_attr( $email ) ?>" class="regular-text" />
+                        <?php if ( $email ): ?>
+                            <button class="button" name="action-button" value="delete" type="submit">Delete</button>
+                        <?php else: ?>
+                            <button class="button" name="action-button" value="save" type="submit">Save</button>
+                        <?php endif; ?>
                     </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong></strong>
-                    </td>
+                    <td></td>
                 </tr>
                 </tbody>
             </table>

@@ -72,7 +72,7 @@ class DT_Webform_Endpoints
      * @return bool|\WP_Error
      */
     public function form_submit( WP_REST_Request $request ){
-        dt_write_log( __METHOD__ );
+//        dt_write_log( __METHOD__ );
         $params = $request->get_params();
 
         // Honeypot
@@ -118,8 +118,8 @@ class DT_Webform_Endpoints
      * @return bool|\WP_Error
      */
     public function create_contact_record( $params ) {
-        dt_write_log( __METHOD__ );
-        dt_write_log( $params );
+//        dt_write_log( __METHOD__ );
+//        dt_write_log( $params );
 
         // set vars
         $check_permission = false;
@@ -136,7 +136,7 @@ class DT_Webform_Endpoints
         // get form data: remote verse local form
         $form_meta = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
 
-        dt_write_log( '$form_meta' );
+//        dt_write_log( '$form_meta' );
 //        dt_write_log( $form_meta );
 
         // name
@@ -168,8 +168,8 @@ class DT_Webform_Endpoints
             }
         }
 
-        dt_write_log( '$new_lead_meta' );
-        dt_write_log( $new_lead_meta );
+//        dt_write_log( '$new_lead_meta' );
+//        dt_write_log( $new_lead_meta );
 
         // custom fields
         foreach ( $new_lead_meta as $lead_key => $lead_value ) {
@@ -285,8 +285,8 @@ class DT_Webform_Endpoints
             $fields['overall_status'] = 'assigned';
         }
 
-        dt_write_log( 'Pre Submit Fields' );
-        dt_write_log( $fields );
+//        dt_write_log( 'Pre Submit Fields' );
+//        dt_write_log( $fields );
 
         // Post to contact
         if ( is_dt() ) { // Create contact if hosted in DT
@@ -323,20 +323,17 @@ class DT_Webform_Endpoints
 
             $body = json_decode( $result['body'], true );
 
-            dt_write_log( 'Post Result' );
-            dt_write_log( $body );
+//            dt_write_log( 'Post Result' );
+//            dt_write_log( $body );
 
             if ( isset( $body['ID'] ) ) {
                 return $result;
             } else {
+                $email = get_option( 'dt_webform_admin_fail_email' );
                 dt_write_log( 'Fail Contact Create' );
                 dt_write_log( $body );
-                // @todo mail(failed contact insert)
-//                $to = '';
-//                $subject = '';
-//                $message = '';
-//                $header = '';
-//                wp_mail( $to, $subject, $message, $header );
+                dt_write_log( $fields );
+                wp_mail( $email, 'Failed Form Post', maybe_serialize( $fields ) );
 
                 // @todo slack (failed contact insert)
 //                $data = array(

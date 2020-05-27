@@ -4,12 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
- * Version:  2.3.2
+ * Version:  3.0
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Requires at least: 4.7.0
  * (Requires 4.7+ because of the integration of the REST API at 4.7 and the security requirements of this milestone version.)
- * Tested up to: 5.3
+ * Tested up to: 5.4
  *
  * @package Disciple_Tools
  * @link    https://github.com/DiscipleTools
@@ -44,35 +44,29 @@ try {
  */
 function dt_webform() {
     global $dt_webform_required_dt_theme_version;
-    $wp_theme = wp_get_theme();
-    $version = $wp_theme->version;
 
-    $current_theme = get_option( 'current_theme' );
-    $state = get_option( 'dt_webform_state' );
-
-    /*
-     * Check if the Disciple.Tools theme is loaded and is the latest required version
-     */
-
-    if ( 'combined' == $state || 'home' == $state ) {
-        if ( ! ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) ) {
-            if ( ! is_multisite() ) {
-                add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
-            }
-            return false;
-        }
-        if ( ( 'Disciple Tools' === $current_theme || dt_is_child_theme_of_disciple_tools() ) && $version < $dt_webform_required_dt_theme_version ) {
+    if ( is_dt() ) {
+        $wp_theme = wp_get_theme();
+        $version = $wp_theme->version;
+        if ( $version < $dt_webform_required_dt_theme_version ) {
             if ( ! is_multisite() ) {
                 add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
                 add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
             }
-
             return new WP_Error( 'current_theme_not_dt', 'Please upgrade Disciple Tools Theme to ' . $dt_webform_required_dt_theme_version . ' to use this plugin.' );
         }
     }
 
-    return DT_Webform::get_instance();
+    $is_rest = dt_is_rest();
+    if ( $is_rest && strpos( dt_get_url_path(), 'webform' ) !== false ){
+        return DT_Webform::get_instance();
+    }
 
+    if ( is_admin() ) {
+        return DT_Webform::get_instance();
+    }
+
+    return false;
 }
 add_action( 'after_setup_theme', 'dt_webform' );
 
@@ -121,144 +115,9 @@ class DT_Webform {
         if ( is_null( $instance ) ) {
             $instance = new DT_Webform();
             $instance->setup();
-
-            /**
-             * Determine state of the plugin
-             *
-             * The state of the plugin can be 'combined', 'home', and 'remote'.
-             * 'Home' enables just the resources needed for the home server of the webform plugin
-             * 'Remote' enables just the resources needed for the remote webform server of the webform plugin
-             * 'Combined' enables both the 'home' and 'remote' servers within the plugin.
-             */
-            $state = get_option( 'dt_webform_state' );
-            switch ( $state ) {
-                case 'combined':
-                    $instance->includes();
-                    $instance->home();
-                    $instance->remote();
-                    break;
-                case 'home':
-                    $instance->includes();
-                    $instance->home();
-                    break;
-                case 'remote':
-                    $instance->includes();
-                    $instance->remote();
-
-                    break;
-                default: // if no option exists, then the plugin is forced to selection screen.
-                    $instance->initialize_plugin_state();
-                    break;
-            }
-
             $instance->setup_actions();
         }
         return $instance;
-    }
-
-    /**
-     * State initialization of the plugin
-     *
-     * @access private
-     * @return void
-     */
-    private function initialize_plugin_state() {
-
-        if ( is_admin() ) {
-            $this->includes();
-            $this->home();
-            $this->remote();
-        }
-    }
-
-    /**
-     * File dependencies exlusively for the HOME SERVER
-     *
-     * @access private
-     * @return void
-     */
-    private function home() {
-
-        require_once( 'includes/endpoints-home.php' );
-    }
-
-    /**
-     * File dependencies exlusively for the REMOTE SERVER
-     *
-     * @access private
-     * @return void
-     */
-    private function remote() {
-
-        require_once( 'includes/endpoints-remote.php' );
-        require_once( 'includes/site-link-post-type.php' );
-        Site_Link_System::instance();
-
-        add_action( 'init', [ $this, 'dt_set_permalink_structure' ] );
-        add_action( 'update_option_permalink_structure', [ $this, 'dt_permalink_structure_changed_callback' ] );
-
-    }
-
-    /**
-     * File dependencies shared by the entire Webform system
-     *
-     * @since  0.1
-     * @access public
-     * @return void
-     */
-    private function includes() {
-
-
-        $is_rest = dt_is_rest();
-        if ( $is_rest || is_admin() ) {
-            require_once( 'includes/utilities.php' );
-            require_once( 'includes/site-link-customize.php' );
-            require_once( 'includes/post-type-active-forms.php' );
-            require_once( 'includes/post-type-new-leads.php' );
-        }
-
-
-        if ( is_admin() ) {
-            // Admin and tabs menu
-            require_once( 'includes/tables.php' );
-
-            if ( file_exists( trailingslashit( get_stylesheet_directory() ) . 'dt-mapping/geocode-api/mapbox-api.php' ) ) {
-                require_once( trailingslashit( get_stylesheet_directory() ) . 'dt-mapping/geocode-api/mapbox-api.php' );
-            } else {
-                require_once( 'dt-mapping/geocode-api/mapbox-api.php' );
-            }
-
-            require_once( 'includes/menu-and-tabs.php' ); // main wp-admin menu and ui
-        }
-    }
-
-    public function dt_set_permalink_structure() {
-        global $wp_rewrite;
-        $wp_rewrite->set_permalink_structure( '/%postname%/' );
-        flush_rewrite_rules();
-    }
-
-    /**
-     *
-     */
-    public function dt_warn_user_about_permalink_settings() {
-        ?>
-        <div class="error notices">
-            <p>You may only set your permalink settings to "Post name"'</p>
-        </div>
-        <?php
-    }
-
-    /**
-     * Notification that 'posttype' is the only permalink structure available.
-     *
-     * @param $permalink_structure
-     */
-    public function dt_permalink_structure_changed_callback( $permalink_structure ) {
-        global $wp_rewrite;
-        if ( $permalink_structure !== '/%postname%/' ) {
-            add_action( 'admin_notices', [ $this, 'dt_warn_user_about_permalink_settings' ] );
-        }
     }
 
     /**
@@ -289,7 +148,35 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '2.3.2';
+        $this->version             = '3.0';
+
+        // LOAD FILES
+
+        require_once( 'includes/endpoints.php' );
+
+        // Not Disciple Tools : remote support files
+        if ( ! is_dt() ) {
+            require_once( 'dt-mapping/geocode-api/mapbox-api.php' );
+            require_once( 'includes/site-link-post-type.php' );
+            Site_Link_System::instance();
+
+            add_action( 'init', [ $this, 'dt_set_permalink_structure' ] );
+            add_action( 'update_option_permalink_structure', [ $this, 'dt_permalink_structure_changed_callback' ] );
+        }
+
+        // REST support files
+        $is_rest = dt_is_rest();
+        if ( $is_rest || is_admin() ) {
+            require_once( 'includes/utilities.php' );
+            require_once( 'includes/post-type-active-forms.php' );
+        }
+
+        // Admin area
+        if ( is_admin() ) {
+            // Admin and tabs menu
+            require_once( 'includes/tables.php' );
+            require_once( 'includes/menu-and-tabs.php' ); // main wp-admin menu and ui
+        }
     }
 
     /**
@@ -331,14 +218,6 @@ class DT_Webform {
             $role->add_cap( 'manage_dt' ); // gives access to dt plugin options
         }
 
-        // set up dt_webform_options
-        $options = get_option( 'dt_webform_options' );
-        if ( ! $options ) {
-            $options = [
-                    'auto_approve' => true
-            ];
-            update_option( 'dt_webform_options', $options, false );
-        }
     }
 
     /**
@@ -352,6 +231,32 @@ class DT_Webform {
         delete_option( 'dt_webform_options' );
         delete_option( 'dt_webform_state' );
         delete_option( 'external_updates-disciple-tools-webform' );
+    }
+
+    public function dt_warn_user_about_permalink_settings() {
+        ?>
+        <div class="error notices">
+            <p>You may only set your permalink settings to "Post name"'</p>
+        </div>
+        <?php
+    }
+
+    /**
+     * Notification that 'posttype' is the only permalink structure available.
+     *
+     * @param $permalink_structure
+     */
+    public function dt_permalink_structure_changed_callback( $permalink_structure ) {
+        global $wp_rewrite;
+        if ( $permalink_structure !== '/%postname%/' ) {
+            add_action( 'admin_notices', [ $this, 'dt_warn_user_about_permalink_settings' ] );
+        }
+    }
+
+    public function dt_set_permalink_structure() {
+        global $wp_rewrite;
+        $wp_rewrite->set_permalink_structure( '/%postname%/' );
+        flush_rewrite_rules();
     }
 
     /**
@@ -444,12 +349,6 @@ class DT_Webform {
         }
         return $ip;
     }
-
-    public static function set_auto_approve_to_false() {
-        $options = get_option( 'dt_webform_options' );
-        $options['auto_approve'] = false;
-        update_option( 'dt_webform_options', $options, false );
-    }
 }
 // End of main class
 
@@ -457,112 +356,4 @@ class DT_Webform {
 register_activation_hook( __FILE__, [ 'DT_Webform', 'activation' ] );
 register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
 
-/**
- * Admin alert for when Disciple Tools Theme is not available
- */
-function dt_webform_no_disciple_tools_theme_found() {
-    ?>
-    <div class="notice notice-error is-dismissible">
-        <p><?php esc_html_e( "'Disciple Tools - Webform' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or deactivate 'Disciple Tools - Webform' plugin.", "dt_webform" ); ?></p>
-    </div>
-    <?php
-}
-
-/**
- * A simple function to assist with development and non-disruptive debugging.
- * -----------
- * -----------
- * REQUIREMENT:
- * WP Debug logging must be set to true in the wp-config.php file.
- * Add these definitions above the "That's all, stop editing! Happy blogging." line in wp-config.php
- * -----------
- * define( 'WP_DEBUG', true ); // Enable WP_DEBUG mode
- * define( 'WP_DEBUG_LOG', true ); // Enable Debug logging to the /wp-content/debug.log file
- * define( 'WP_DEBUG_DISPLAY', false ); // Disable display of errors and warnings
- * @ini_set( 'display_errors', 0 );
- * -----------
- * -----------
- * EXAMPLE USAGE:
- * (string)
- * write_log('THIS IS THE START OF MY CUSTOM DEBUG');
- * -----------
- * (array)
- * $an_array_of_things = ['an', 'array', 'of', 'things'];
- * write_log($an_array_of_things);
- * -----------
- * (object)
- * $an_object = new An_Object
- * write_log($an_object);
- */
-if ( !function_exists( 'dt_write_log' ) ) {
-    /**
-     * A function to assist development only.
-     * This function allows you to post a string, array, or object to the WP_DEBUG log.
-     *
-     * @param $log
-     */
-    function dt_write_log( $log ) {
-        if ( true === WP_DEBUG ) {
-            global $dt_write_log_microtime;
-            $now = microtime( true );
-            if ( $dt_write_log_microtime > 0 ) {
-                $elapsed_log = sprintf( "[elapsed:%5dms]", ( $now - $dt_write_log_microtime ) * 1000 );
-            } else {
-                $elapsed_log = "[elapsed:-------]";
-            }
-            $dt_write_log_microtime = $now;
-            if ( is_array( $log ) || is_object( $log ) ) {
-                error_log( $elapsed_log . " " . print_r( $log, true ) );
-            } else {
-                error_log( "$elapsed_log $log" );
-            }
-        }
-    }
-}
-
-if ( ! function_exists( 'dt_is_child_theme_of_disciple_tools' ) ) {
-    /**
-     * Returns true if this is a child theme of Disciple Tools, and false if it is not.
-     *
-     * @return bool
-     */
-    function dt_is_child_theme_of_disciple_tools() : bool {
-        if ( get_template_directory() !== get_stylesheet_directory() ) {
-            $current_theme = wp_get_theme();
-            if ( 'disciple-tools-theme' == $current_theme->get( 'Template' ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
-}
-if ( !function_exists( 'dt_is_rest' ) ) {
-    /**
-     * Checks if the current request is a WP REST API request.
-     *
-     * Case #1: After WP_REST_Request initialisation
-     * Case #2: Support "plain" permalink settings
-     * Case #3: URL Path begins with wp-json/ (your REST prefix)
-     *          Also supports WP installations in subfolders
-     *
-     * @returns boolean
-     * @author matzeeable
-     */
-    function dt_is_rest( $namespace = null ) {
-        $prefix = rest_get_url_prefix();
-        if ( defined( 'REST_REQUEST' ) && REST_REQUEST
-            || isset( $_GET['rest_route'] )
-            && strpos( trim( sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ), '\\/' ), $prefix, 0 ) === 0 ) {
-            return true;
-        }
-        $rest_url    = wp_parse_url( site_url( $prefix ) );
-        $current_url = wp_parse_url( add_query_arg( array() ) );
-        $is_rest = strpos( $current_url['path'], $rest_url['path'], 0 ) === 0;
-        if ( $namespace ){
-            return $is_rest && strpos( $current_url['path'], $namespace ) != false;
-        } else {
-            return $is_rest;
-        }
-    }
-}
-
+require_once( 'includes/functions.php' );

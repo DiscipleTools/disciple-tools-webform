@@ -5,11 +5,12 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
  * Version:  3.0
+ * Author name: Disciple.Tools
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Requires at least: 4.7.0
  * (Requires 4.7+ because of the integration of the REST API at 4.7 and the security requirements of this milestone version.)
- * Tested up to: 5.4
+ * Tested up to: 5.4.1
  *
  * @package Disciple_Tools
  * @link    https://github.com/DiscipleTools
@@ -201,6 +202,35 @@ class DT_Webform {
 
         // Internationalize the text strings used.
         add_action( 'plugins_loaded', array( $this, 'i18n' ), 2 );
+
+        if ( is_admin() ) {
+            // adds links to the plugin description area in the plugin admin list.
+            add_filter( 'plugin_row_meta', [ $this, 'plugin_description_links' ], 10, 4);
+        }
+    }
+
+    /**
+     * Filters the array of row meta for each/specific plugin in the Plugins list table.
+     * Appends additional links below each/specific plugin on the plugins page.
+     *
+     * @access  public
+     * @param   array       $links_array            An array of the plugin's metadata
+     * @param   string      $plugin_file_name       Path to the plugin file
+     * @param   array       $plugin_data            An array of plugin data
+     * @param   string      $status                 Status of the plugin
+     * @return  array       $links_array
+     */
+    public function plugin_description_links( $links_array, $plugin_file_name, $plugin_data, $status ) {
+        if ( strpos( $plugin_file_name, basename(__FILE__) ) ) {
+            // You can still use `array_unshift()` to add links at the beginning.
+
+            $links_array[] = '<a href="https://github.com/DiscipleTools/disciple-tools-webform">Github</a>';
+            $links_array[] = '<a href="https://www.youtube.com/watch?v=lBOwgrOSUkU">Video Tutorial</a>';
+
+            // add other links here
+        }
+
+        return $links_array;
     }
 
     /**

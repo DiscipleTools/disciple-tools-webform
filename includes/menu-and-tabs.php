@@ -433,6 +433,9 @@ class DT_Webform_Menu
 
     public function metabox_dt_fields() {
         $contact_defaults = DT_Webform_Utilities::get_contact_defaults( true );
+        if ( is_wp_error( $contact_defaults ) ) {
+            return;
+        }
         $object = DT_Webform_Active_Form_Post_Type::instance();
         $fields = $object->filtered_contact_fields( $contact_defaults );
         ?>

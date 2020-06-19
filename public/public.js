@@ -118,14 +118,13 @@ function get_data() {
   } else {
     submit_form(JSON.stringify(data)).then((response) => {
       submitButton.disabled = false;
-      document.querySelector("#submit-button-container .spinner").remove()
+      jQuery("#submit-button-container .spinner").remove()
       if ( response ){
         jQuery('#contact-form').html(window.TRANSLATION.success)
       } else {
         jQuery('.form-submit-error').html(window.TRANSLATION.failure)
       }
-     });
-
+    });
   }
 }
 

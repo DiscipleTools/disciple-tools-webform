@@ -58,6 +58,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
             'submit_in': '<?php echo $dt_webform_meta['js_string_submit_in'] ?? esc_html__( 'Submit in', 'dt_webform' ) ?>',
             'submit': '<?php echo $dt_webform_meta['js_string_submit'] ?? esc_html__( 'Submit', 'dt_webform' ) ?>',
             'success': '<?php echo $dt_webform_meta['js_string_success'] ?? esc_html__( 'Success', 'dt_webform' ) ?>',
+            'failure': '<?php echo $dt_webform_meta['js_string_failure'] ?? esc_html__( 'Sorry, Something went wrong', 'dt_webform' ) ?>',
         }
         window.SETTINGS = {
             'spinner': ' <span class="spinner"><img src="<?php echo plugin_dir_url( __FILE__ ) ?>spinner.svg" width="20px" /></span>',
@@ -546,7 +547,9 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
     }
     ?>
 
-    <div class="section" id="submit-button-container"><br>
+    <div class="section" id="submit-button-container">
+        <span style="color:red" class="form-submit-error"></span>
+        <br>
         <button type="button" class="submit-button ignore" id="submit-button" onclick="check_form()" disabled><?php esc_attr_e( 'Submit', 'dt_webform' ) ?></button> <span class="spinner" style="display:none;"></span>
     </div>
 

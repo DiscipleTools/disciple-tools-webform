@@ -59,7 +59,7 @@ function dt_webform() {
     }
 
     $is_rest = dt_is_rest();
-    if ( $is_rest && strpos( dt_get_url_path(), 'webform' ) !== false ){
+    if ( $is_rest && ( strpos( dt_get_url_path(), 'webform' ) !== false || strpos( dt_get_url_path(), 'site_link_check' ) !== false )){
         return DT_Webform::get_instance();
     }
 

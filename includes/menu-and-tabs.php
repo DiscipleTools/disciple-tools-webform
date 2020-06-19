@@ -334,6 +334,79 @@ class DT_Webform_Menu
                                 ?>
                             </select>
                             <button class="button" type="submit">Save</button>
+                            <?php if ( $selected_site ){ ?>
+                                <br>
+                                <span>
+                                    <?php esc_html_e( 'Status:' ) ?>
+                                    <strong>
+                                        <span id="<?php echo esc_attr( md5( $selected_site ) ); ?>-status">
+                                            <?php esc_html_e( 'Checking Status' ) ?>
+                                        </span>
+                                    </strong>
+                                </span>
+                                <?php $site_link = Site_Link_System::get_site_connection_vars( $selected_site );
+                                if ( isset( $site_link["url"] )){
+
+                                    echo "<script type='text/javascript'>
+                                    jQuery(document).ready(function () {
+                                        check_link_status('" . esc_attr( $site_link["transfer_token"] ) ."', '" . esc_attr( $site_link["url"] ) . "', '" . esc_attr( md5( $selected_site ) ) . "')
+                                    })
+
+                                    function check_link_status( transfer_token, url, id ) {
+                    
+                                        let linked = '" . esc_attr__( 'Linked' ) . "';
+                                        let not_linked = '" . esc_attr__( 'Not Linked' ) . "';
+                                        let not_found = '" . esc_attr__( 'Failed to connect with the URL provided.' ) . "';
+                                        let no_ssl = '" . esc_attr__( 'Linked, but insecurely. The webform may not work.' ) . "';
+                        
+                                        return jQuery.ajax({
+                                            type: 'POST',
+                                            data: JSON.stringify({ \"transfer_token\": transfer_token } ),
+                                            contentType: 'application/json; charset=utf-8',
+                                            dataType: 'json',
+                                            url: 'https://' + url + '/wp-json/dt-public/v1/sites/site_link_check',
+                                        })
+                                        .done(function (data) {
+                                            if( data ) {
+                                                jQuery('#' + id + '-status').html( linked ).attr('class', 'success-green')
+                                            } else {
+                                                jQuery('#' + id + '-status').html( not_linked ).attr('class', 'fail-red');
+                                            }
+                                        })
+                                        .fail(function (err) {
+                                            //try non https on failure
+                                            jQuery.ajax({
+                                                type: 'POST',
+                                                data: JSON.stringify({ \"transfer_token\": transfer_token } ),
+                                                contentType: 'application/json; charset=utf-8',
+                                                dataType: 'json',
+                                                url: 'http://' + url + '/wp-json/dt-public/v1/sites/site_link_check',
+                                            }).done(data=>{
+                                                if( data ) {
+                                                    jQuery('#' + id + '-status').html( no_ssl ).attr('class', 'fail-red')
+                                                } else {
+                                                    jQuery('#' + id + '-status').html( not_linked ).attr('class', 'fail-red');
+                                                }
+                                            }).fail(function(err) {
+                                                 jQuery( document ).ajaxError(function( event, request, settings ) {
+                                                     if( request.status === 0 ) {
+                                                        jQuery('#' + id + '-status').html( not_found ).attr('class', 'fail-red')
+                                                     } else {
+                                                        jQuery('#' + id + '-status').html( JSON.stringify( request.statusText ) ).attr('class', 'fail-red')
+                                                     }
+                                                });
+                                            })
+                                        });
+                                    }
+                                    </script>
+                                    <style type='text/css'>
+                                        .success-green { color: limegreen;}
+                                        .fail-red { color: red;}
+                                    </style>
+                                    ";
+
+                                }
+                            } ?>
 
                         <?php } ?>
 

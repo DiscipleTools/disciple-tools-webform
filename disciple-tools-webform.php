@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
- * Version:  3.0
+ * Version:  3.1
  * Author name: Disciple.Tools
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
@@ -59,7 +59,7 @@ function dt_webform() {
     }
 
     $is_rest = dt_is_rest();
-    if ( $is_rest && strpos( dt_get_url_path(), 'webform' ) !== false ){
+    if ( $is_rest && ( strpos( dt_get_url_path(), 'webform' ) !== false || strpos( dt_get_url_path(), 'site_link_check' ) !== false )){
         return DT_Webform::get_instance();
     }
 
@@ -149,7 +149,7 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '3.0';
+        $this->version             = '3.1';
 
         // LOAD FILES
 

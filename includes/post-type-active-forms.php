@@ -1678,6 +1678,13 @@ class DT_Webform_Active_Form_Post_Type
             'default'     => 'Success',
             'section'     => 'localize',
         ];
+        $fields['js_string_failure'] = [
+            'name'        => __( 'Sorry, Something went wrong', 'dt_webform' ),
+            'description' => __( 'translate: "Sorry, Something went wrong"', 'dt_webform' ),
+            'type'        => 'text',
+            'default'     => 'Sorry, Something went wrong',
+            'section'     => 'localize',
+        ];
 
         // core fields
         $fields['header_title_field'] = [

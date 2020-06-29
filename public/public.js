@@ -63,6 +63,7 @@ async function submit_form(data) {
   })
   .catch((error) => {
     console.error('Error:', error);
+    return null;
   });
 }
 
@@ -96,7 +97,6 @@ function get_data() {
       data.location[jQuery(this).data('type')] = jQuery(this).text()
     })
   }
-  console.log(data)
 
   if (!navigator.onLine) {
     // user is offline, store data locally
@@ -108,7 +108,6 @@ function get_data() {
       document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount())
     }
 
-    console.log(message);
     document.querySelector("form").reset();
 
     removeOfflineWarning();
@@ -118,12 +117,14 @@ function get_data() {
 
   } else {
     submit_form(JSON.stringify(data)).then((response) => {
-      console.log(response);
       submitButton.disabled = false;
-      document.querySelector("#submit-button-container .spinner").remove()
-      jQuery('#contact-form').html(window.TRANSLATION.success)
-     });
-
+      jQuery("#submit-button-container .spinner").remove()
+      if ( response ){
+        jQuery('#contact-form').html(window.TRANSLATION.success)
+      } else {
+        jQuery('.form-submit-error').html(window.TRANSLATION.failure)
+      }
+    });
   }
 }
 

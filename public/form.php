@@ -35,7 +35,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
     <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery.min.js"></script>
     <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery-migrate.min.js"></script>
     <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery.validate.min.js"></script>
-    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>public.js?ver=1.2"></script>
+    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __FILE__ ) .'public.js' ) ) ?>"></script>
 
     <?php $swurl = esc_url( plugin_dir_url( __FILE__ ) ) . 'sw.js'?>
     <script>

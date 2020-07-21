@@ -950,7 +950,7 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                             jQuery('#' + id + '-message').show();
                         }
                     })
-                    .fail(function (err) {
+                    .fail(function (request) {
                         jQuery.ajax({
                             type: 'POST',
                             data: JSON.stringify({ \"transfer_token\": transfer_token } ),

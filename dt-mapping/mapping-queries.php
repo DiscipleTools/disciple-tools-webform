@@ -563,6 +563,7 @@ class Disciple_Tools_Mapping_Queries {
 
     /**
      * Count post types, churchs and groups in each used location and accross admin levels
+     * @todo rewrite. user is no longer found here and these are listing milstones
      */
     public static function get_location_grid_totals_on_field( $post_type, $field, $force_refresh = false ) : array {
 
@@ -1099,14 +1100,18 @@ class Disciple_Tools_Mapping_Queries {
 
         if ( $status ) {
             $results = $wpdb->get_results( $wpdb->prepare( "
-             SELECT t0.admin0_grid_id as grid_id, count(t0.admin0_grid_id) as count
+            SELECT t0.admin0_grid_id as grid_id, count(t0.admin0_grid_id) as count
             FROM (
-             SELECT lg.admin0_grid_id, lg.admin1_grid_id, lg.admin2_grid_id, lg.admin3_grid_id, lg.admin4_grid_id, lg.admin5_grid_id
+              SELECT lg.admin0_grid_id, lg.admin1_grid_id, lg.admin2_grid_id, lg.admin3_grid_id, lg.admin4_grid_id, lg.admin5_grid_id
                 FROM $wpdb->postmeta as pm
                 JOIN $wpdb->posts as p ON p.ID=pm.post_id AND p.post_type = 'contacts'
                 LEFT JOIN $wpdb->dt_location_grid as lg ON pm.meta_value=lg.grid_id
                 WHERE pm.meta_key = 'location_grid'
-                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE ( p.meta_key = 'corresponds_to_user' AND p.meta_value != '') OR ( p.meta_key = 'overall_status' AND p.meta_value = 'closed'))
+                AND pm.post_id NOT IN (
+                  SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p 
+                  WHERE ( p.meta_key = 'corresponds_to_user' AND p.meta_value != '') 
+                  OR ( p.meta_key = 'overall_status' AND p.meta_value = 'closed')
+                )
             )
             WHERE lgm.post_type = 'contacts'
                 AND lgm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE ( p.meta_key = 'corresponds_to_user' AND p.meta_value != '') )
@@ -1253,7 +1258,7 @@ class Disciple_Tools_Mapping_Queries {
                 JOIN $wpdb->posts as p ON p.ID=pm.post_id AND p.post_type = 'groups'
                 LEFT JOIN $wpdb->dt_location_grid as lg ON pm.meta_value=lg.grid_id
                 WHERE pm.meta_key = 'location_grid'
-                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s );
+                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s )
             ) as t0
             GROUP BY t0.admin0_grid_id
             UNION
@@ -1264,7 +1269,7 @@ class Disciple_Tools_Mapping_Queries {
                 JOIN $wpdb->posts as p ON p.ID=pm.post_id AND p.post_type = 'groups'
                 LEFT JOIN $wpdb->dt_location_grid as lg ON pm.meta_value=lg.grid_id
                 WHERE pm.meta_key = 'location_grid'
-                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s );
+                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s )
             ) as t1
             GROUP BY t1.admin1_grid_id
             UNION
@@ -1275,7 +1280,7 @@ class Disciple_Tools_Mapping_Queries {
                 JOIN $wpdb->posts as p ON p.ID=pm.post_id AND p.post_type = 'groups'
                 LEFT JOIN $wpdb->dt_location_grid as lg ON pm.meta_value=lg.grid_id
                 WHERE pm.meta_key = 'location_grid'
-                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s );
+                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s )
             ) as t2
             GROUP BY t2.admin2_grid_id
             UNION
@@ -1286,7 +1291,7 @@ class Disciple_Tools_Mapping_Queries {
                 JOIN $wpdb->posts as p ON p.ID=pm.post_id AND p.post_type = 'groups'
                 LEFT JOIN $wpdb->dt_location_grid as lg ON pm.meta_value=lg.grid_id
                 WHERE pm.meta_key = 'location_grid'
-                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s );
+                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s )
             ) as t3
             GROUP BY t3.admin3_grid_id
             UNION
@@ -1297,7 +1302,7 @@ class Disciple_Tools_Mapping_Queries {
                 JOIN $wpdb->posts as p ON p.ID=pm.post_id AND p.post_type = 'groups'
                 LEFT JOIN $wpdb->dt_location_grid as lg ON pm.meta_value=lg.grid_id
                 WHERE pm.meta_key = 'location_grid'
-                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s );
+                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s )
             ) as t4
             GROUP BY t4.admin4_grid_id
             UNION
@@ -1308,7 +1313,7 @@ class Disciple_Tools_Mapping_Queries {
                 JOIN $wpdb->posts as p ON p.ID=pm.post_id AND p.post_type = 'groups'
                 LEFT JOIN $wpdb->dt_location_grid as lg ON pm.meta_value=lg.grid_id
                 WHERE pm.meta_key = 'location_grid'
-                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s );
+                AND pm.post_id NOT IN (SELECT DISTINCT(p.post_id) FROM $wpdb->postmeta as p WHERE p.meta_key = 'group_status' AND p.meta_value = %s )
             ) as t5
             GROUP BY t5.admin5_grid_id;
             ", $status, $status, $status, $status, $status, $status

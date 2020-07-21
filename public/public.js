@@ -45,9 +45,7 @@ function storeData(data) {
 }
 
 async function submit_form(data) {
-  let url = get_url();
-  // console.log(data);
-  return fetch(url + '/wp-json/dt-public/v1/webform/form_submit', {
+  return fetch(window.SETTINGS.rest_url + 'dt-public/v1/webform/form_submit', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
@@ -157,9 +155,6 @@ function offlineCountMessage(offlineCount) {
     message = `You have ${offlineCount} contacts stored offline, reconnect to the internet to save these contacts`
   }
   return message ? message : "";
-}
-function get_url() {
-    return window.location.protocol + '//' + window.location.hostname
 }
 
 function translate_form_strings() {

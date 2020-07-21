@@ -62,6 +62,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
         }
         window.SETTINGS = {
             'spinner': ' <span class="spinner"><img src="<?php echo plugin_dir_url( __FILE__ ) ?>spinner.svg" width="20px" /></span>',
+            'rest_url':  '<?php echo esc_url_raw( rest_url() ) ?>',
         }
         <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>
             jQuery(document).ready(function() {
@@ -258,7 +259,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
                     case 'location':
 
                         if ( $dt_webform_value['values'] === 'click_map' ) {
-                            form_click_map($dt_webform_value);
+                            form_click_map( $dt_webform_value );
                         }
                         if ( $dt_webform_value['values'] === 'search_box' ) {
                             ?>
@@ -355,7 +356,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 
                                         let root = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
                                         let settings = '.json?types=country,region,postcode,district,place,locality,neighborhood,address&limit=6&access_token='
-                                        let key = '<?php echo DT_Mapbox_API::get_key() ?>'
+                                        let key = '<?php echo esc_attr( DT_Mapbox_API::get_key() ) ?>'
 
                                         let url = root + encodeURI( address ) + settings + key
 
@@ -645,7 +646,7 @@ function form_click_map( $dt_webform_value ) {
 
 
                 // add location grid list
-                jQuery.get('<?php echo esc_url( trailingslashit( plugin_dir_url(__DIR__ ) ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
+                jQuery.get('<?php echo esc_url( trailingslashit( plugin_dir_url( __DIR__ ) ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
                     {
                         type: 'possible_matches',
                         longitude: lng,
@@ -670,7 +671,7 @@ function form_click_map( $dt_webform_value ) {
                 window.active_lnglat = [lng,lat]
 
                 // add polygon
-                jQuery.get('<?php echo esc_url( trailingslashit( plugin_dir_url(__DIR__ ) ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
+                jQuery.get( '<?php echo esc_url( trailingslashit( plugin_dir_url( __DIR__ ) ) ) . 'dt-mapping/' ?>location-grid-list-api.php',
                     {
                         type: 'possible_matches',
                         longitude: lng,

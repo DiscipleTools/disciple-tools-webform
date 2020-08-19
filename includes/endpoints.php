@@ -118,8 +118,8 @@ class DT_Webform_Endpoints
      * @return bool|\WP_Error
      */
     public function create_contact_record( $params ) {
-//        dt_write_log( __METHOD__ );
-//        dt_write_log( $params );
+        dt_write_log( __METHOD__ );
+        dt_write_log( $params );
 
         // set vars
         $check_permission = false;

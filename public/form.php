@@ -216,7 +216,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
                     case 'multi_select':
                         $list = DT_Webform_Active_Form_Post_Type::match_dt_field_labels_with_values( $dt_webform_value['labels'], $dt_webform_value['values'] );
                         if ( count( $list ) > 0 ) {
-                            ?>
+                        ?>
                             <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                  class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                                 <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
@@ -224,20 +224,15 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
                                     <?php echo esc_attr( $dt_webform_value['title'] ) ?>
                                 </label>
                                 <br>
-                                <select id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
-                                        class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
-                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?> multiple>
-                                    <?php
-                                    if ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' ) {
-                                        echo '<option></option>';
-                                    }
-                                    foreach ( $list as $item ) {
-                                        echo '<option value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</option>';
-                                    }
-                                    ?>
-                                </select>
+                                <fieldset>
+                                <?php
+                                foreach ( $list as $item ) {
+                                    echo '<input type="checkbox" name="'. esc_attr( $dt_webform_key ) .'" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '<br>';
+                                }
+                                ?>
+                                </fieldset>
                             </div>
-                            <?php
+                        <?php
                         }
                         break;
                     case 'text':
@@ -475,7 +470,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
                         // text box
                         ?>
                         <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
-                             class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
+                             class="section single-checkbox section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                             <input type="checkbox"
                                    id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                    name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"

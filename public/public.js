@@ -75,8 +75,14 @@ function get_data() {
   submitButtonContainer.insertAdjacentHTML("beforeend", window.SETTINGS.spinner);
   let data = {};
 
-  jQuery(':input[type=checkbox]:checked').each(function() {
+  jQuery('.single-checkbox input[type=checkbox]:checked').each(function() {
       data[this.name] = jQuery(this).val();
+  });
+  jQuery('fieldset input[type=checkbox]:checked').each(function(i,v) {
+    if (typeof data[v.name] === 'undefined' ){
+      data[v.name] = []
+    }
+    data[v.name].push(v.value);
   });
   jQuery(':input[type=radio]:checked').each(function() {
     data[this.name] = jQuery(this).val();

@@ -269,6 +269,9 @@ class DT_Webform_Utilities {
                         margin: 10px 0 ;
                         padding: 10px 0;
                     }
+                    fieldset {
+                        border:none;
+                    }
                     ';
                 break;
             case 'heavy':
@@ -398,6 +401,9 @@ class DT_Webform_Utilities {
                     #description {
                         padding-bottom: 1em;
                     }
+                    fieldset {
+                        border:none;
+                    }
                     ';
                 break;
             case 'none':
@@ -434,6 +440,9 @@ class DT_Webform_Utilities {
                     .section-note {}
                     .section-map {}
                     .section-custom_label {}
+                    fieldset {
+                        border:none;
+                    }
 
                     // INPUT CLASSES
                     .input-text {}
@@ -619,6 +628,9 @@ class DT_Webform_Utilities {
                         color: red;
                         font-size: .8em;
                     }
+                    fieldset {
+                        border:none;
+                    }
                     ';
                 break;
             default:
@@ -768,6 +780,9 @@ class DT_Webform_Utilities {
                         color: red;
                         font-size: .8em;
                     }
+                    fieldset {
+                        border:none;
+                    }
                     ';
 
                 $ids = '';
@@ -785,8 +800,6 @@ class DT_Webform_Utilities {
                 }
 
                 return $css . $ids;
-                break;
-
 
         }
 
@@ -908,320 +921,6 @@ class DT_Webform_Utilities {
 
         return $css;
     }
-
-    /**
-     * Trigger transfer of new leads
-     *
-     * @param array $selected_records
-     *
-     * @return bool|\WP_Error
-     */
-//    public static function trigger_transfer_of_new_leads( $selected_records = [] ) {
-//        dt_write_log( __METHOD__ );
-//
-//        $transfer_records = [];
-//
-//        $site_transfer_post_id = get_option( 'dt_webform_site_link' );
-//        if ( empty( $site_transfer_post_id ) ) {
-//            return new WP_Error( 'no_site_transfer_setting', 'No site to site transfer defined.' );
-//        }
-//        $transfer_vars = Site_Link_System::get_site_connection_vars( $site_transfer_post_id );
-//
-//        // get entire record from selected records
-//        foreach ( $selected_records as $record ) {
-//            $array = dt_get_simple_post_meta( $record );
-//            if ( isset( $array['token'] ) ) {
-//                $transfer_records[] = dt_get_simple_post_meta( $record );
-//            }
-//        }
-//        if ( empty( $transfer_records ) ) {
-//            return false;
-//        }
-//
-//
-//        // Send remote request
-//        $args = [
-//            'method' => 'GET',
-//            'body' => [
-//                'transfer_token' => $transfer_vars['transfer_token'],
-//                'selected_records' => $transfer_records,
-//            ]
-//        ];
-//
-//        dt_write_log( $args );
-//
-//        $result = wp_remote_get( 'https://' . $transfer_vars['url'] . '/wp-json/dt-public/v1/webform/transfer_collection', $args );
-//        if ( is_wp_error( $result ) ) {
-//            dt_write_log( $result );
-//            return new WP_Error( 'failed_remote_get', $result->get_error_message() );
-//        }
-//
-//        if ( isset( $result['body'] ) && ! empty( $result['body'] ) ) {
-//            $records = json_decode( $result['body'] );
-//
-//            if ( is_array( $records ) ) {
-//                foreach ( $records as $record ) {
-//                    wp_delete_post( $record, true );
-//                }
-//            }
-//        }
-//
-//        return true;
-//    }
-
-    /**
-     * Create Contact via Disciple Tools System
-     *
-     * @param $new_lead_id
-     *
-     * @return bool|\WP_Error
-     */
-//    public static function create_contact_record( $new_lead_id ) {
-//        dt_write_log( __METHOD__ );
-//
-//        // set vars
-//        $check_permission = false;
-//        $fields = [];
-//        $notes = [];
-//        $new_lead_meta = dt_get_simple_post_meta( $new_lead_id );
-//
-//        dt_write_log( 'new_lead_meta' );
-//        dt_write_log( $new_lead_meta );
-//
-//        // check required fields
-//        if ( ! isset( $new_lead_meta['token'] ) || empty( $new_lead_meta['token'] ) ) {
-//            return new WP_Error( 'missing_contact_info', 'Missing token' );
-//        }
-//        if ( ! isset( $new_lead_meta['name'] ) || empty( $new_lead_meta['name'] ) ) {
-//            return new WP_Error( 'missing_contact_info', 'Missing name' );
-//        }
-//
-//        // get form data: remote verse local form
-//        $form_meta = [];
-//        if ( isset( $new_lead_meta['form_meta'] ) ) {
-//            $form_meta = $new_lead_meta['form_meta'];
-//        }
-//        dt_write_log( 'form_meta' );
-//        dt_write_log( $form_meta );
-//
-//        // name
-//        $fields['title'] = $new_lead_meta['name'];
-//
-//        // phone
-//        if ( isset( $new_lead_meta['phone'] ) && ! empty( $new_lead_meta['phone'] ) ) {
-//            $fields['contact_phone'] = [ [ "value" => $new_lead_meta['phone'] ] ];
-//        }
-//
-//        // email
-//        if ( isset( $new_lead_meta['email'] ) && ! empty( $new_lead_meta['email'] ) ) {
-//            $fields['contact_email'] = [ [ "value" => $new_lead_meta['email'] ] ];
-//        }
-//
-//        // locations
-//        $locations = [ "values" => [] ];
-//        $coordinates = [ "values" => [] ];
-//        foreach ( $new_lead_meta as $lead_key => $lead_value ) {
-//            if ( 'location_lnglat_' === substr( $lead_key, 0, 16 ) ) {
-//                $array = explode( ',', $lead_value );
-//
-//                $longitude = $array[0] ?? '';
-//                $latitide = $array[1] ?? '';
-//                $grid_id = $array[2] ?? '';
-//
-//                $locations['values'][] = [
-//                    'value' => $grid_id
-//                ];
-//
-//                $coordinates['values'][] = [
-//                    'value' => [
-//                        'lng' => $longitude,
-//                        'lat' => $latitide,
-//                        'grid_id' => $grid_id,
-//                        'level' => '',
-//                        'place_name' => ''
-//                    ]
-//                ];
-//            }
-//        }
-//        if ( isset( $locations['values'] ) && ! empty( $locations['values'] ) ) {
-//            $fields['location_grid'] = $locations;
-//        }
-//        if ( isset( $coordinates['values'] ) && ! empty( $coordinates['values'] ) ) {
-//            $fields['location_lnglat'] = $coordinates;
-//        }
-//
-//        $contact_fields = Disciple_Tools_Contact_Post_Type::instance()->get_custom_fields_settings();
-//
-//        // custom fields
-//        foreach ( $new_lead_meta as $lead_key => $lead_value ) {
-//            if ( 'field_' === substr( $lead_key, 0, 6 ) && ! empty( $lead_value ) ) {
-//
-//                // unserialize post meta
-//                if ( isset( $form_meta[$lead_key] ) ) {
-//                    $field = maybe_unserialize( $form_meta[$lead_key] );
-//                } else {
-//                    continue;
-//                }
-//
-//                if ( ! isset( $field['type'] ) ) {
-//                    continue;
-//                }
-//
-//                // prepare note
-//                $label = ucfirst( $field['type'] );
-//                $notes[$lead_key] = $label . ': ' . $lead_value;
-//
-//                // prepare mapped fields
-//                if ( isset( $field['dt_field'] ) && ! empty( $field['dt_field'] ) ) {
-//                    // set field value to custom field
-//                    switch ( $field['type'] ) {
-//                        case 'checkbox':
-//                            if ( ! isset( $fields[$field['dt_field']] ) ) {
-//                                $fields[$field['dt_field']] = [ 'values' => [] ];
-//                            }
-//                            $fields[$field['dt_field']]['values'][] = [ 'value' => $field['values'] ];
-//                            break;
-//
-//                        case 'multi_radio':
-//                        case 'dropdown':
-//                        case 'tel':
-//                        case 'email':
-//                        case 'text':
-//                            if ( isset( $contact_fields[$field['dt_field']]["type"] ) && $contact_fields[$field['dt_field']]["type"] === "multi_select" ) {
-//                                $fields[$field['dt_field']]['values'][] = [ 'value' => $lead_value ];
-//                            } else {
-//                                $fields[$field['dt_field']] = $lead_value;
-//                            }
-//                            break;
-//                        case 'note':
-//                            $notes[$lead_key] = $field['label'] . ': ' . esc_html( $lead_value );
-//                            break;
-//                        default:
-//                            continue 2;
-//                            break;
-//                    }
-//                }
-//            }
-//        }
-//
-//        // source
-//        if ( ! empty( $form_meta['source'] ) ) {
-//            if ( ! isset( $fields['sources'] ) ) {
-//                $fields['sources'] = [ "values" => [] ];
-//            }
-//            $fields['sources']['values'] = [ [ "value" => $form_meta['source'] ] ];
-//        }
-//
-//        // ip address
-//        if ( ! empty( $new_lead_meta['ip_address'] ) ) {
-//            $notes['ip_address'] = __( 'IP Address: ', 'dt_webform' ) . $new_lead_meta['ip_address'];
-//        }
-//
-//        // form source
-//        if ( ! isset( $new_lead_meta['form_title'] ) || empty( $new_lead_meta['form_title'] ) ) {
-//            $notes['form_title'] = __( 'Source Form: Unknown (token: ', 'dt_webform' ) . $new_lead_meta['token'] . ')';
-//        } else {
-//            $notes['form_title'] = __( 'Source Form: ', 'dt_webform' )  . $new_lead_meta['form_title'];
-//        }
-//
-//        $fields['notes'] = $notes;
-//
-//        // assign user
-//        if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) ) {
-//            $fields['assigned_to'] = $form_meta['assigned_to'];
-//            $fields['overall_status'] = 'assigned';
-//        }
-//
-//        // Post to contact
-//        if ( ! class_exists( 'Disciple_Tools_Contacts' ) ) {
-//            return new WP_Error( 'disciple_tools_missing', 'Disciple Tools is missing.' );
-//        }
-//
-//        dt_write_log( $fields );
-//
-//        // Create contact
-//        $result = Disciple_Tools_Contacts::create_contact( $fields, $check_permission );
-//
-//        if ( is_wp_error( $result ) ) {
-//            return new WP_Error( 'failed_to_insert_contact', $result->get_error_message() );
-//        }
-//
-//        // Delete new lead after success
-//        $delete_result = wp_delete_post( $new_lead_id, true );
-//        if ( is_wp_error( $delete_result ) ) {
-//            return new WP_Error( 'failed_to_delete_contact', $result->get_error_message() );
-//        }
-//
-//        return $result;
-//    }
-
-    /**
-     * Insert Post
-     *
-     * @return int|\WP_Error
-     */
-//    public static function insert_post( $params ) {
-//        dt_write_log( __METHOD__ );
-//
-//        $params = array_filter( $params );
-//        dt_write_log( $params );
-//
-//        // Prepare Insert
-//        $args = [
-//            'post_type' => 'dt_webform_new_leads',
-//            'post_title' => sanitize_text_field( wp_unslash( $params['name'] ) ),
-//            'comment_status' => 'closed',
-//            'ping_status' => 'closed',
-//        ];
-//
-//        foreach ( $params as $key => $value ) {
-//            $key = sanitize_text_field( wp_unslash( $key ) );
-//            if ( is_array( $value ) ) {
-//                $value = dt_sanitize_array( $value );
-//            }
-//            else {
-//                $value = sanitize_text_field( wp_unslash( $value ) );
-//            }
-//
-//            $args['meta_input'][$key] = $value;
-//        }
-//
-//        // get form_meta
-//        $form_meta = [];
-//        if ( ! empty( $params['token'] ) ) {
-//            $form_meta = maybe_unserialize( self::get_form_meta( $params['token'] ) );
-//        }
-//
-//        // add form_title
-//        if ( ! isset( $args['meta_input']['form_title'] ) && ! empty( $form_meta ) ) {
-//            $form_title = DT_Webform_Active_Form_Post_Type::get_form_title_by_token( $params['token'] );
-//            $args['meta_input']['form_title'] = $form_title;
-//        }
-//
-//        // add full form meta
-//        if ( ! isset( $args['meta_input']['form_meta'] ) && ! empty( $form_meta ) ) {
-//            $args['meta_input']['form_meta'] = self::get_form_meta( $params['token'] );
-//        }
-//
-//        // add assigned to
-//        if ( ! isset( $args['meta_input']['assigned_to'] ) && ! empty( $form_meta ) && isset( $form_meta['assigned_to'] ) ) {
-//            $args['meta_input']['assigned_to'] = $form_meta['assigned_to'];
-//        }
-//
-//        // add source
-//        if ( ! isset( $args['meta_input']['source'] ) && ! empty( $form_meta ) && isset( $form_meta['source'] ) ) {
-//            $args['meta_input']['source'] = $form_meta['source'];
-//        }
-//
-//        // Add plugin status
-//        if ( ! isset( $args['meta_input']['form_state'] ) || empty( $args['meta_input']['form_state'] ) ) {
-//            $args['meta_input']['form_state'] = get_option( 'dt_webform_state' );
-//        }
-//
-//        // Insert
-//        $status = wp_insert_post( $args, true );
-//        return $status;
-//    }
 
 }
 

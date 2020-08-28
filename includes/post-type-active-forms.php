@@ -1458,7 +1458,7 @@ class DT_Webform_Active_Form_Post_Type
                                         <option disabled>-----</option>
                                         <?php
                                         $contact_defaults = $this->contact_fields;
-                                        $selected_value = get_post_meta( $post_id, 'sources', true );
+                                        $selected_value = get_post_meta( $post_id, 'source', true );
                                         foreach ( $contact_defaults['sources']  as $kk => $vv ) {
                                             echo '<option value="' . esc_attr( $kk ) . '" ';
                                             if ( $kk === $selected_value ) {

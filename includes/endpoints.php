@@ -294,7 +294,7 @@ class DT_Webform_Endpoints
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'create_contacts' );
-            $result = Disciple_Tools_Contacts::create_contact( $fields, $check_permission );
+            $result = DT_Posts::create_post( "contacts", $fields, $check_permission );
 
         } else { // Create contact if remote
 

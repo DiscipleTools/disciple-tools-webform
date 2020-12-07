@@ -345,7 +345,7 @@ class DT_Webform_Menu
                                     </strong>
                                 </span>
                                 <?php $site_link = Site_Link_System::get_site_connection_vars( $selected_site );
-                                if ( isset( $site_link["url"] )){
+                                if ( ! is_wp_error( $site_link ) && isset( $site_link["url"] )){
 
                                     echo "<script type='text/javascript'>
                                     jQuery(document).ready(function () {
@@ -353,12 +353,12 @@ class DT_Webform_Menu
                                     })
 
                                     function check_link_status( transfer_token, url, id ) {
-                    
+
                                         let linked = '" . esc_attr__( 'Linked' ) . "';
                                         let not_linked = '" . esc_attr__( 'Not Linked' ) . "';
                                         let not_found = '" . esc_attr__( 'Failed to connect with the URL provided.' ) . "';
                                         let no_ssl = '" . esc_attr__( 'Linked, but insecurely. The webform may not work.' ) . "';
-                        
+
                                         return jQuery.ajax({
                                             type: 'POST',
                                             data: JSON.stringify({ \"transfer_token\": transfer_token } ),

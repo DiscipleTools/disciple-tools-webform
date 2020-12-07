@@ -315,6 +315,7 @@ class DT_Webform_Endpoints
             ];
 
             $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts', $args );
+            dt_write_log($result);
             if ( is_wp_error( $result ) ) {
                 return new WP_Error( 'failed_remote_post', $result->get_error_message() );
             }

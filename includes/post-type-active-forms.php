@@ -1459,7 +1459,7 @@ class DT_Webform_Active_Form_Post_Type
                                         <?php
                                         $contact_defaults = $this->contact_fields;
                                         $selected_value = get_post_meta( $post_id, 'source', true );
-                                        foreach ( $contact_defaults['sources']  as $kk => $vv ) {
+                                        foreach ( $contact_defaults['sources']['default']  as $kk => $vv ) {
                                             echo '<option value="' . esc_attr( $kk ) . '" ';
                                             if ( $kk === $selected_value ) {
                                                 echo 'selected';
@@ -1483,8 +1483,8 @@ class DT_Webform_Active_Form_Post_Type
                                         $contact_defaults = $this->contact_fields;
                                         $selected_value = get_post_meta( $post_id, 'overall_status', true );
 
-                                        echo '<option value="new">'.esc_attr( $contact_defaults['fields']['overall_status']['default']['new']['label'] ).'</option><option disabled>-----</option>';
-                                        foreach ( $contact_defaults['fields']['overall_status']['default']  as $kk => $vv ) {
+                                        echo '<option value="new">'.esc_attr( $contact_defaults['overall_status']['default']['new']['label'] ).'</option><option disabled>-----</option>';
+                                        foreach ( $contact_defaults['overall_status']['default']  as $kk => $vv ) {
                                             echo '<option value="' . esc_attr( $kk ) . '" ';
                                             if ( $kk === $selected_value ) {
                                                 echo 'selected';
@@ -1978,7 +1978,7 @@ class DT_Webform_Active_Form_Post_Type
         ];
 
         // remove connections
-        foreach ( $contact_defaults['fields'] as $key => $field ) {
+        foreach ( $contact_defaults as $key => $field ) {
             if ( $field['type'] === 'connection' ) {
                 unset( $contact_defaults['fields'][$key] );
             }
@@ -1986,7 +1986,7 @@ class DT_Webform_Active_Form_Post_Type
                 unset( $contact_defaults['fields'][$key] );
             }
         }
-        $fields = $contact_defaults['fields'];
+        $fields = $contact_defaults;
         ksort( $fields );
 
         return $fields;

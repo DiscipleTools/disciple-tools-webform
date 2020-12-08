@@ -278,6 +278,7 @@ class DT_Webform_Active_Form_Post_Type
                                 $this->template_row_dt_field_multi( $unique_key, $data );
                                 break;
                             case 'date':
+                            case 'communication_channel':
                             case 'text':
                                 $this->template_row_dt_field_single( $unique_key, $data );
                                 break;
@@ -378,7 +379,7 @@ class DT_Webform_Active_Form_Post_Type
                                     placeholder="One value per line. Underscores allowed. No spaces or special characters." /></textarea>`
             let map_select = `<select name="field_<?php echo esc_attr( $unique_key ) ?>[values]" style="display:none">
                                     <option value="search_box" selected>Search Box</option>
-                                    <option value="click_map" <?php echo ( is_dt() ) ? '' : 'disabled' ?>>Click Map</option>
+                                    <option value="click_map" <?php echo ( is_this_dt() ) ? '' : 'disabled' ?>>Click Map</option>
                                     </select>`
             let design_fields = `<select id="type_<?php echo esc_attr( $unique_key ) ?>" name="field_<?php echo esc_attr( $unique_key ) ?>[type]" required>
                                     <option></option>
@@ -493,7 +494,7 @@ class DT_Webform_Active_Form_Post_Type
                                 vInput.append(`<input name="field_${unique_key}[values][]" value="${i}" />`)
                             })
                         }
-                        if ( 'text' ===  v.type || 'date' === v.type ) {
+                        if ( 'text' ===  v.type || 'communication_channel' ===  v.type || 'date' === v.type ) {
                             labels.append(`<input name="field_${unique_key}[labels]" id="new-labels-${unique_key}" value="${v.name}" />`)
                         }
                     }
@@ -1459,7 +1460,7 @@ class DT_Webform_Active_Form_Post_Type
                                         <?php
                                         $contact_defaults = $this->contact_fields;
                                         $selected_value = get_post_meta( $post_id, 'source', true );
-                                        foreach ( $contact_defaults['sources']  as $kk => $vv ) {
+                                        foreach ( $contact_defaults['sources']['default']  as $kk => $vv ) {
                                             echo '<option value="' . esc_attr( $kk ) . '" ';
                                             if ( $kk === $selected_value ) {
                                                 echo 'selected';
@@ -1483,8 +1484,8 @@ class DT_Webform_Active_Form_Post_Type
                                         $contact_defaults = $this->contact_fields;
                                         $selected_value = get_post_meta( $post_id, 'overall_status', true );
 
-                                        echo '<option value="new">'.esc_attr( $contact_defaults['fields']['overall_status']['default']['new']['label'] ).'</option><option disabled>-----</option>';
-                                        foreach ( $contact_defaults['fields']['overall_status']['default']  as $kk => $vv ) {
+                                        echo '<option value="new">'.esc_attr( $contact_defaults['overall_status']['default']['new']['label'] ).'</option><option disabled>-----</option>';
+                                        foreach ( $contact_defaults['overall_status']['default']  as $kk => $vv ) {
                                             echo '<option value="' . esc_attr( $kk ) . '" ';
                                             if ( $kk === $selected_value ) {
                                                 echo 'selected';
@@ -1945,8 +1946,11 @@ class DT_Webform_Active_Form_Post_Type
             $contact_defaults = $this->contact_fields;
         }
 
-        $ignore = [
+        $keys_to_ignore = [
             'requires_update',
+            'user_select',
+            'boolean',
+            'number',
             'reason_unassignable',
             'reason_paused',
             'reason_closed',
@@ -1977,16 +1981,21 @@ class DT_Webform_Active_Form_Post_Type
             'baptism_date',
         ];
 
+        $types_to_ignore = [
+            'connection',
+            'hash'
+        ];
+
         // remove connections
-        foreach ( $contact_defaults['fields'] as $key => $field ) {
-            if ( $field['type'] === 'connection' ) {
-                unset( $contact_defaults['fields'][$key] );
+        foreach ( $contact_defaults as $key => $field ) {
+            if ( in_array( $field['type'], $types_to_ignore ) ) {
+                unset( $contact_defaults[$key] );
             }
-            else if ( array_search( $key, $ignore ) !== false ) {
-                unset( $contact_defaults['fields'][$key] );
+            else if ( array_search( $key, $keys_to_ignore ) !== false ) {
+                unset( $contact_defaults[$key] );
             }
         }
-        $fields = $contact_defaults['fields'];
+        $fields = $contact_defaults;
         ksort( $fields );
 
         return $fields;

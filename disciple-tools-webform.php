@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
- * Version:  3.4
+ * Version:  4.0
  * Author name: Disciple.Tools
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * @license GPL-2.0 or later
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
-$dt_webform_required_dt_theme_version = '0.27.0';
+$dt_webform_required_dt_theme_version = '1.0';
 
 require_once( 'includes/functions.php' );
 
@@ -48,7 +48,7 @@ try {
 function dt_webform() {
     global $dt_webform_required_dt_theme_version;
 
-    if ( is_dt() ) {
+    if ( is_this_dt() ) {
         $wp_theme = wp_get_theme();
         $version = $wp_theme->version;
         if ( $version < $dt_webform_required_dt_theme_version ) {
@@ -151,14 +151,14 @@ class DT_Webform {
         $this->css_uri      = trailingslashit( $this->assets_uri . 'css' );
 
         // Admin and settings variables
-        $this->version             = '3.4';
+        $this->version             = '4.0';
 
         // LOAD FILES
 
-        require_once( 'includes/endpoints.php' );
+        require_once( 'includes/create-contact.php' );
 
         // Not Disciple Tools : remote support files
-        if ( ! is_dt() ) {
+        if ( ! is_this_dt() ) {
             require_once( 'dt-mapping/geocode-api/mapbox-api.php' );
             require_once( 'includes/site-link-post-type.php' );
             Site_Link_System::instance();

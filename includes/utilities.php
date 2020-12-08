@@ -85,7 +85,7 @@ class DT_Webform_Utilities {
 
     public static function get_contact_defaults( $force = false ) {
 
-        if ( is_dt() ) {
+        if ( is_this_dt() ) {
             Disciple_Tools::instance();
             return DT_Posts::get_post_field_settings( 'contacts' );
         }
@@ -149,6 +149,11 @@ class DT_Webform_Utilities {
                     }
                     #contact-form {}
                     .input-text {
+                        padding: .2em;
+                        font-size: .8em;
+                        width: 100%;
+                    }
+                    .input-communication_channel {
                         padding: .2em;
                         font-size: .8em;
                         width: 100%;
@@ -287,6 +292,11 @@ class DT_Webform_Utilities {
                     .input-text {
                         padding: .5em;
                         font-size: 1em;
+                        width: 100%;
+                    }
+                    .input-communication_channel {
+                        padding: .2em;
+                        font-size: .8em;
                         width: 100%;
                     }
                     .input-date {
@@ -449,6 +459,7 @@ class DT_Webform_Utilities {
 
                     // INPUT CLASSES
                     .input-text {}
+                    .input-communication_channel {}
                     .input-textarea {}
                     .input-checkbox {}
                     .input-multi_radio {}
@@ -536,6 +547,12 @@ class DT_Webform_Utilities {
                     }
 
                     .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
+                    }
+                    .input-communication_channel {
                         padding: .5em;
                         font-size: 1em;
                         width: 100%;
@@ -691,6 +708,12 @@ class DT_Webform_Utilities {
                     }
 
                     .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
+                    }
+                    .input-communication_channel {
                         padding: .5em;
                         font-size: 1em;
                         width: 100%;

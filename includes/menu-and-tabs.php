@@ -69,7 +69,7 @@ class DT_Webform_Menu
         }
 
         // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
-        if ( is_dt() ) {
+        if ( is_this_dt() ) {
             add_menu_page( __( 'Extensions (DT)', 'disciple_tools' ), __( 'Extensions (DT)', 'disciple_tools' ), 'manage_dt', 'dt_extensions', [ $this, 'extensions_menu' ], 'dashicons-admin-generic', 59 );
             add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'tab_setup' ] );
         }
@@ -223,7 +223,7 @@ class DT_Webform_Menu
 
         DT_Mapbox_API::metabox_for_admin();
 
-        if ( ! is_dt() ) {
+        if ( ! is_this_dt() ) {
             $this->metabox_select_site();
         }
 

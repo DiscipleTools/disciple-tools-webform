@@ -118,8 +118,8 @@ class DT_Webform_Endpoints
      * @return bool|\WP_Error
      */
     public function create_contact_record( $params ) {
-        dt_write_log( __METHOD__ );
-        dt_write_log( $params );
+//        dt_write_log( __METHOD__ );
+//        dt_write_log( $params );
 
         // set vars
         $check_permission = false;
@@ -241,6 +241,12 @@ class DT_Webform_Endpoints
                             case 'key_select':
                                 $fields[$field['dt_field']] = $lead_value;
                                 break;
+                            case 'communication_channel':
+                                if ( ! isset( $fields[$field['dt_field']] )) {
+                                    $fields[$field['dt_field']] = [];
+                                }
+                                $fields[$field['dt_field']][] = [ "value" => $lead_value ];
+                                break;
                             case 'multi_select':
                                 if ( is_array( $lead_value ) ) {
                                     foreach ( $lead_value as $item ) {
@@ -285,9 +291,8 @@ class DT_Webform_Endpoints
             $fields['overall_status'] = 'assigned';
         }
 
-
         // Post to contact
-        if ( is_dt() ) { // Create contact if hosted in DT
+        if ( is_this_dt() ) { // Create contact if hosted in DT
 
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
@@ -315,7 +320,7 @@ class DT_Webform_Endpoints
             ];
 
             $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts', $args );
-            dt_write_log($result);
+            dt_write_log( $result );
             if ( is_wp_error( $result ) ) {
                 return new WP_Error( 'failed_remote_post', $result->get_error_message() );
             }

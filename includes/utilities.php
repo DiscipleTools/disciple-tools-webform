@@ -85,9 +85,9 @@ class DT_Webform_Utilities {
 
     public static function get_contact_defaults( $force = false ) {
 
-        if ( is_dt() ) {
+        if ( is_this_dt() ) {
             Disciple_Tools::instance();
-            return DT_Posts::get_post_settings( 'contacts' );
+            return DT_Posts::get_post_field_settings( 'contacts' );
         }
 
         // caching
@@ -102,19 +102,22 @@ class DT_Webform_Utilities {
         }
 
         $site = Site_Link_System::get_site_connection_vars( $site_id );
-        if ( ! $site ) {
+        if ( ! $site || is_wp_error( $site ) ) {
             return new WP_Error( __METHOD__, 'Missing site to site data' );
         }
 
+
         $args = [
-            'method' => 'GET',
-            'body' => [],
+            'method' => 'POST',
+            'body' => [
+                'transfer_token' => $site['transfer_token'],
+            ],
             'headers' => [
                 'Authorization' => 'Bearer ' . $site['transfer_token'],
             ],
         ];
 
-        $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts/settings', $args );
+        $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-public/v2/contacts/settings_fields', $args );
         if ( is_wp_error( $result ) ) {
             return new WP_Error( __METHOD__, $result->get_error_message() );
         }
@@ -146,6 +149,11 @@ class DT_Webform_Utilities {
                     }
                     #contact-form {}
                     .input-text {
+                        padding: .2em;
+                        font-size: .8em;
+                        width: 100%;
+                    }
+                    .input-communication_channel {
                         padding: .2em;
                         font-size: .8em;
                         width: 100%;
@@ -284,6 +292,11 @@ class DT_Webform_Utilities {
                     .input-text {
                         padding: .5em;
                         font-size: 1em;
+                        width: 100%;
+                    }
+                    .input-communication_channel {
+                        padding: .2em;
+                        font-size: .8em;
                         width: 100%;
                     }
                     .input-date {
@@ -446,6 +459,7 @@ class DT_Webform_Utilities {
 
                     // INPUT CLASSES
                     .input-text {}
+                    .input-communication_channel {}
                     .input-textarea {}
                     .input-checkbox {}
                     .input-multi_radio {}
@@ -533,6 +547,12 @@ class DT_Webform_Utilities {
                     }
 
                     .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
+                    }
+                    .input-communication_channel {
                         padding: .5em;
                         font-size: 1em;
                         width: 100%;
@@ -688,6 +708,12 @@ class DT_Webform_Utilities {
                     }
 
                     .input-text {
+                        padding: .5em;
+                        font-size: 1em;
+                        width: 100%;
+                        border: 1px solid lightgray;
+                    }
+                    .input-communication_channel {
                         padding: .5em;
                         font-size: 1em;
                         width: 100%;

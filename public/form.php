@@ -91,10 +91,10 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
         foreach ( $dt_webform_fields as $dt_webform_key => $dt_webform_value ) :
             if ( isset( $dt_webform_value[ 'type' ] ) && $dt_webform_value[ 'type' ] === 'location' ) :
 
-                if ( is_dt() && ! class_exists( 'DT_Mapbox_API')  ) {
+                if ( is_this_dt() && ! class_exists( 'DT_Mapbox_API')  ) {
                     require_once( get_template_directory().  '/dt-mapping/geocode-api/mapbox-api.php' );
                 }
-                else if ( ! is_dt() ) {
+                else if ( ! is_this_dt() ) {
                     require_once( '../dt-mapping/geocode-api/mapbox-api.php' );
                 }
                 ?>
@@ -236,6 +236,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
                         }
                         break;
                     case 'text':
+                    case 'communication_channel':
                     case 'date':
                         ?>
                         <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"

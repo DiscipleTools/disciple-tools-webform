@@ -197,7 +197,7 @@ async function checkStorage() {
 jQuery(document).ready(function () {
 
     if ( getUrlParameter('success') ) {
-      jQuery('#report').empty().append( window.TRANSLATION.success + '<br>');
+      jQuery('#report').empty().append( `<div id="success">${window.TRANSLATION.success}</div><br>`);
     }
 
     // check_form()

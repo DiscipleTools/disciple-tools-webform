@@ -224,9 +224,16 @@ if ( ! function_exists( 'dt_get_webform_site_link' ) ) {
  */
 if ( ! function_exists( 'dt_webform_no_disciple_tools_theme_found' ) ) {
     function dt_webform_no_disciple_tools_theme_found() {
+        global $dt_streams_required_dt_theme_version;
+        $wp_theme = wp_get_theme();
+        $current_version = $wp_theme->version;
+        $message = __( "'Disciple Tools - Webform' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or make sure it is latest version.", "dt_webform" );
+        if ( $wp_theme->get_template() === "disciple-tools-theme" ){
+            $message .= ' ' . sprintf( esc_html__( 'Current Disciple Tools version: %1$s, required version: %2$s', 'dt_webform' ), esc_html( $current_version ), esc_html( $dt_streams_required_dt_theme_version ) );
+        }
         ?>
         <div class="notice notice-error is-dismissible">
-            <p><?php esc_html_e( "'Disciple Tools - Webform' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or deactivate 'Disciple Tools - Webform' plugin.", "dt_webform" ); ?></p>
+            <p><?php echo esc_html( $message ); ?></p>
         </div>
         <?php
     }

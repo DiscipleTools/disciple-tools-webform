@@ -57,7 +57,7 @@ if ( ! class_exists( 'DT_Mapping_Module' ) ) {
              *
              * Example:
              *      add_filter( 'dt_mapping_module_has_permissions', function() {
-             *          if ( current_user_can( 'dt_all_access_contacts' ) ) {
+             *          if ( current_user_can( 'view_any_contacts' ) ) {
              *              return true;
              *          }
              *          return false;

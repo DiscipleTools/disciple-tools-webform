@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
  * Version:  4.0
+ * Text Domain: disciple-tools-webform
+ * Domain Path: /languages
  * Author name: Disciple.Tools
  * Author URI: https://github.com/DiscipleTools
  * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
@@ -196,7 +198,7 @@ class DT_Webform {
             require( $this->admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' );
         }
         Puc_v4_Factory::buildUpdateChecker(
-            'https://raw.githubusercontent.com/DiscipleTools/disciple-tools-version-control/master/disciple-tools-webform-version-control.json',
+            'https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/version-control.json',
             __FILE__,
             'disciple-tools-webform'
         );

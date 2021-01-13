@@ -5,4 +5,4 @@ This plugin is an expansion of the Disciple Tools system to add web lead forms t
 
 ## Basic Configurations of the Plugin
 
-![Webform Configurations](webform-configurations.jpg)
+![Webform Configurations](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/webform-configurations.jpg)

@@ -52,6 +52,10 @@ system for git. For a more details on contribution see the
 
 ## Screenshots
 
+#### Sample Edit Screen
+![screenshot form](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/documentation/form-builder-screen.png)
+
+---
+#### Sample Form
 ![screenshot form](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/documentation/form-with-fields.png)
 
-![screenshot builder](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/documentation/new-form-page.png)

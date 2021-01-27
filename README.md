@@ -25,6 +25,7 @@ risk of a high target evangelism website being compromised and then having  cont
 - Connect fields created in Disciple.Tools to be displayed on the lead form.
 - Run the webform system from a remote server for security.
 - Uses an admin interface to build custom forms.
+- Fully customize form using CSS.
 
 #### Will Not Do
 

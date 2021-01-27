@@ -70,14 +70,14 @@ class DT_Webform_Menu
 
         // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
         if ( is_this_dt() ) {
-            add_menu_page( __( 'Extensions (DT)', 'disciple_tools' ), __( 'Extensions (DT)', 'disciple_tools' ), 'manage_dt', 'dt_extensions', [ $this, 'extensions_menu' ], 'dashicons-admin-generic', 59 );
-            add_submenu_page( 'dt_extensions', __( 'Webform', 'dt_webform' ), __( 'Webform', 'dt_webform' ), 'manage_dt', $this->token, [ $this, 'tab_setup' ] );
+            add_menu_page( 'Extensions (DT)', 'Extensions (DT)', 'manage_dt', 'dt_extensions', [ $this, 'extensions_menu' ], 'dashicons-admin-generic', 59 );
+            add_submenu_page( 'dt_extensions', 'Webform', 'Webform', 'manage_dt', $this->token, [ $this, 'tab_setup' ] );
         }
         else if ( ! $is_site_set ) {
-            add_menu_page( __( 'Webform (DT)', 'disciple_tools' ), __( 'Webform (DT)', 'disciple_tools' ), 'manage_dt', $this->token, [ $this, 'initialize_plugin_state' ], 'dashicons-admin-links', 99 );
+            add_menu_page( 'Webform (DT)', 'Webform (DT)', 'manage_dt', $this->token, [ $this, 'initialize_plugin_state' ], 'dashicons-admin-links', 99 );
         }
         else {
-            add_menu_page( __( 'Webform (DT)', 'disciple_tools' ), __( 'Webform (DT)', 'disciple_tools' ), 'manage_dt', $this->token, [ $this, 'tab_setup' ], 'dashicons-admin-links', 99 );
+            add_menu_page( 'Webform (DT)', 'Webform (DT)', 'manage_dt', $this->token, [ $this, 'tab_setup' ], 'dashicons-admin-links', 99 );
         }
     }
 
@@ -95,7 +95,7 @@ class DT_Webform_Menu
 
         ?>
         <div class="wrap">
-            <h2><?php esc_attr_e( 'DISCIPLE TOOLS - WEBFORM', 'dt_webform' ) ?></h2>
+            <h2>DISCIPLE TOOLS - WEBFORM</h2>
 
             <?php $this->template( 'begin' ) ?>
 
@@ -139,25 +139,25 @@ class DT_Webform_Menu
     public function tab_setup() {
 
         if ( ! current_user_can( 'manage_dt' ) ) {
-            wp_die( esc_attr__( 'You do not have sufficient permissions to access this page.' ) );
+            wp_die( esc_html( 'You do not have sufficient permissions to access this page.' ) );
         }
 
-        $title = __( 'DISCIPLE TOOLS - WEBFORM' );
+        $title = 'DISCIPLE TOOLS - WEBFORM';
 
         $link = 'admin.php?page=' . $this->token . '&tab=';
 
         $tab_bar = [
             [
                 'key' => 'forms',
-                'label' => __( 'Forms', 'dt_webform' ),
+                'label' => 'Forms',
             ],
             [
                 'key' => 'settings',
-                'label' => __( 'Settings', 'dt_webform' ),
+                'label' => 'Settings',
             ],
             [
-                'key' => 'tutorial',
-                'label' => __( 'Tutorial', 'dt_webform' ),
+                'key' => 'help',
+                'label' => 'Help',
             ],
         ];
 
@@ -198,8 +198,8 @@ class DT_Webform_Menu
             <?php
             switch ( $active_tab ) {
 
-                case "tutorial":
-                    $this->tab_tutorial();
+                case "help":
+                    $this->tab_help();
                     break;
                 case "settings":
                     $this->tab_settings();
@@ -237,16 +237,15 @@ class DT_Webform_Menu
         $this->template( 'end' );
     }
 
-    public function tab_tutorial() {
+    public function tab_help() {
         // begin columns template
         $this->template( 'begin' );
 
-        $this->metabox_tutorial();
+        $this->metabox_help();
 
         // begin right column template
         $this->template( 'right_column' );
 
-        $this->metabox_tutorial_menu();
         // end columns template
         $this->template( 'end' );
     }
@@ -422,21 +421,19 @@ class DT_Webform_Menu
         <?php
     }
 
-    public function metabox_tutorial() {
+    public function metabox_help() {
         ?>
         <form method="post">
             <table class="widefat striped">
                 <thead>
-                <tr><th>Tutorial</th></tr>
+                <tr><th>Documentation</th></tr>
                 </thead>
                 <tbody>
-                <tr id="assign-to-user">
-                    <td>
-                        <strong>Video Training</strong><br>
-                        <a href="https://www.youtube.com/channel/UCwQQSXUJunyqnj1bL_Fh6mQ/videos" target="_blank" >Go to the Disciple Tools youtube training site.</a>
-                    </td>
-                </tr>
-
+                    <tr id="assign-to-user">
+                        <td>
+                            <a href="https://github.com/DiscipleTools/disciple-tools-webform/wiki">Documentation</a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </form>
@@ -444,19 +441,8 @@ class DT_Webform_Menu
         <?php
     }
 
-    public function metabox_tutorial_menu() {
+    public function metabox_help_menu() {
         ?>
-        <form method="post">
-            <table class="widefat striped">
-                <thead>
-                <tr><th>Topics</th></tr>
-                </thead>
-                <tbody>
-
-                </tbody>
-            </table>
-        </form>
-        <br>
         <?php
     }
 
@@ -554,7 +540,7 @@ class DT_Webform_Menu
                     case 'begin':
                         ?>
                         <div class="wrap">
-                        <div id="poststuff">
+                        <div id="poststuf">
                         <div id="post-body" class="metabox-holder columns-1">
                         <div id="post-body-content">
                         <!-- Main Column -->
@@ -578,7 +564,7 @@ class DT_Webform_Menu
                     case 'begin':
                         ?>
                         <div class="wrap">
-                        <div id="poststuff">
+                        <div id="poststuf">
                         <div id="post-body" class="metabox-holder columns-2">
                         <div id="post-body-content">
                         <!-- Main Column -->

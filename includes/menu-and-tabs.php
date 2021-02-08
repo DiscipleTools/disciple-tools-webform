@@ -70,7 +70,6 @@ class DT_Webform_Menu
 
         // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
         if ( is_this_dt() ) {
-            add_menu_page( 'Extensions (DT)', 'Extensions (DT)', 'manage_dt', 'dt_extensions', [ $this, 'extensions_menu' ], 'dashicons-admin-generic', 59 );
             add_submenu_page( 'dt_extensions', 'Webform', 'Webform', 'manage_dt', $this->token, [ $this, 'tab_setup' ] );
         }
         else if ( ! $is_site_set ) {

@@ -60,6 +60,7 @@ class DT_Webform_Endpoints
                     'methods'  => WP_REST_Server::CREATABLE,
                     'callback' => [ $this, 'form_submit' ],
                 ],
+                'permission_callback' => '__return_true',
             ]
         );
     }

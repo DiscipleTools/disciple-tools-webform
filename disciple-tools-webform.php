@@ -192,18 +192,6 @@ class DT_Webform {
      * @return void
      */
     private function setup_actions() {
-
-        // Check for plugin updates system
-        if ( ! class_exists( 'Puc_v4_Factory' ) ) {
-            require( $this->admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' );
-        }
-        Puc_v4_Factory::buildUpdateChecker(
-            'https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/version-control.json',
-            __FILE__,
-            'disciple-tools-webform'
-        );
-        // End check for updates system
-
         // Internationalize the text strings used.
         add_action( 'plugins_loaded', array( $this, 'i18n' ), 2 );
 
@@ -391,3 +379,33 @@ register_activation_hook( __FILE__, [ 'DT_Webform', 'activation' ] );
 register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
 
 
+/**
+ * Check for plugin updates even when the active theme is not Disciple.Tools
+ *
+ * Below is the publicly hosted .json file that carries the version information. This file can be hosted
+ * anywhere as long as it is publicly accessible. You can download the version file listed below and use it as
+ * a template.
+ * Also, see the instructions for version updating to understand the steps involved.
+ * @see https://github.com/DiscipleTools/disciple-tools-version-control/wiki/How-to-Update-the-Starter-Plugin
+ */
+add_action( 'plugins_loaded', function (){
+    if ( is_admin() ){
+        // Check for plugin updates
+        if ( ! class_exists( 'Puc_v4_Factory' ) ) {
+            $dir_path           = trailingslashit( plugin_dir_path( __FILE__ ) );
+            $includes_path      = trailingslashit( $dir_path . 'includes' );
+            $admin_path         = trailingslashit( $includes_path . 'admin' );
+            if ( file_exists( $admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' )){
+                require( $admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' );
+            }
+        }
+        if ( class_exists( 'Puc_v4_Factory' ) ){
+            Puc_v4_Factory::buildUpdateChecker(
+                'https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/version-control.json',
+                __FILE__,
+                'disciple-tools-webform'
+            );
+
+        }
+    }
+} );

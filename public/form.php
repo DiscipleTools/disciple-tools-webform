@@ -53,16 +53,16 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
     </script>
     <script>
         window.TRANSLATION = {
-            'required': '<?php echo $dt_webform_meta['js_string_required'] ?? esc_html__( 'Required', 'dt_webform' ) ?>',
-            'characters_required': '<?php echo $dt_webform_meta['js_string_char_required'] ?? esc_html__( "At least {0} characters required!", 'dt_webform' ) ?>',
-            'submit_in': '<?php echo $dt_webform_meta['js_string_submit_in'] ?? esc_html__( 'Submit in', 'dt_webform' ) ?>',
-            'submit': '<?php echo $dt_webform_meta['js_string_submit'] ?? esc_html__( 'Submit', 'dt_webform' ) ?>',
-            'success': '<?php echo $dt_webform_meta['js_string_success'] ?? esc_html__( 'Success', 'dt_webform' ) ?>',
-            'failure': '<?php echo $dt_webform_meta['js_string_failure'] ?? esc_html__( 'Sorry, Something went wrong', 'dt_webform' ) ?>',
+            'required': "<?php echo $dt_webform_meta['js_string_required'] ?? esc_html__( 'Required', 'dt_webform' ) ?>",
+            'characters_required': "<?php echo $dt_webform_meta['js_string_char_required'] ?? esc_html__( "At least {0} characters required!", 'dt_webform' ) ?>",
+            'submit_in': "<?php echo $dt_webform_meta['js_string_submit_in'] ?? esc_html__( 'Submit in', 'dt_webform' ) ?>",
+            'submit': "<?php echo $dt_webform_meta['js_string_submit'] ?? esc_html__( 'Submit', 'dt_webform' ) ?>",
+            'success': "<?php echo $dt_webform_meta['js_string_success'] ?? esc_html__( 'Success', 'dt_webform' ) ?>",
+            'failure': "<?php echo $dt_webform_meta['js_string_failure'] ?? esc_html__( 'Sorry, Something went wrong', 'dt_webform' ) ?>",
         }
         window.SETTINGS = {
             'spinner': ' <span class="spinner"><img src="<?php echo plugin_dir_url( __FILE__ ) ?>spinner.svg" width="20px" /></span>',
-            'rest_url':  '<?php echo esc_url_raw( rest_url() ) ?>',
+            'rest_url':  "<?php echo esc_url_raw( rest_url() ) ?>",
         }
         <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>
             jQuery(document).ready(function() {

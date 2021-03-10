@@ -111,7 +111,7 @@ function get_data() {
 
       document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount())
     }
-
+    jQuery("#submit-button-container .spinner").remove();
     document.querySelector("form").reset();
 
     removeOfflineWarning();
@@ -155,10 +155,10 @@ function offlineCount() {
 function offlineCountMessage(offlineCount) {
   let message;
   if (offlineCount == 1) {
-    message = `You have ${offlineCount} contact stored offline, reconnect to the internet to save this contacts`
+    message = `You have ${offlineCount} contact stored offline, reconnect to the internet to save this contact`
   }
   else if (offlineCount > 1) {
-    message = `You have ${offlineCount} contacts stored offline, reconnect to the internet to save these contacts`
+    message = `You have ${offlineCount} contacts stored offline, reconnect to the internet to save these contact`
   }
   return message ? message : "";
 }

@@ -170,6 +170,7 @@ function translate_form_strings() {
 async function checkStorage() {
   // check if we have saved data in localStorage
   if (typeof Storage !== 'undefined') {
+    if (offlineCount() > 0) {document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount());}
     const token = new URLSearchParams(location.search).get('token');
 
     for (let i=0; i< localStorage.length; i++) {

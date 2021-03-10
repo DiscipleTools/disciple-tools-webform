@@ -23,9 +23,9 @@ let rebuild_drill_down = ( response, bindFunction, grid_id )=>{
             let disabled = !response[i+2]
 
             // create button
-            html += `<li><button id="${_.escape( section.parent )}" type="button" ${disabled ? "disabled" : ""}
-                onclick="DRILLDOWN.get_drill_down( '${_.escape( bindFunction )}', '${_.escape( section.selected )}' )"
-                class="button ${hollowClass} geocode-link">${_.escape( section.selected_name )}</button></li>`
+            html += `<li><button id="${window.lodash.escape( section.parent )}" type="button" ${disabled ? "disabled" : ""}
+                onclick="DRILLDOWN.get_drill_down( '${window.lodash.escape( bindFunction )}', '${window.lodash.escape( section.selected )}' )"
+                class="button ${hollowClass} geocode-link">${window.lodash.escape( section.selected_name )}</button></li>`
 
             current_selection = section
 
@@ -38,20 +38,20 @@ let rebuild_drill_down = ( response, bindFunction, grid_id )=>{
                     console.log('no additional dropdown triggered')
                 } else {
                     // make select
-                    html += `<li><select id="${_.escape( section.parent )}" style="vertical-align: top"
-                    onchange="DRILLDOWN.get_drill_down( '${_.escape( bindFunction )}', this.value )"
+                    html += `<li><select id="${window.lodash.escape( section.parent )}" style="vertical-align: top"
+                    onchange="DRILLDOWN.get_drill_down( '${window.lodash.escape( bindFunction )}', this.value )"
                     class="geocode-select">`
 
                     // make initial option
-                    html += `<option value="${_.escape( section.parent )}"></option>`
+                    html += `<option value="${window.lodash.escape( section.parent )}"></option>`
 
                     // make option list
                     jQuery.each(section.list, function (ii, item) {
-                        html += `<option value="${_.escape( item.grid_id )}" `
+                        html += `<option value="${window.lodash.escape( item.grid_id )}" `
                         if (item.grid_id === section.selected) {
                             html += ` selected`
                         }
-                        html += `>${_.escape( item.name )}</option>`
+                        html += `>${window.lodash.escape( item.name )}</option>`
                     })
 
                     html += `</select></li>`
@@ -90,7 +90,7 @@ window.DRILLDOWN = {
         }
 
         let rest = window.drilldownModule.settings.endpoints.get_drilldown_endpoint
-        
+
         if ( cached && window.drilldownModule.drilldown && window.drilldownModule.drilldown[grid_id] ){
             rebuild_drill_down( window.drilldownModule.drilldown[grid_id], bindFunction, grid_id )
         } else {
@@ -107,8 +107,8 @@ window.DRILLDOWN = {
             .then( function( response ) {
                 window.drilldownModule.drilldown[grid_id] = response
                 rebuild_drill_down( response, bindFunction, grid_id )
-                
-    
+
+
             }) // end success statement
             .fail(function (err) {
                 console.log("error")

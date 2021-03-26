@@ -90,7 +90,7 @@ window.DRILLDOWN = {
         }
 
         let rest = window.drilldownModule.settings.endpoints.get_drilldown_endpoint
-
+        
         if ( cached && window.drilldownModule.drilldown && window.drilldownModule.drilldown[grid_id] ){
             rebuild_drill_down( window.drilldownModule.drilldown[grid_id], bindFunction, grid_id )
         } else {
@@ -107,8 +107,8 @@ window.DRILLDOWN = {
             .then( function( response ) {
                 window.drilldownModule.drilldown[grid_id] = response
                 rebuild_drill_down( response, bindFunction, grid_id )
-
-
+                
+    
             }) // end success statement
             .fail(function (err) {
                 console.log("error")

@@ -1499,19 +1499,32 @@ class DT_Webform_Active_Form_Post_Type
                             <?php
                             break;
                         case 'assigned_to':
+                            $roles = [];
+                            $wp_roles = wp_roles()->roles;
+
+                            foreach ( $wp_roles as $role_name => $role_obj ) {
+                                if ( ! empty( $role_obj['capabilities']['access_contacts'] ) ) {
+                                    $roles[] = $role_name;
+                                }
+                            }
+
                             $potential_user_list = get_users(
                                 [
                                     'order'    => 'ASC',
                                     'orderby'  => 'display_name',
+                                    'role__in' => $roles,
                                 ]
                             );
+
+                            $base_user           = dt_get_base_user();
+
                             echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td>';
                             ?>
                             <select name="<?php echo esc_attr( $k ); ?>">
                                 <option disabled>---</option>
                                 <?php foreach ( $potential_user_list as $potential_user ): ?>
                                     <option
-                                        value="<?php echo esc_attr( $potential_user->ID ); ?>"><?php echo esc_attr( $potential_user->display_name ); ?></option>
+                                        value="<?php echo esc_attr( $potential_user->ID ); ?>" <?php if ( $potential_user->ID === $base_user->ID ): ?> selected <?php endif; ?> ><?php echo esc_attr( $potential_user->display_name ); ?></option>
                                 <?php endforeach; ?>
                             </select>
 

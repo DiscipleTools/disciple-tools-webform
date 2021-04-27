@@ -52,6 +52,7 @@ class DT_Webform_Active_Form_Post_Type
             add_action( 'save_post', [ $this, 'save_meta_box' ] );
             add_action( 'save_post', [ $this, 'save_core_fields' ] );
             add_action( 'save_post', [ $this, 'save_extra_fields' ] );
+            add_action( 'save_post', [ $this, 'save_token' ] );
 
             global $pagenow;
             if ( $pagenow === 'post.php' ) {
@@ -1284,7 +1285,6 @@ class DT_Webform_Active_Form_Post_Type
      * @throws \Exception 'Expected field to exist'.
      */
     public function save_meta_box( int $post_id ) {
-
         // Verify
         if ( get_post_type() !== $this->post_type ) {
             return $post_id;
@@ -1340,8 +1340,31 @@ class DT_Webform_Active_Form_Post_Type
         return $post_id;
     } // End save_meta_box()
 
-    public function save_core_fields( $post_id ) {
+    public function save_token( $post_id ) {
 
+        // fail process early
+        if ( get_post_type() !== $this->post_type ) {
+            return $post_id;
+        }
+        if ( ! current_user_can( 'manage_dt', $post_id ) ) {
+            return $post_id;
+        }
+        if ( isset( $_GET['action'] ) ) {
+            if ( $_GET['action'] == 'trash' || $_GET['action'] == 'untrash' || $_GET['action'] == 'delete' ) {
+                return $post_id;
+            }
+        }
+
+        $token = bin2hex( random_bytes( 16 ) );
+
+        if ( ! get_post_meta( $post_id, 'token' ) ) {
+            add_post_meta( $post_id, 'token', $token, true );
+        } else {
+            update_post_meta( $post_id, 'token', $token );
+        }
+    }
+
+    public function save_core_fields( $post_id ) {
         // fail process early
         if ( get_post_type() !== $this->post_type ) {
             return $post_id;

@@ -22,7 +22,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 }
 
 ?>
-<html lang="en">
+<html <?php language_attributes(); ?>>
 <head>
     <title><?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?></title>
     <?php
@@ -37,6 +37,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
     <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>jquery.validate.min.js"></script>
     <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __FILE__ ) .'public.js' ) ) ?>"></script>
 
+    <script type="text/javascript" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __FILE__ ) .'public.js' ) ) ?>"></script>
     <?php $swurl = esc_url( plugin_dir_url( __FILE__ ) ) . 'sw.js'?>
     <script>
         if ('serviceWorker' in navigator) {
@@ -52,6 +53,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
         }
     </script>
     <script>
+        window.google_geocode_api_key = <?php echo(Disciple_Tools_Google_Geocode_API::get_key() ) ? '"' .Disciple_Tools_Google_Geocode_API::get_key() . '"': false ?>;
         window.TRANSLATION = {
             'required': "<?php echo $dt_webform_meta['js_string_required'] ?? esc_html__( 'Required', 'dt_webform' ) ?>",
             'characters_required': "<?php echo $dt_webform_meta['js_string_char_required'] ?? esc_html__( "At least {0} characters required!", 'dt_webform' ) ?>",
@@ -93,9 +95,11 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 
                 if ( is_this_dt() && ! class_exists( 'DT_Mapbox_API')  ) {
                     require_once( get_template_directory().  '/dt-mapping/geocode-api/mapbox-api.php' );
+                    require_once( '../dt-mapping/geocode-api/google-api.php' );
                 }
                 else if ( ! is_this_dt() ) {
                     require_once( '../dt-mapping/geocode-api/mapbox-api.php' );
+                    require_once( '../dt-mapping/geocode-api/google-api.php' );
                 }
                 ?>
                 <script type="text/javascript" src="<?php echo DT_Mapbox_API::$mapbox_gl_js ?>"></script>
@@ -381,6 +385,51 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 
                                         }); // end get request
                                     } // end validate
+
+                                    // builds the autocomplete list from Google (if Google key is installed)
+                                    function google_autocomplete(address){
+                                    if ( address.length < 1 ) {
+                                        jQuery('#mapbox-clear-autocomplete').hide()
+                                        return;
+                                    }
+
+                                    let service = new google.maps.places.AutocompleteService();
+                                    service.getPlacePredictions({ 'input': address }, function(predictions, status ) {
+                                        let list = jQuery('#mapbox-autocomplete-list')
+                                        list.empty()
+
+                                        if ( status === 'OK' ) {
+                                        jQuery.each( predictions, function( index, value ) {
+                                            if ( 4 > index ) {
+                                            list.append(`<div data-value="${index}">${window.lodash.escape(value.description)}</div>`)
+                                            }
+                                        })
+
+                                        let add_address = jQuery('#mapbox-autocomplete').data('add-address')
+                                        if ( typeof add_address === 'undefined' || add_address === true ) {
+                                            list.append(`<div data-value="address" style="font-weight:bold;">${window.lodash.escape( window.dtMapbox.translations.use )}: "${window.lodash.escape( address )}"</div>`)
+                                        }
+
+                                        jQuery('#mapbox-autocomplete-list div').on("click", function (e) {
+                                            close_all_lists(e.target.attributes['data-value'].value);
+                                        });
+
+                                        // Set globals
+                                        window.mapbox_result_features = predictions
+                                        }
+                                        else if ( status === 'ZERO_RESULTS' ) {
+                                        list.append(`<div>No Results Found</div>`)
+                                        list.append(`<div data-value="address" style="font-weight:bold;">${window.lodash.escape( window.dtMapbox.translations.use )}: "${window.lodash.escape( address )}"</div>`)
+
+                                        jQuery('#mapbox-autocomplete-list div').on("click", function (e) {
+                                            close_all_lists(e.target.attributes['data-value'].value);
+                                        });
+                                        }
+                                        else {
+                                        console.log('Predictions was not successful for the following reason: ' + status)
+                                        }
+                                    })
+                                    }
                                     window.validate_timer_id = '';
                                     function validate_timer() {
 
@@ -391,8 +440,12 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 
                                         // set timer
                                         window.validate_timer_id = setTimeout(function(){
-                                            // call geocoder
-                                            mapbox_autocomplete( jQuery('#mapbox-search').val() )
+                                            if ( window.google_geocode_api_key ) {
+                                                google_autocomplete( jQuery('#mapbox-search').val() )
+                                            } else {
+                                                // call geocoder
+                                                mapbox_autocomplete( jQuery('#mapbox-search').val() )
+                                            }
 
                                             // toggle buttons back
                                             jQuery('#mapbox-spinner-button').hide()

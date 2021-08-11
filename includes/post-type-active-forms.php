@@ -1540,7 +1540,13 @@ class DT_Webform_Active_Form_Post_Type
                                 ]
                             );
 
-                            $base_user           = dt_get_base_user();
+                            if ( function_exists( dt_get_base_user() ) ) {
+                                $base_user           = dt_get_base_user();
+                            }
+                            else {
+                                $base_user           = wp_get_current_user();
+                            }
+
 
                             echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td>';
                             ?>

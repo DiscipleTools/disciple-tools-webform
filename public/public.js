@@ -60,7 +60,8 @@ async function submit_form(data) {
     }
   })
   .catch((error) => {
-    console.error('Error:', error);
+    console.error('Error');
+    console.error(error);
     return null;
   });
 }

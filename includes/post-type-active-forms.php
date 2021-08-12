@@ -181,7 +181,9 @@ class DT_Webform_Active_Form_Post_Type
         // maintain token
         $token = get_post_meta( $post->ID, 'token', true );
         if ( ! $token ) {
-            $token = bin2hex( random_bytes( 16 ) );
+            global $post_id;
+            $this->save_token( $post_id );
+            $token = get_post_meta( $post->ID, 'token', true );
         }
         ?>
         <input type="hidden" name="token" value="<?php echo esc_attr( $token ) ?>" />
@@ -1354,14 +1356,13 @@ class DT_Webform_Active_Form_Post_Type
                 return $post_id;
             }
         }
+        if ( get_post_meta( $post_id, 'token', true ) ) {
+            return $post_id;
+        }
 
         $token = bin2hex( random_bytes( 16 ) );
-
-        if ( ! get_post_meta( $post_id, 'token' ) ) {
-            add_post_meta( $post_id, 'token', $token, true );
-        } else {
-            update_post_meta( $post_id, 'token', $token );
-        }
+        add_post_meta( $post_id, 'token', $token, true );
+        return $post_id;
     }
 
     public function save_core_fields( $post_id ) {

@@ -287,7 +287,7 @@ class DT_Webform_Endpoints
         $fields['notes'] = $notes;
 
         // assign user
-        if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) ) {
+        if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) && $form_meta["assigned_to"] !== "default_user" ) {
             $fields['assigned_to'] = $form_meta['assigned_to'];
             $fields['overall_status'] = 'assigned';
         }

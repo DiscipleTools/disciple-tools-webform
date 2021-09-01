@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * Plugin Name: Disciple Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
- * Version:  4.4
+ * Version:  4.5
  * Text Domain: disciple-tools-webform
  * Domain Path: /languages
  * Author name: Disciple.Tools
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * @license GPL-2.0 or later
  *          https://www.gnu.org/licenses/gpl-2.0.html
  *
- * @version 4.4 Bug fixes
+ * @version 4.5 Bug fixes
  */
 $dt_webform_required_dt_theme_version = '1.0';
 

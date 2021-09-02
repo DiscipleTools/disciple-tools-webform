@@ -852,14 +852,17 @@ class DT_Webform_Active_Form_Post_Type
                 if ( ! empty( $data['title'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[title]" value="'.esc_html( $data['title'] ).'" style="width:100%;" />';
                 }
-                echo '<hr>';
-                if ( ! empty( $data['labels'] ) ) {
-                    foreach ( $data['labels'] as $key => $label ) {
-                        echo esc_html( $label ) . '<br>';
-                        echo '<input type="hidden" name="'.esc_attr( $unique_key ).'[labels]['.esc_attr( $key ).']" value="'.esc_html( $label ).'" />';
-                    }
+                if ( is_array( $data["labels"] ) ){
+                    $data["labels"] = implode( "\r\n", $data["labels"] );
                 }
                 ?>
+                 <hr>
+                <textarea type="text"
+                          style="width:100%;"
+                          rows="5"
+                          name="<?php echo esc_attr( $unique_key ) ?>[labels]"
+                          placeholder="One value per line. Underscores allowed. No spaces or special characters." /><?php echo esc_textarea( $data["labels"] ) ?></textarea>
+
             </td>
             <!-- Values-->
             <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
@@ -2123,7 +2126,10 @@ class DT_Webform_Active_Form_Post_Type
         return array_filter( explode( PHP_EOL, $labels ) );
     }
 
-    public static function match_dt_field_labels_with_values( array $labels, array $values ) : array {
+    public static function match_dt_field_labels_with_values( $labels, array $values ) : array {
+        if ( is_string( $labels ) ){
+            $labels = self::make_labels_array( $labels );
+        }
         if ( empty( $labels ) || empty( $values ) ) {
             return [];
         }

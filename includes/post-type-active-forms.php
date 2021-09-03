@@ -1385,6 +1385,7 @@ class DT_Webform_Active_Form_Post_Type
                 return $post_id;
             }
         }
+        dt_write_log($_POST);
 
         $array = $this->filter_for_core_fields( $_POST );
 

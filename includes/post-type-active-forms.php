@@ -1369,6 +1369,7 @@ class DT_Webform_Active_Form_Post_Type
     }
 
     public function save_core_fields( $post_id ) {
+        dt_write_log($_POST);
         // fail process early
         if ( get_post_type() !== $this->post_type ) {
             return $post_id;

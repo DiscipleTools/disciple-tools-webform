@@ -507,7 +507,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
                         ?>
                         <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                              class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
-                            <?php echo nl2br( esc_html( $dt_webform_value['labels'] ) ) ?>
+                            <?php echo wp_kses_post( nl2br( $dt_webform_value['labels'] ) ) ?>
                         </div>
                         <?php
                         break;

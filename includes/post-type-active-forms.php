@@ -130,7 +130,10 @@ class DT_Webform_Active_Form_Post_Type
         'has_archive'           => false,
         'exclude_from_search'   => true,
         'publicly_queryable'    => false,
-        'capability_type'       => 'page',
+        'capabilities' => [
+            'edit_post' => 'manage_dt',
+        ],
+        'capability_type'       => 'post',
         'show_in_rest'          => false,
         );
         register_post_type( $this->post_type, $args );

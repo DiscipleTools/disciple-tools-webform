@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.com/DiscipleTools/disciple-tools-webform.svg?branch=master)](https://travis-ci.com/DiscipleTools/disciple-tools-webform)
 
+![Webform](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/documentation/webform-banner.png)
 # Disciple Tools - Webform
 
 Add a lead form to any website and integrate those leads into the Disciple Tools system. Build

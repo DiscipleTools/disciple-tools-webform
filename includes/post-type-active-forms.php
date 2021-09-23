@@ -1814,7 +1814,7 @@ class DT_Webform_Active_Form_Post_Type
             'description' => '',
             'type'        => 'assigned_to',
             'default'     => '',
-            'label'       => 'This field must be a number. This number is the user_id number from Disciple Tools. This can be found in the Admin > User section. See tutorial for more help.',
+            'label'       => 'This field must be a number. This number is the user_id number from Disciple.Tools. This can be found in the Admin > User section. See tutorial for more help.',
             'required'    => 'no',
             'hidden'      => 'no',
             'section'     => 'info',

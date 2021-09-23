@@ -68,7 +68,7 @@ class DT_Webform_Menu
             $is_site_set = $this->verify_site_active( $is_site_set );
         }
 
-        // Check for Disciple Tools Theme. If not, then set plugin to 'remote'
+        // Check for Disciple.Tools Theme. If not, then set plugin to 'remote'
         if ( is_this_dt() ) {
             add_submenu_page( 'dt_extensions', 'Webform', 'Webform', 'manage_dt', $this->token, [ $this, 'tab_setup' ] );
         }
@@ -81,7 +81,7 @@ class DT_Webform_Menu
     }
 
     /**
-     * Menu stub. Replaced when Disciple Tools Theme fully loads.
+     * Menu stub. Replaced when Disciple.Tools Theme fully loads.
      */
     public function extensions_menu() {
     }
@@ -94,7 +94,7 @@ class DT_Webform_Menu
 
         ?>
         <div class="wrap">
-            <h2>DISCIPLE TOOLS - WEBFORM</h2>
+            <h2>Disciple.Tools - WEBFORM</h2>
 
             <?php $this->template( 'begin' ) ?>
 
@@ -141,7 +141,7 @@ class DT_Webform_Menu
             wp_die( esc_html( 'You do not have sufficient permissions to access this page.' ) );
         }
 
-        $title = 'DISCIPLE TOOLS - WEBFORM';
+        $title = 'Disciple.Tools - WEBFORM';
 
         $link = 'admin.php?page=' . $this->token . '&tab=';
 
@@ -298,7 +298,7 @@ class DT_Webform_Menu
                 <thead>
                 <tr>
                     <td colspan="2">
-                        <strong>Link to Disciple Tools Site</strong><br>
+                        <strong>Link to Disciple.Tools Site</strong><br>
                     </td>
                 </tr>
                 </thead>
@@ -307,7 +307,7 @@ class DT_Webform_Menu
                     <td width="100px">
                         <?php
                         if ( empty( $sites ) ) {
-                            echo 'No site links found for this webform. You must create a site link to Disciple Tools to unlock the rest of this plugin. Go to <a href="'. esc_url( admin_url() ) . 'edit.php?post_type=site_link_system">Site Links</a>.';
+                            echo 'No site links found for this webform. You must create a site link to Disciple.Tools to unlock the rest of this plugin. Go to <a href="'. esc_url( admin_url() ) . 'edit.php?post_type=site_link_system">Site Links</a>.';
                         } else {
                             ?>
                             You must select a site link to unlock the webform plugin.<br>
@@ -468,7 +468,7 @@ class DT_Webform_Menu
                 </thead>
                 <tbody>
                 <tr>
-                    <td>If a form is filled out, but he system fails to create a record in Disciple Tools, the failed form can be emailed to an administrator. </td>
+                    <td>If a form is filled out, but he system fails to create a record in Disciple.Tools, the failed form can be emailed to an administrator. </td>
                 </tr>
                 <tr>
                     <td>

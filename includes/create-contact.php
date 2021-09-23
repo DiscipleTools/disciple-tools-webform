@@ -112,7 +112,7 @@ class DT_Webform_Endpoints
     }
 
     /**
-     * Create Contact via Disciple Tools System
+     * Create Contact via Disciple.Tools System
      *
      * @param $new_lead_id
      *

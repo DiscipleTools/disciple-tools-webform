@@ -1,12 +1,12 @@
 [![Build Status](https://travis-ci.com/DiscipleTools/disciple-tools-webform.svg?branch=master)](https://travis-ci.com/DiscipleTools/disciple-tools-webform)
 
 ![Webform](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/documentation/webform-banner.png)
-# Disciple Tools - Webform
+# Disciple.Tools - Webform
 
-Add a lead form to any website and integrate those leads into the Disciple Tools system. Build
+Add a lead form to any website and integrate those leads into the Disciple.Tools system. Build
 custom lead forms through an admin interface, assign leads to dispatcher, and tag with sources.
 Special security design allows for forms to be served from one system and privately transferred
-to the Disciple Tools system.
+to the Disciple.Tools system.
 
 ## Purpose
 
@@ -34,7 +34,7 @@ risk of a high target evangelism website being compromised and then having  cont
 
 ## Requirements
 
-- Disciple Tools Theme installed on a self-hosted Wordpress Server
+- Disciple.Tools Theme installed on a self-hosted Wordpress Server
 - If installed on a remote server, must be a self-hosted Wordpress site.
 
 ## Installing

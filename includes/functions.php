@@ -27,7 +27,7 @@ if ( ! is_this_dt() ) {
 
     if ( ! function_exists( 'dt_is_child_theme_of_disciple_tools' ) ) {
         /**
-         * Returns true if this is a child theme of Disciple Tools, and false if it is not.
+         * Returns true if this is a child theme of Disciple.Tools, and false if it is not.
          *
          * @return bool
          */
@@ -224,16 +224,16 @@ if ( ! function_exists( 'dt_get_webform_site_link' ) ) {
     }
 }
 /**
- * Admin alert for when Disciple Tools Theme is not available
+ * Admin alert for when Disciple.Tools Theme is not available
  */
 if ( ! function_exists( 'dt_webform_no_disciple_tools_theme_found' ) ) {
     function dt_webform_no_disciple_tools_theme_found() {
         global $dt_streams_required_dt_theme_version;
         $wp_theme = wp_get_theme();
         $current_version = $wp_theme->version;
-        $message = __( "'Disciple Tools - Webform' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or make sure it is latest version.", "dt_webform" );
+        $message = __( "'Disciple.Tools - Webform' plugin requires 'Disciple.Tools' theme to work. Please activate 'Disciple.Tools' theme or make sure it is latest version.", "dt_webform" );
         if ( $wp_theme->get_template() === "disciple-tools-theme" ){
-            $message .= ' ' . sprintf( esc_html__( 'Current Disciple Tools version: %1$s, required version: %2$s', 'dt_webform' ), esc_html( $current_version ), esc_html( $dt_streams_required_dt_theme_version ) );
+            $message .= ' ' . sprintf( esc_html__( 'Current Disciple.Tools version: %1$s, required version: %2$s', 'dt_webform' ), esc_html( $current_version ), esc_html( $dt_streams_required_dt_theme_version ) );
         }
         ?>
         <div class="notice notice-error is-dismissible">

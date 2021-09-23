@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  *Plugin Name: Disciple.Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
- * Description: Disciple Tools - Webform extends the Disciple Tools system to send and receive remote submissions from webform contacts.
+ * Description: Disciple.Tools - Webform extends the Disciple.Tools system to send and receive remote submissions from webform contacts.
  * Version:  4.5.1
  * Text Domain: disciple-tools-webform
  * Domain Path: /languages
@@ -61,7 +61,7 @@ function dt_webform() {
                 add_action( 'admin_notices', 'dt_webform_no_disciple_tools_theme_found' );
                 add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
             }
-            return new WP_Error( 'current_theme_not_dt', 'Please upgrade Disciple Tools Theme to ' . $dt_webform_required_dt_theme_version . ' to use this plugin.' );
+            return new WP_Error( 'current_theme_not_dt', 'Please upgrade Disciple.Tools Theme to ' . $dt_webform_required_dt_theme_version . ' to use this plugin.' );
         }
     }
 
@@ -162,7 +162,7 @@ class DT_Webform {
 
         require_once( 'includes/create-contact.php' );
 
-        // Not Disciple Tools : remote support files
+        // Not Disciple.Tools : remote support files
         if ( ! is_this_dt() ) {
             require_once( 'dt-mapping/geocode-api/mapbox-api.php' );
             require_once( 'includes/site-link-post-type.php' );
@@ -237,7 +237,7 @@ class DT_Webform {
      */
     public static function activation() {
 
-        // Confirm 'Administrator' has 'manage_dt' privilege. This is key in 'remote' configuration when Disciple Tools theme is not installed.
+        // Confirm 'Administrator' has 'manage_dt' privilege. This is key in 'remote' configuration when Disciple.Tools theme is not installed.
         $role = get_role( 'administrator' );
         if ( !empty( $role ) ) {
             $role->add_cap( 'manage_dt' ); // gives access to dt plugin options

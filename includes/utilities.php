@@ -108,24 +108,21 @@ class DT_Webform_Utilities {
 
 
         $args = [
-            'method' => 'POST',
-            'body' => [
-                'transfer_token' => $site['transfer_token'],
-            ],
+            'method' => 'GET',
             'headers' => [
                 'Authorization' => 'Bearer ' . $site['transfer_token'],
             ],
         ];
 
-        $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-public/v2/contacts/settings_fields', $args );
+        $result = wp_remote_get( 'http://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts/settings', $args );
         if ( is_wp_error( $result ) ) {
             return new WP_Error( __METHOD__, $result->get_error_message() );
         }
 
         $contact_defaults = json_decode( $result['body'], true );
-        if ( isset( $contact_defaults['sources'] ) ) {
-            set_transient( 'dt_webform_contact_defaults', $contact_defaults, 60 *60 *24 );
-            return $contact_defaults;
+        if ( isset( $contact_defaults["fields"]['sources'] ) ) {
+            set_transient( 'dt_webform_contact_defaults', $contact_defaults["fields"], 60 *60 *24 );
+            return $contact_defaults["fields"];
         } else {
             return new WP_Error( __METHOD__, 'Remote response from DT server malformed.' );
         }

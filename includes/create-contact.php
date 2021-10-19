@@ -243,7 +243,7 @@ class DT_Webform_Endpoints
                                 $fields[$field['dt_field']] = $lead_value;
                                 break;
                             case 'communication_channel':
-                                if ( ! isset( $fields[$field['dt_field']] )) {
+                                if ( !isset( $fields[$field['dt_field']] ) ){
                                     $fields[$field['dt_field']] = [];
                                 }
                                 $fields[$field['dt_field']][] = [ "value" => $lead_value ];

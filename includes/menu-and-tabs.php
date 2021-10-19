@@ -186,7 +186,7 @@ class DT_Webform_Menu
             <h2><?php echo esc_attr( $title ) ?></h2>
 
             <h2 class="nav-tab-wrapper">
-                <?php foreach ( $tab_bar as $tab) : ?>
+                <?php foreach ( $tab_bar as $tab ) : ?>
                     <a href="<?php echo esc_attr( $link . $tab['key'] ) ?>"
                        class="nav-tab <?php echo ( $active_tab == $tab['key'] ) ? esc_attr( 'nav-tab-active' ) : ''; ?>">
                         <?php echo esc_attr( $tab['label'] ) ?>
@@ -343,7 +343,7 @@ class DT_Webform_Menu
                                     </strong>
                                 </span>
                                 <?php $site_link = Site_Link_System::get_site_connection_vars( $selected_site );
-                                if ( ! is_wp_error( $site_link ) && isset( $site_link["url"] )){
+                                if ( ! is_wp_error( $site_link ) && isset( $site_link["url"] ) ){
 
                                     echo "<script type='text/javascript'>
                                     jQuery(document).ready(function () {
@@ -509,11 +509,11 @@ class DT_Webform_Menu
             <tr>
                 <td>
                     <?php
-                    foreach ($fields as $key => $value) {
+                    foreach ( $fields as $key => $value ) {
                         echo '<strong>' . esc_attr( $key ) . '</strong> (' . esc_attr( $value['type'] ) . ')<br>';
                         if ( ! empty( $value['default'] ) && is_array( $value['default'] ) ) {
-                            foreach ( $value['default'] as $k => $v) {
-                                if ('connection_types' === $key) {
+                            foreach ( $value['default'] as $k => $v ) {
+                                if ( 'connection_types' === $key ) {
                                     echo ' &nbsp;&nbsp; ' . esc_html( $v ) . '<br>';
                                 } else {
                                     echo ' &nbsp;&nbsp; ' . esc_html( $k ) . '<br>';

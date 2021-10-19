@@ -66,7 +66,7 @@ function dt_webform() {
     }
 
     $is_rest = dt_is_rest();
-    if ( $is_rest && ( strpos( dt_get_url_path(), 'webform' ) !== false || strpos( dt_get_url_path(), 'site_link_check' ) !== false )){
+    if ( $is_rest && ( strpos( dt_get_url_path(), 'webform' ) !== false || strpos( dt_get_url_path(), 'site_link_check' ) !== false ) ){
         return DT_Webform::get_instance();
     }
 
@@ -357,12 +357,12 @@ class DT_Webform {
      */
     public static function get_real_ip_address() {
         $ip = '';
-        if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ))   //check ip from share internet
+        if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) )   //check ip from share internet
         {
             // @codingStandardsIgnoreLine
             $ip = $_SERVER['HTTP_CLIENT_IP'];
         }
-        elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ))   //to check ip is pass from proxy
+        elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) )   //to check ip is pass from proxy
         {
             // @codingStandardsIgnoreLine
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
@@ -398,7 +398,7 @@ add_action( 'plugins_loaded', function (){
             $dir_path           = trailingslashit( plugin_dir_path( __FILE__ ) );
             $includes_path      = trailingslashit( $dir_path . 'includes' );
             $admin_path         = trailingslashit( $includes_path . 'admin' );
-            if ( file_exists( $admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' )){
+            if ( file_exists( $admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' ) ){
                 require( $admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' );
             }
         }

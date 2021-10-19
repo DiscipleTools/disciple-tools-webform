@@ -181,7 +181,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 
             // DT Fields
             if ( isset( $dt_webform_value['is_dt_field'] ) && ! empty( $dt_webform_value['is_dt_field'] ) ) {
-                switch ($dt_webform_value['type']) {
+                switch ( $dt_webform_value['type'] ) {
                     // multi labels, multi values
                     case 'dropdown':
                     case 'key_select':
@@ -216,7 +216,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
                     case 'multi_select':
                         $list = DT_Webform_Active_Form_Post_Type::match_dt_field_labels_with_values( $dt_webform_value['labels'], $dt_webform_value['values'] );
                         if ( count( $list ) > 0 ) {
-                        ?>
+                            ?>
                             <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                  class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                                 <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
@@ -232,7 +232,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
                                 ?>
                                 </fieldset>
                             </div>
-                        <?php
+                            <?php
                         }
                         break;
                     case 'text':
@@ -415,7 +415,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
             } // end dt fields
             // Non-DT Fields
             else {
-                switch ($dt_webform_value['type']) {
+                switch ( $dt_webform_value['type'] ) {
                     // multi labels, multi values
                     case 'dropdown':
                     case 'key_select':
@@ -567,10 +567,11 @@ function form_click_map( $dt_webform_value ) {
         <?php if ( ! empty( $dt_webform_value['labels'] ) ) : ?>
             <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                    class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value['labels'] ) ?? '' ?></label>
-        <?php endif; ?>
+        <?php endif;
 
-        <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
-        <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
+        wp_enqueue_style( 'mapbox-css', 'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css', [], "4.4" );
+        wp_enqueue_script( 'mapbox-script', 'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css', [], '4.4' );
+        ?>
 
         <!-- Widget -->
         <div class="label-map-instructions">zoom and click map to select locations</div>

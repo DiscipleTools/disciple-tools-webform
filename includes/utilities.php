@@ -13,7 +13,7 @@ class DT_Webform_Utilities {
             return false;
         }
         $meta = wp_cache_get( 'get_form_meta', $token );
-        if ( $meta) {
+        if ( $meta ) {
             return maybe_unserialize( $meta );
         }
 

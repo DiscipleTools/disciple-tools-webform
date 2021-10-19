@@ -1896,7 +1896,7 @@ class DT_Webform_Active_Form_Post_Type
             'post_type' => 'dt_webform_forms',
             'meta_value' => $token
         ] );
-        if ( $results->post_count < 1) {
+        if ( $results->post_count < 1 ) {
             return __( 'Unknown', 'dt_webform' );
         }
         return $results->post->post_title;
@@ -1907,7 +1907,7 @@ class DT_Webform_Active_Form_Post_Type
             'post_type' => 'dt_webform_forms',
             'meta_value' => $token
         ] );
-        if ( $results->post_count < 1) {
+        if ( $results->post_count < 1 ) {
             return __( 'Unknown', 'dt_webform' );
         }
         return $results->post->ID;
@@ -2073,14 +2073,14 @@ class DT_Webform_Active_Form_Post_Type
     }
 
     public static function filter_for_custom_fields( $array ) {
-        return array_filter( $array, function( $key) {
+        return array_filter( $array, function( $key ) {
             return strpos( $key, 'field_' ) === 0;
         }, ARRAY_FILTER_USE_KEY );
     }
 
     public function filter_for_core_fields( $array ) {
 
-        return array_filter( $array, function( $key) {
+        return array_filter( $array, function( $key ) {
             // @todo write dry
             if ( strpos( $key, 'header_title_field' ) === 0 ) {
                 return true;

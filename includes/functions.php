@@ -15,7 +15,7 @@ if ( ! function_exists( 'is_this_dt' ) ) {
 
         // main theme check
         $is_theme_dt = strpos( $wp_theme->get_template(), "disciple-tools-theme" ) !== false || $wp_theme->name === "Disciple Tools";
-        if ($is_theme_dt) {
+        if ( $is_theme_dt ) {
             return true;
         }
 
@@ -127,7 +127,7 @@ if ( ! is_this_dt() ) {
 
     if ( ! function_exists( 'dt_sanitize_array' ) ) {
         function dt_sanitize_array( &$array ) {
-            foreach ($array as &$value) {
+            foreach ( $array as &$value ) {
                 if ( !is_array( $value ) ) {
                     $value = sanitize_text_field( wp_unslash( $value ) );
                 } else {

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * DT_Webform_Forms_List
  * @see https://wordpress.org/plugins/custom-list-table-example/
  */
-if ( !class_exists( 'WP_List_Table' )){
+if ( !class_exists( 'WP_List_Table' ) ){
     require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 
@@ -58,8 +58,8 @@ class DT_Webform_Forms_List extends WP_List_Table {
 
     }
 
-    public function column_default( $item, $column_name){
-        switch ($column_name){
+    public function column_default( $item, $column_name ){
+        switch ( $column_name ){
             case 'name':
                 //Build row actions
                 $actions = array(
@@ -88,7 +88,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
     }
 
 
-    public function column_cb( $item){
+    public function column_cb( $item ){
         return sprintf(
             '<input type="checkbox" name="%1$s[]" value="%2$s" />',
             /*$1%s*/ $this->_args['singular'],  //Let's simply repurpose the table's singular label
@@ -123,7 +123,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
     public function process_bulk_action() {
 
         //Detect when a bulk action is being triggered...
-        if ( 'delete' === $this->current_action() && isset( $_GET['tab'] ) && $_GET['tab'] == 'remote_forms') {
+        if ( 'delete' === $this->current_action() && isset( $_GET['tab'] ) && $_GET['tab'] == 'remote_forms' ) {
             wp_die( 'Items deleted (or they would be if we had items to delete)!' );
         }
 

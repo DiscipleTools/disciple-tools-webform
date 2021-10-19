@@ -114,7 +114,7 @@ class DT_Webform_Utilities {
             ],
         ];
 
-        $result = wp_remote_get( 'http://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts/settings', $args );
+        $result = wp_remote_get( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts/settings', $args );
         if ( is_wp_error( $result ) ) {
             return new WP_Error( __METHOD__, $result->get_error_message() );
         }

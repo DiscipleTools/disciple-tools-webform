@@ -61,16 +61,13 @@ class DT_Webform_Active_Form_Post_Type
                 // if empty or error contact_fields
                 if ( is_wp_error( $this->contact_fields ) || empty( $this->contact_fields ) ) {
                     $this->contact_fields = [
-                    'sources' => [],
-                    'fields' => [
+                        'sources' => [
+                            'default' => []
+                        ],
                         'overall_status' => [
                             'type' => '',
-                            'default' => []
+                            'default' => [],
                         ]
-                    ],
-                    'channels' => [],
-                    'address_types' => [],
-                    'connection_types' => []
                     ];
                 }
 

@@ -290,6 +290,9 @@ class DT_Webform_Endpoints
         if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) && $form_meta["assigned_to"] !== "default_user" ) {
             $fields['assigned_to'] = $form_meta['assigned_to'];
             $fields['overall_status'] = 'assigned';
+            if ( isset( $form_meta["overall_status"] ) && !empty( $form_meta["overall_status"] ) ){
+                $fields['overall_status'] = $form_meta["overall_status"];
+            }
         }
 
         // Post to contact

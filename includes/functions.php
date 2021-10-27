@@ -14,7 +14,7 @@ if ( ! function_exists( 'is_this_dt' ) ) {
         }
 
         // main theme check
-        $is_theme_dt = strpos( $wp_theme->get_template(), "disciple-tools-theme" ) !== false || $wp_theme->name === "Disciple Tools";
+        $is_theme_dt = class_exists( "Disciple_Tools" );
         if ( $is_theme_dt ) {
             return true;
         }

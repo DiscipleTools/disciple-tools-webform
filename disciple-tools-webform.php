@@ -392,7 +392,7 @@ register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
  * @see https://github.com/DiscipleTools/disciple-tools-version-control/wiki/How-to-Update-the-Starter-Plugin
  */
 add_action( 'plugins_loaded', function (){
-    if ( is_admin() || wp_doing_cron() ){
+    if ( is_admin() && ! is_multisite() || is_network_admin() || wp_doing_cron() ){
         // Check for plugin updates
         if ( ! class_exists( 'Puc_v4_Factory' ) ) {
             $dir_path           = trailingslashit( plugin_dir_path( __FILE__ ) );

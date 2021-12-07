@@ -152,8 +152,8 @@ class DT_Webform_Active_Form_Post_Type
         add_meta_box( $this->post_type . '_custom_box', __( 'Custom Form', 'dt_webform' ), [ $this, 'load_custom_meta_box' ], $this->post_type, 'normal', 'high' );
         add_meta_box( $this->post_type . '_demo', __( 'Demo', 'dt_webform' ), [ $this, 'load_demo_meta_box' ], $this->post_type, 'normal', 'low' );
         add_meta_box( $this->post_type . '_localize', __( 'Localize', 'dt_webform' ), [ $this, 'load_localize_meta_box' ], $this->post_type, 'normal', 'low' );
-        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'low' );
         add_meta_box( $this->post_type . '_description', __( 'Admin Notes', 'dt_webform' ), [ $this, 'load_description_meta_box' ], $this->post_type, 'side', 'low' );
+        add_meta_box( $this->post_type . '_embed', __( 'Embed Code', 'dt_webform' ), [ $this, 'load_embed_meta_box' ], $this->post_type, 'side', 'low' );
         add_meta_box( $this->post_type . '_css', __( 'Form Styles', 'dt_webform' ), [ $this, 'load_form_styles_meta_box' ], $this->post_type, 'side', 'low' );
     }
 
@@ -806,6 +806,16 @@ class DT_Webform_Active_Form_Post_Type
             <?php
             $this->direct_link();
             ?>
+
+            <hr>
+            <?php
+            $site = dt_webform()->public_uri;
+            $token = get_metadata( 'post', $post->ID, 'token', true );
+            $full_link = esc_url( $site ) .'form.php?token='. esc_attr( $token );
+            ?>
+            <label for="embed-code">QR Direct Link</label><br>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=323a68&data=<?php echo esc_url( $full_link ) ?>" title="<?php echo esc_url( $full_link ) ?>" alt="<?php echo esc_url( $full_link ) ?>" style="width:100%;"/><br><a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=323a68&data=<?php echo esc_url( $full_link ) ?>">direct link</a>
+            <br>
             <hr>
             <div style="text-align:center;">
                 <p>Unique Form ID</p>

@@ -24,6 +24,8 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 ?>
 <html lang="en">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?></title>
     <?php
     /**

@@ -94,7 +94,6 @@ if ( ! is_this_dt() ) {
         }
     }
 
-
     if ( !function_exists( 'dt_is_rest' ) ) {
         /**
          * Checks if the current request is a WP REST API request.
@@ -105,7 +104,6 @@ if ( ! is_this_dt() ) {
          *          Also supports WP installations in subfolders
          *
          * @returns boolean
-         * @author matzeeable
          */
         function dt_is_rest( $namespace = null ) {
             $prefix = rest_get_url_prefix();

@@ -1055,10 +1055,10 @@ class DT_Webform_Utilities {
         <?php
     }
 
-    public static function get_form_html( $dt_webform_token, $dt_webform_core_fields, $dt_webform_fields ): string {
+    public static function get_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields ): string {
         ob_start();
 
-        self::echo_form_html( $dt_webform_token, $dt_webform_core_fields, $dt_webform_fields );
+        self::echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields );
 
         $html = ob_get_contents();
 
@@ -1067,13 +1067,14 @@ class DT_Webform_Utilities {
         return $html;
     }
 
-    public static function echo_form_html( $dt_webform_token, $dt_webform_core_fields, $dt_webform_fields ) {
+    public static function echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields ) {
 
         /**
          * Hidden Fields
          */
         ?>
         <input type="hidden" id="token" name="token" value="<?php echo esc_attr( $dt_webform_token ) ?>"/>
+        <input type="hidden" id="meta_campaigns" name="meta_campaigns" value="<?php echo esc_attr( $dt_webform_campaigns ) ?>"/>
         <input type="hidden" id="ip_address" name="ip_address"
                value="<?php echo esc_attr( DT_Webform::get_real_ip_address() ?? '' ) ?>"/>
 

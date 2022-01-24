@@ -13,6 +13,7 @@ require_once( '../includes/post-type-active-forms.php' );
 require_once( '../includes/functions.php' );
 
 $dt_webform_token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
+$dt_webform_campaigns = ! empty( $_GET['campaigns'] ) ? sanitize_text_field( wp_unslash( $_GET['campaigns'] ) ) : '';
 $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token );
 $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
@@ -35,7 +36,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 <div id="wrapper">
 <form id="contact-form" action="">
 
-    <?php DT_Webform_Utilities::echo_form_html( $dt_webform_token, $dt_webform_core_fields, $dt_webform_fields ); ?>
+    <?php DT_Webform_Utilities::echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields ); ?>
 
 </form>
 

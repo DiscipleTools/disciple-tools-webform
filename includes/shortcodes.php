@@ -7,8 +7,9 @@ function register_webform_shortcodes() {
 
 function webform_shortcodes_handler( $atts ): string {
     $params = shortcode_atts( array(
-        'id'    => '', // Blank post id
-        'fetch' => 'false' // If false, return url; otherwise return form elements
+        'id'          => '', // Blank post id
+        'button_only' => 'true', // If true, return url; otherwise return form elements
+        'campaigns'   => '' // Additional campaign metadata
     ), $atts );
 
     // Fetch corresponding form token
@@ -20,8 +21,12 @@ function webform_shortcodes_handler( $atts ): string {
         // Construct public url
         $public_url = trailingslashit( trailingslashit( plugin_dir_url( __DIR__ ) ) . 'public' ) . 'form.php?token=' . esc_attr( $token );
 
+        // If present, append additional url parameters
+        $campaigns  = ! empty( $params['campaigns'] ) ? '&campaigns=' . esc_attr( $params['campaigns'] ) : '';
+        $public_url .= $campaigns;
+
         // Determine required response
-        if ( $params['fetch'] === 'false' ) {
+        if ( $params['button_only'] === 'true' ) {
             return $public_url;
 
         } else {
@@ -36,7 +41,7 @@ function webform_shortcodes_handler( $atts ): string {
             $dt_webform_fields      = DT_Webform_Active_Form_Post_Type::get_extra_fields( $token );
 
             // Generate html to be returned
-            $form_html    = DT_Webform_Utilities::get_form_html( $token, $dt_webform_core_fields, $dt_webform_fields );
+            $form_html    = DT_Webform_Utilities::get_form_html( $token, $campaigns, $dt_webform_core_fields, $dt_webform_fields );
             $scripts_html = DT_Webform_Utilities::get_form_html_scripts_and_styles( $token, $dt_webform_meta, $dt_webform_fields );
 
             // Generate html to be returned

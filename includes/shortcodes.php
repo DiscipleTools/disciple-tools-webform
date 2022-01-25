@@ -42,7 +42,7 @@ function webform_shortcodes_handler( $atts ): string {
             $dt_webform_fields      = DT_Webform_Active_Form_Post_Type::get_extra_fields( $token );
 
             // Generate html to be returned
-            $form_html    = DT_Webform_Utilities::get_form_html( $token, $params['campaigns'] ?? '', $dt_webform_core_fields, $dt_webform_fields );
+            $form_html    = DT_Webform_Utilities::get_form_html( $token, get_metadata_campaigns( $params['campaigns'] ), $dt_webform_core_fields, $dt_webform_fields );
             $scripts_html = DT_Webform_Utilities::get_form_html_scripts_and_styles( $token, $dt_webform_meta, $dt_webform_fields );
 
             // Generate html to be returned
@@ -62,4 +62,16 @@ function webform_shortcodes_handler( $atts ): string {
     }
 
     return '';
+}
+
+function get_metadata_campaigns( $atts_campaigns ): string {
+
+    /**
+     * Default to incoming request campaigns param; otherwise,
+     * revert to shortcode campaigns attribute; if present!
+     */
+
+    $request_campaigns = ! empty( $_GET['campaigns'] ) ? sanitize_text_field( wp_unslash( $_GET['campaigns'] ) ) : '';
+
+    return ! empty( $request_campaigns ) ? $request_campaigns : $atts_campaigns ?? '';
 }

@@ -976,7 +976,7 @@ class DT_Webform_Utilities {
         <script type="text/javascript"
                 src="<?php echo esc_url( $public_url ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ) ) ?>"></script>
 
-        <?php $swurl = esc_url( plugin_dir_url( __FILE__ ) ) . 'sw.js' ?>
+        <?php $swurl = esc_url( plugin_dir_url( __DIR__ ) ) . 'public/sw.js' ?>
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function () {
@@ -1000,7 +1000,7 @@ class DT_Webform_Utilities {
                 'failure': "<?php echo $dt_webform_meta['js_string_failure'] ?? esc_html__( 'Sorry, Something went wrong', 'dt_webform' ) ?>",
             }
             window.SETTINGS = {
-                'spinner': ' <span class="spinner"><img src="<?php echo plugin_dir_url( __FILE__ ) ?>spinner.svg" width="20px" /></span>',
+                'spinner': ' <span class="spinner"><img src="<?php echo plugin_dir_url( __DIR__ ) ?>public/spinner.svg" width="20px" /></span>',
                 'rest_url': "<?php echo esc_url_raw( rest_url() ) ?>",
             }
             <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>

@@ -824,7 +824,7 @@ class DT_Webform_Active_Form_Post_Type
                           style="width:100%; height:100px;">[dt-webform id="<?php echo esc_attr( $post->ID ); ?>" button_only="false" campaigns=""]</textarea>
                 <br><br>
 
-                <a href="<?php echo esc_url( apply_shortcodes( '[dt-webform id="' . $post->ID . '" button_only="true" campaigns="Shortcode"]' ) ) ?>"
+                <a href="<?php echo esc_url( apply_shortcodes( '[dt-webform id="' . $post->ID . '" button_only="true" campaigns=""]' ) ) ?>"
                    target="_blank">Open shortcode in its own window.</a>
             </div>
             <br>

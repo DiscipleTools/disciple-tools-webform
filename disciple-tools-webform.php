@@ -25,6 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 $dt_webform_required_dt_theme_version = '1.0';
 
 require_once( 'includes/functions.php' );
+require_once( 'includes/shortcodes.php' );
 
 /*******************************************************************************************************************
  * MIGRATION ENGINE

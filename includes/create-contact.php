@@ -272,6 +272,11 @@ class DT_Webform_Endpoints
             $fields['sources']['values'] = [ [ "value" => $form_meta['source'] ] ];
         }
 
+        // metadata - campaigns
+        if ( isset( $new_lead_meta['meta_campaigns'] ) && ! empty( $new_lead_meta['meta_campaigns'] ) ) {
+            $fields['campaigns']['values'] = [ [ "value" => $new_lead_meta['meta_campaigns'] ] ];
+        }
+
         // ip address
         if ( ! empty( $new_lead_meta['ip_address'] ) ) {
             $notes['ip_address'] = __( 'IP Address: ', 'dt_webform' ) . $new_lead_meta['ip_address'];

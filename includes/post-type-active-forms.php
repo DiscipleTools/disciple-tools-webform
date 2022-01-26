@@ -817,6 +817,19 @@ class DT_Webform_Active_Form_Post_Type
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=323a68&data=<?php echo esc_url( $full_link ) ?>" title="<?php echo esc_url( $full_link ) ?>" alt="<?php echo esc_url( $full_link ) ?>" style="width:100%;"/><br><a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=323a68&data=<?php echo esc_url( $full_link ) ?>">direct link</a>
             <br>
             <hr>
+
+            <div style="text-align:center;">
+                <p>Shortcode</p>
+                <textarea id="embed_code_shortcode"
+                          style="width:100%; height:100px;">[dt-webform id="<?php echo esc_attr( $post->ID ); ?>" button_only="false" campaigns=""]</textarea>
+                <br><br>
+
+                <a href="<?php echo esc_url( apply_shortcodes( '[dt-webform id="' . $post->ID . '" button_only="true" campaigns=""]' ) ) ?>"
+                   target="_blank">Open shortcode in its own window.</a>
+            </div>
+            <br>
+
+            <hr>
             <div style="text-align:center;">
                 <p>Unique Form ID</p>
                 <?php echo esc_attr( get_post_meta( $post->ID, 'token', true ) ) ?>

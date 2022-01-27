@@ -819,10 +819,20 @@ class DT_Webform_Active_Form_Post_Type
             <hr>
 
             <div style="text-align:center;">
-                <p>Shortcode</p>
+                <p>Shortcode [<a target="_blank"
+                                 href="https://github.com/DiscipleTools/disciple-tools-webform/wiki/1.-How-to-Build-a-Simple-Form#6-copy-embed-code-and-paste-into-website">?</a>]
+                </p>
                 <textarea id="embed_code_shortcode"
-                          style="width:100%; height:100px;">[dt-webform id="<?php echo esc_attr( $post->ID ); ?>" button_only="false" campaigns=""]</textarea>
-                <br><br>
+                          style="width:100%; height:75px;">[dt-webform id="<?php echo esc_attr( $post->ID ); ?>" button_only="false" campaigns=""]</textarea>
+                <br>
+
+                <p>Attributes</p>
+                <strong>id:</strong> Webform id; which can be found within the URL's post parameter.<br><br>
+                <strong>button_only:</strong> A boolean (True/False) attribute. If True, then shortcode to be converted
+                into a URL which points to corresponding webform. However, if False; then shortcode to be converted into
+                actual webform.<br><br>
+                <strong>campaigns:</strong> Specify additional metadata tag information; which will be added to
+                Campaigns DT field, following contact creation.<br><br>
 
                 <a href="<?php echo esc_url( apply_shortcodes( '[dt-webform id="' . $post->ID . '" button_only="true" campaigns=""]' ) ) ?>"
                    target="_blank">Open shortcode in its own window.</a>

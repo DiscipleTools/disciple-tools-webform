@@ -1238,7 +1238,7 @@ class DT_Webform_Utilities {
                                                    style="width:95%" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?> /><span
                                                 id="mapbox-spinner-button"
                                                 style="display:none;width:5%;padding:8px;"><img
-                                                    src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) ?>spinner.svg"
+                                                    src="<?php echo esc_url( plugin_dir_url( __DIR__ ) ) ?>spinner.svg"
                                                     alt="spinner" style="width: 20px;"/></span>
                                             <div id="mapbox-autocomplete-list" class="mapbox-autocomplete-items"></div>
                                             <div style="display:none;">

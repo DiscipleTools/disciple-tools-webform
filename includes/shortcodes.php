@@ -48,6 +48,7 @@ function webform_shortcodes_handler( $atts ): string {
             // Generate html to be returned
             return "
             <div id=\"wrapper\">
+                {$scripts_html}
                 <form id=\"contact-form\" action=\"\">
                     {$form_html}
                 </form>
@@ -55,7 +56,6 @@ function webform_shortcodes_handler( $atts ): string {
                 <div id=\"report\"></div>
                 <div id=\"offlineWarningContainer\"></div>
 
-                {$scripts_html}
             </div>
             ";
         }

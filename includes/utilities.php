@@ -1033,13 +1033,16 @@ class DT_Webform_Utilities {
                     if ( is_this_dt() && ! class_exists( 'DT_Mapbox_API' ) ) {
                         require_once( get_template_directory() . '/dt-mapping/geocode-api/mapbox-api.php' );
                     } else if ( ! is_this_dt() ) {
-                        require_once( '../dt-mapping/geocode-api/mapbox-api.php' );
+                        require_once( plugin_dir_path( __DIR__ ) . 'dt-mapping/geocode-api/mapbox-api.php' );
                     }
-                    ?>
-                    <script type="text/javascript" src="<?php echo DT_Mapbox_API::$mapbox_gl_js ?>"></script>
-                    <link rel="stylesheet" href="<?php echo DT_Mapbox_API::$mapbox_gl_css ?>" type="text/css"
-                          media="all">
-                    <?php
+                    if ( class_exists("DT_Mapbox_API")){
+                        ?>
+                        <script type="text/javascript" src="<?php echo DT_Mapbox_API::$mapbox_gl_js ?>"></script>
+                        <link rel="stylesheet" href="<?php echo DT_Mapbox_API::$mapbox_gl_css ?>" type="text/css"
+                              media="all">
+                        <?php
+
+                    }
                     break;
                 endif;
             endforeach;
@@ -1210,6 +1213,12 @@ class DT_Webform_Utilities {
                             <?php
                             break;
                         case 'location':
+
+                            if ( is_this_dt() && ! class_exists( 'DT_Mapbox_API' ) ) {
+                                require_once( get_template_directory() . '/dt-mapping/geocode-api/mapbox-api.php' );
+                            } else if ( ! is_this_dt() ) {
+                                require_once( plugin_dir_path( __DIR__ ) . 'dt-mapping/geocode-api/mapbox-api.php' );
+                            }
 
                             if ( $dt_webform_value['values'] === 'click_map' ) {
                                 form_click_map( $dt_webform_value );

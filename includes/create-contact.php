@@ -300,6 +300,7 @@ class DT_Webform_Endpoints
             }
         }
 
+        $fields = apply_filters( "dt_webform_fields_before_submit", $fields );
         // Post to contact
         if ( is_this_dt() ) { // Create contact if hosted in DT
 

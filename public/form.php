@@ -17,6 +17,7 @@ $dt_webform_campaigns = ! empty( $_GET['campaigns'] ) ? sanitize_text_field( wp_
 $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token );
 $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
+$public_url = trailingslashit( plugin_dir_url( __FILE__ ) );
 
 if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['disable'] ) {
     die( 'form is disabled' );
@@ -29,7 +30,7 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?></title>
 
-    <?php DT_Webform_Utilities::echo_form_html_scripts_and_styles( $dt_webform_token, $dt_webform_meta, $dt_webform_fields ); ?>
+    <?php DT_Webform_Utilities::echo_form_html_scripts_and_styles( $dt_webform_token, $dt_webform_meta, $dt_webform_fields, $public_url ); ?>
 
 </head>
 <body>

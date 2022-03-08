@@ -977,7 +977,7 @@ class DT_Webform_Utilities {
         <script type="text/javascript"
                 src="<?php echo esc_url( $public_url ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ) ) ?>"></script>
 
-        <?php $swurl = esc_url( plugin_dir_url( __DIR__ ) ) . 'public/sw.js' ?>
+        <?php $swurl = $public_url . 'sw.js' ?>
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function () {
@@ -1001,7 +1001,7 @@ class DT_Webform_Utilities {
                 'failure': "<?php echo $dt_webform_meta['js_string_failure'] ?? esc_html__( 'Sorry, Something went wrong', 'dt_webform' ) ?>",
             }
             window.SETTINGS = {
-                'spinner': ' <span class="spinner"><img src="<?php echo plugin_dir_url( __DIR__ ) ?>public/spinner.svg" width="20px" /></span>',
+                'spinner': ' <span class="spinner"><img src="<?php echo $public_url ?>spinner.svg" width="20px" /></span>',
                 'rest_url': "<?php echo esc_url_raw( rest_url() ) ?>",
             }
             <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>
@@ -1059,10 +1059,10 @@ class DT_Webform_Utilities {
         <?php
     }
 
-    public static function get_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields ): string {
+    public static function get_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields, $public_url ): string {
         ob_start();
 
-        self::echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields );
+        self::echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields, $public_url );
 
         $html = ob_get_contents();
 
@@ -1071,7 +1071,7 @@ class DT_Webform_Utilities {
         return $html;
     }
 
-    public static function echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields ) {
+    public static function echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields, $public_url ) {
 
         /**
          * Hidden Fields
@@ -1239,7 +1239,7 @@ class DT_Webform_Utilities {
                                                    style="width:95%" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?> /><span
                                                 id="mapbox-spinner-button"
                                                 style="display:none;width:5%;padding:8px;"><img
-                                                    src="<?php echo esc_url( plugin_dir_url( __DIR__ ) ) ?>spinner.svg"
+                                                    src="<?php echo esc_url( $public_url ) ?>spinner.svg"
                                                     alt="spinner" style="width: 20px;"/></span>
                                             <div id="mapbox-autocomplete-list" class="mapbox-autocomplete-items"></div>
                                             <div style="display:none;">

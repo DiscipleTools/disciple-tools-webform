@@ -17,6 +17,7 @@ $dt_webform_campaigns = ! empty( $_GET['campaigns'] ) ? sanitize_text_field( wp_
 $dt_webform_meta = DT_Webform_Utilities::get_form_meta( $dt_webform_token );
 $dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $dt_webform_token );
 $dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $dt_webform_token );
+$public_url = trailingslashit( plugin_dir_url( __FILE__ ) );
 
 if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['disable'] ) {
     die( 'form is disabled' );
@@ -29,14 +30,14 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo esc_html( $dt_webform_core_fields['header_title_field']['label'] ?? '' ) ?></title>
 
-    <?php DT_Webform_Utilities::echo_form_html_scripts_and_styles( $dt_webform_token, $dt_webform_meta, $dt_webform_fields ); ?>
+    <?php DT_Webform_Utilities::echo_form_html_scripts_and_styles( $dt_webform_token, $dt_webform_meta, $dt_webform_fields, $public_url ); ?>
 
 </head>
 <body>
 <div id="wrapper">
 <form id="contact-form" action="">
 
-    <?php DT_Webform_Utilities::echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields ); ?>
+    <?php DT_Webform_Utilities::echo_form_html( $dt_webform_token, $dt_webform_campaigns, $dt_webform_core_fields, $dt_webform_fields, $public_url ); ?>
 
 </form>
 
@@ -48,6 +49,9 @@ if ( isset( $dt_webform_meta['disable'] ) && 'disabled' === $dt_webform_meta['di
 
 <?php
 function form_click_map( $dt_webform_value ) {
+    $public_url = trailingslashit( plugin_dir_url( __FILE__ ) );
+    dt_write_log( __METHOD__ );
+    dt_write_log( $public_url );
     ?>
     <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
          class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
@@ -75,7 +79,7 @@ function form_click_map( $dt_webform_value ) {
 
         <!-- Mapbox script -->
         <script>
-            window.spinner = '<img class="load-spinner" src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ) . 'spinner.svg' ?>" width="20px" />'
+            window.spinner = '<img class="load-spinner" src="<?php echo esc_url( $public_url ) . 'public/spinner.svg' ?>" width="20px" />'
             mapboxgl.accessToken = '<?php echo esc_html( get_option( 'dt_mapbox_api_key' ) ) ?>';
             var map = new mapboxgl.Map({
                 container: 'map',

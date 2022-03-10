@@ -1729,7 +1729,7 @@ class DT_Webform_Active_Form_Post_Type
             'section'     => 'appearance',
         ];
         $fields['disable'] = [
-            'name'        => __( 'Disable the form', 'dt_webform' ),
+            'name'        => __( 'Form Status', 'dt_webform' ),
             'description' => '',
             'type'        => 'key_select',
             'default'     => [

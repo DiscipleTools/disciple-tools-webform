@@ -1578,11 +1578,11 @@ class DT_Webform_Active_Form_Post_Type
                                     ]
                                 );
 
-                                if ( function_exists( 'dt_get_base_user' ) ){
-                                    $base_user = dt_get_base_user();
-                                } else {
-                                    $base_user = wp_get_current_user();
-                                }
+                            }
+                            if ( function_exists( 'dt_get_base_user' ) ){
+                                $base_user = dt_get_base_user();
+                            } else {
+                                $base_user = wp_get_current_user();
                             }
 
 

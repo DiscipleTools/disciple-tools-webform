@@ -1562,26 +1562,27 @@ class DT_Webform_Active_Form_Post_Type
                             $roles = [];
                             $wp_roles       = wp_roles()->roles;
                             $selected_value = get_post_meta( $post_id, 'assigned_to', true );
-
-                            foreach ( $wp_roles as $role_name => $role_obj ) {
-                                if ( ! empty( $role_obj['capabilities']['access_contacts'] ) ) {
-                                    $roles[] = $role_name;
+                            $potential_user_list = [];
+                            if ( is_this_dt() ){
+                                foreach ( $wp_roles as $role_name => $role_obj ){
+                                    if ( !empty( $role_obj['capabilities']['access_contacts'] ) ){
+                                        $roles[] = $role_name;
+                                    }
                                 }
-                            }
 
-                            $potential_user_list = get_users(
-                                [
-                                    'order'    => 'ASC',
-                                    'orderby'  => 'display_name',
-                                    'role__in' => $roles,
-                                ]
-                            );
+                                $potential_user_list = get_users(
+                                    [
+                                        'order' => 'ASC',
+                                        'orderby' => 'display_name',
+                                        'role__in' => $roles,
+                                    ]
+                                );
 
-                            if ( function_exists( 'dt_get_base_user' ) ) {
-                                $base_user           = dt_get_base_user();
-                            }
-                            else {
-                                $base_user           = wp_get_current_user();
+                                if ( function_exists( 'dt_get_base_user' ) ){
+                                    $base_user = dt_get_base_user();
+                                } else {
+                                    $base_user = wp_get_current_user();
+                                }
                             }
 
 

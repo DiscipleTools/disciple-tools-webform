@@ -957,7 +957,7 @@ class DT_Webform_Utilities {
         return $html;
     }
 
-    public static function echo_form_html_scripts_and_styles( $dt_webform_token, $dt_webform_meta, $dt_webform_fields, $public_url ) {
+    public static function echo_form_html_scripts_and_styles( $dt_webform_token, $dt_webform_meta, $dt_webform_fields, $public_url ){
 
         /**
          * Coding standards require enqueue of files, but for the purpose of a light iframe, we don't want
@@ -965,8 +965,6 @@ class DT_Webform_Utilities {
          */
         // @codingStandardsIgnoreStart
 
-//        $public_url =  trailingslashit( plugin_dir_url( '/' ) ) . 'public/' ;
-        dt_write_log( $public_url );
         ?>
 
         <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery.min.js"></script>

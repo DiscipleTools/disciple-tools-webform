@@ -42,8 +42,9 @@ function webform_shortcodes_handler( $atts ): string {
             $dt_webform_fields      = DT_Webform_Active_Form_Post_Type::get_extra_fields( $token );
 
             // Generate html to be returned
-            $form_html    = DT_Webform_Utilities::get_form_html( $token, get_metadata_campaigns( $params['campaigns'] ), $dt_webform_core_fields, $dt_webform_fields );
-            $scripts_html = DT_Webform_Utilities::get_form_html_scripts_and_styles( $token, $dt_webform_meta, $dt_webform_fields );
+            $public_url = trailingslashit( plugin_dir_url( __DIR__ ) ) . 'public/';
+            $form_html    = DT_Webform_Utilities::get_form_html( $token, get_metadata_campaigns( $params['campaigns'] ), $dt_webform_core_fields, $dt_webform_fields, $public_url );
+            $scripts_html = DT_Webform_Utilities::get_form_html_scripts_and_styles( $token, $dt_webform_meta, $dt_webform_fields, $public_url );
 
             // Generate html to be returned
             return "

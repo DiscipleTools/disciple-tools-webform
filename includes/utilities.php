@@ -235,7 +235,7 @@ class DT_Webform_Utilities {
                     }
                     .input-label {
                         font-size: 1em;
-
+                        display: inline-block;
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -378,7 +378,7 @@ class DT_Webform_Utilities {
 
                     .input-label {
                         font-size: 1.2em;
-
+                        display: inline-block;
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -504,7 +504,7 @@ class DT_Webform_Utilities {
                         font-weight: bolder;
                         padding: .5em 0;
                     }
-                   #description {
+                    #description {
                         padding: .5em 0;
                     }
                     #section-name {}
@@ -576,7 +576,7 @@ class DT_Webform_Utilities {
                         padding:5px;
                     }
                     .input-tel {
-                       padding: .5em;
+                        padding: .5em;
                         font-size: 1em;
                         width: 100%;
                     }
@@ -616,6 +616,7 @@ class DT_Webform_Utilities {
                     }
                     .input-label {
                         font-size: 1.2em;
+                        display: inline-block;
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -648,7 +649,7 @@ class DT_Webform_Utilities {
                     fieldset {
                         border:none;
                     }
-                    ';
+                ';
                 break;
             default:
                 $css = '
@@ -663,7 +664,7 @@ class DT_Webform_Utilities {
                         font-weight: bolder;
                         padding: .5em 0;
                     }
-                   #description {
+                    #description {
                         padding: .5em 0;
                     }
                     #section-name {}
@@ -774,6 +775,7 @@ class DT_Webform_Utilities {
                     }
                     .input-label {
                         font-size: 1.2em;
+                        display: inline-block;
                     }
                     .label-dropdown {}
                     .label-multi_radio {
@@ -806,7 +808,7 @@ class DT_Webform_Utilities {
                     fieldset {
                         border:none;
                     }
-                    ';
+                ';
 
                 $ids = '';
                 foreach ( $meta as $key => $value ) {
@@ -1097,7 +1099,7 @@ class DT_Webform_Utilities {
         <?php if ( isset( $dt_webform_core_fields['name_field'] ) && $dt_webform_core_fields['name_field']['hidden'] !== 'yes' ) : ?>
             <div id="section-name" class="section">
                 <label for="name"
-                       class="input-label label-name"><?php echo esc_html( $dt_webform_core_fields['name_field']['label'] ) ?? '' ?></label><br>
+                       class="input-label label-name"><?php echo esc_html( $dt_webform_core_fields['name_field']['label'] ) ?? '' ?></label>
                 <input type="text" id="name" name="name" class="input-text input-name"
                        value="" <?php echo ( $dt_webform_core_fields['name_field']['required'] === 'yes' ) ? 'required' : '' ?>/>
             </div>
@@ -1106,7 +1108,7 @@ class DT_Webform_Utilities {
         <?php if ( isset( $dt_webform_core_fields['phone_field'] ) && $dt_webform_core_fields['phone_field']['hidden'] !== 'yes' ) : ?>
             <div id="section-phone" class="section">
                 <label for="phone"
-                       class="input-label"><?php echo esc_html( $dt_webform_core_fields['phone_field']['label'] ) ?? '' ?></label><br>
+                       class="input-label"><?php echo esc_html( $dt_webform_core_fields['phone_field']['label'] ) ?? '' ?></label>
                 <input type="tel" id="phone" name="phone" class="input-text input-phone"
                        value="" <?php echo ( $dt_webform_core_fields['phone_field']['required'] == 'yes' ) ? 'required' : '' ?>/>
             </div>
@@ -1115,7 +1117,7 @@ class DT_Webform_Utilities {
         <?php if ( isset( $dt_webform_core_fields['email_field'] ) && $dt_webform_core_fields['email_field']['hidden'] !== 'yes' ) : ?>
             <div id="section-email" class="section">
                 <label for="email"
-                       class="input-label label-email"><?php echo esc_html( $dt_webform_core_fields['email_field']['label'] ) ?? '' ?></label><br>
+                       class="input-label label-email"><?php echo esc_html( $dt_webform_core_fields['email_field']['label'] ) ?? '' ?></label>
                 <input type="email" id="email2" name="email2" class="input-text email" value=""/>
                 <input type="email" id="email" name="email" class="input-text input-email"
                        value="" <?php echo ( $dt_webform_core_fields['email_field']['required'] === 'yes' ) ? 'required' : '' ?>/>
@@ -1153,7 +1155,6 @@ class DT_Webform_Utilities {
                                            class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
                                         <?php echo esc_attr( $dt_webform_value['title'] ) ?>
                                     </label>
-                                    <br>
                                     <select id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                             class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
                                             name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
@@ -1182,7 +1183,6 @@ class DT_Webform_Utilities {
                                            class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
                                         <?php echo esc_attr( $dt_webform_value['title'] ) ?>
                                     </label>
-                                    <br>
                                     <fieldset>
                                         <?php
                                         foreach ( $list as $item ) {
@@ -1202,7 +1202,6 @@ class DT_Webform_Utilities {
                                  class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?> section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
                                 <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                        class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['labels'] ?? '' ) ?></label>
-                                <br>
                                 <input type="<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
                                        id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
@@ -1228,7 +1227,7 @@ class DT_Webform_Utilities {
                                      class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?> section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
                                     <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                            class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['labels'] ?? '' ) ?></label>
-                                    <br>
+
                                     <div id="mapbox-wrapper">
                                         <div id="mapbox-autocomplete" class="mapbox-autocomplete input-group"
                                              data-autosubmit="true">
@@ -1410,7 +1409,6 @@ class DT_Webform_Utilities {
                                            class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
                                         <?php echo esc_attr( $dt_webform_value['title'] ) ?>
                                     </label>
-                                    <br>
                                     <select id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                             class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
                                             name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
@@ -1435,7 +1433,7 @@ class DT_Webform_Utilities {
                                 <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                      class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                                     <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
-                                           class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['title'] ) ?></label><br>
+                                           class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['title'] ) ?></label>
                                     <?php
                                     foreach ( $list as $index => $item ) {
                                         $checked = '';
@@ -1473,7 +1471,7 @@ class DT_Webform_Utilities {
                                  class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?> section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
                                 <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                        class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['labels'] ?? '' ) ?></label>
-                                <br>
+
                                 <input type="<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
                                        id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
@@ -1510,7 +1508,6 @@ class DT_Webform_Utilities {
                                  class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                                 <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                        class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value['labels'] ) ?? '' ?></label>
-                                <br>
                                 <textarea id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                           name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                           class="input-textarea input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>></textarea>

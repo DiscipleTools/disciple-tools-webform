@@ -8,7 +8,7 @@ function register_webform_shortcodes() {
 function webform_shortcodes_handler( $atts ): string {
     $params = shortcode_atts( array(
         'id'          => '', // Blank post id
-        'button_only' => 'true', // If true, return url; otherwise return form elements
+        'button_only' => 'false', // If true, return url; otherwise return form elements
         'campaigns'   => '' // Additional campaign metadata
     ), $atts );
 

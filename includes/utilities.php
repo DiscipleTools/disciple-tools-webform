@@ -1434,6 +1434,7 @@ class DT_Webform_Utilities {
                                      class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
                                     <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
                                            class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['title'] ) ?></label>
+                                    <div>
                                     <?php
                                     foreach ( $list as $index => $item ) {
                                         $checked = '';
@@ -1443,7 +1444,9 @@ class DT_Webform_Utilities {
                                         echo '<span class="span-radio"><input type="radio" class="input-' . esc_attr( $dt_webform_value['type'] ) . '" name="' . esc_attr( $dt_webform_value['key'] ) . '" value="' . esc_html( $item ) . '" ' . esc_attr( $checked ) . '>' . esc_html( $item ) . '</span>';
                                     }
                                     ?>
-                                    <br style="clear: both;"/></div>
+                                    </div>
+                                    <br style="clear: both;"/>
+                                </div>
                                 <?php
                             }
                             break;

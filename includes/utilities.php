@@ -1411,7 +1411,7 @@ class DT_Webform_Utilities {
                                     </label>
                                     <select id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                             class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
-                                            name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
+                                            name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>>
                                         <?php
                                         if ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' ) {
                                             echo '<option></option>';

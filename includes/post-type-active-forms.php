@@ -1588,16 +1588,23 @@ class DT_Webform_Active_Form_Post_Type
 
 
                             echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td>';
-                            ?>
-                            <select name="<?php echo esc_attr( $k ); ?>">
-                                <option value="default_user">Default User</option>
-                                <?php foreach ( $potential_user_list as $potential_user ): ?>
-                                    <option
-                                        value="<?php echo esc_attr( $potential_user->ID ); ?>" <?php if ( $potential_user->ID == $selected_value || ! $selected_value && $potential_user->ID == $base_user->ID ): ?> selected <?php endif; ?> ><?php echo esc_attr( $potential_user->display_name ); ?></option>
-                                <?php endforeach; ?>
-                            </select>
 
-                            <?php
+                            if ( is_this_dt() ) {
+                                ?>
+                                <select name="<?php echo esc_attr( $k ); ?>">
+                                    <option value="default_user">Default User</option>
+                                    <?php foreach ( $potential_user_list as $potential_user ): ?>
+                                        <option
+                                            value="<?php echo esc_attr( $potential_user->ID ); ?>" <?php if ( $potential_user->ID == $selected_value || ! $selected_value && $potential_user->ID == $base_user->ID ): ?> selected <?php endif; ?> ><?php echo esc_attr( $potential_user->display_name ); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php
+                            } else {
+                                ?>
+                                <input name="<?php echo esc_attr( $k ); ?>" style="min-width: 80%;"/>
+                                <?php
+                            }
+
                             echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
                             break;

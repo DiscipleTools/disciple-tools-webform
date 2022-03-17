@@ -1076,14 +1076,32 @@ class DT_Webform_Active_Form_Post_Type
                           placeholder="One value per line. Underscores allowed. No spaces or special characters." /><?php echo esc_textarea( $data['labels'] ) ?></textarea>
                             </td>
             <!-- Values-->
-            <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
-                <?php
-                $this->template_pre_selected_cell( $unique_key, $data );
-                echo '<hr>';
+            <?php
+            if ( ! in_array( $data['type'], [ 'multi_radio' ] ) ) {
                 ?>
-            </td>
+                <td id="values-cell-<?php echo esc_attr( $unique_key ) ?>">
+                    <?php
+                    $this->template_pre_selected_cell( $unique_key, $data );
+                    echo '<hr>';
+                    ?>
+                </td>
+                <?php
+            } else {
+                ?>
+                <td></td>
+                <?php
+            }
+            ?>
             <!-- Required -->
-            <?php $this->template_required_cell( $unique_key, $data ); ?>
+            <?php
+            if ( ! in_array( $data['type'], [ 'multi_radio' ] ) ) {
+                $this->template_required_cell( $unique_key, $data );
+            } else {
+                ?>
+                <td></td>
+                <?php
+            }
+            ?>
             <!-- Order -->
             <?php $this->template_order_cell( $unique_key, $data ); ?>
             <!-- Action -->

@@ -1460,6 +1460,7 @@ class DT_Webform_Utilities {
                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                        class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
                                        value="<?php echo esc_html( $dt_webform_value['labels'] ) ?>"
+                                       data-selected="<?php echo esc_html( $dt_webform_value['selected'] ?? '' ) ?>"
                                 />
                                 <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                        class="label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value['labels'] ) ?></label>

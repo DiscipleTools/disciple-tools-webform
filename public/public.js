@@ -195,7 +195,6 @@ async function checkStorage() {
 
 }
 
-
 jQuery(document).ready(function () {
 
     if ( getUrlParameter('success') ) {
@@ -221,5 +220,23 @@ jQuery(document).ready(function () {
             button.html( window.TRANSLATION.submit ).prop('disabled', false)
         }
 
+      // Enforce check to submit requirements
+      enforce_requires_check_to_submit();
+
     }, 1000);
+
+  function enforce_requires_check_to_submit() {
+    jQuery('.input-checkbox').each(function () {
+      if (jQuery(this).data('selected') === 'check_to_submit') {
+        jQuery('#submit-button').prop('disabled', true);
+      }
+    });
+  }
+
+  jQuery('.input-checkbox').on('click', function () {
+    if (jQuery(this).data('selected') === 'check_to_submit') {
+      jQuery('#submit-button').prop('disabled', !jQuery(this).prop('checked'));
+    }
+  });
+
 })

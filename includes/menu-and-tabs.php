@@ -224,6 +224,8 @@ class DT_Webform_Menu
 
         if ( ! is_this_dt() ) {
             $this->metabox_select_site();
+
+        } else {
             $this->metabox_list_users();
         }
 

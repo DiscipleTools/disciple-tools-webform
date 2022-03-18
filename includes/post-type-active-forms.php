@@ -1130,7 +1130,8 @@ class DT_Webform_Active_Form_Post_Type
         ?>
         <td>
             <select name="<?php echo esc_attr( $unique_key ) ?>[required]">
-                <option value="<?php echo esc_attr( $data['required'] ) ?>"><?php echo esc_attr( ucwords( $data['required'] ) ) ?></option>
+                <option
+                    value="<?php echo esc_attr( $data['required'] ?? '' ) ?>"><?php echo esc_attr( ucwords( $data['required'] ?? '' ) ) ?></option>
                 <option disabled>---</option>
                 <option value="no"><?php echo esc_attr__( 'No', 'dt_webform' ) ?></option>
                 <option value="yes"><?php echo esc_attr__( 'Yes', 'dt_webform' ) ?></option>
@@ -1143,7 +1144,8 @@ class DT_Webform_Active_Form_Post_Type
         $options = $this->select_options();
         ?>
         <select style="width:100%;" name="<?php echo esc_attr( $unique_key ) ?>[selected]">
-            <option value="<?php echo esc_attr( $data['selected'] ) ?>" selected><?php echo esc_attr( $options[$data['selected']] ) ?? '' ?></option>
+            <option value="<?php echo esc_attr( $data['selected'] ?? '' ) ?>"
+                    selected><?php echo esc_attr( $options[ $data['selected'] ?? '' ] ?? '' ) ?? '' ?></option>
             <option disabled>---</option>
             <?php
             foreach ( $options as $index => $option ) {
@@ -1545,7 +1547,7 @@ class DT_Webform_Active_Form_Post_Type
                                         $contact_defaults = $this->contact_fields;
                                         $selected_value = get_post_meta( $post_id, 'overall_status', true );
 
-                                        echo '<option value="new">'.esc_attr( $contact_defaults['overall_status']['default']['new']['label'] ).'</option><option disabled>-----</option>';
+                                        echo '<option value="new">'.esc_attr( $contact_defaults['overall_status']['default']['new']['label'] ?? '' ).'</option><option disabled>-----</option>';
                                         foreach ( $contact_defaults['overall_status']['default']  as $kk => $vv ) {
                                             echo '<option value="' . esc_attr( $kk ) . '" ';
                                             if ( $kk === $selected_value ) {
@@ -1591,7 +1593,7 @@ class DT_Webform_Active_Form_Post_Type
 
                             if ( is_this_dt() ) {
                                 ?>
-                                <select name="<?php echo esc_attr( $k ); ?>">
+                                <select name="<?php echo esc_attr( $k ); ?>" class="regular-text">
                                     <option value="default_user">Default User</option>
                                     <?php foreach ( $potential_user_list as $potential_user ): ?>
                                         <option
@@ -1601,7 +1603,8 @@ class DT_Webform_Active_Form_Post_Type
                                 <?php
                             } else {
                                 ?>
-                                <input name="<?php echo esc_attr( $k ); ?>" style="min-width: 80%;"/>
+                                <input type="text" name="<?php echo esc_attr( $k ); ?>" class="regular-text"
+                                       value="<?php echo esc_attr( $selected_value ?? '' ); ?>"/>
                                 <?php
                             }
 

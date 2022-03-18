@@ -224,6 +224,9 @@ class DT_Webform_Menu
 
         if ( ! is_this_dt() ) {
             $this->metabox_select_site();
+
+        } else {
+            $this->metabox_list_users();
         }
 
         $this->metabox_fail_email();
@@ -442,6 +445,54 @@ class DT_Webform_Menu
 
     public function metabox_help_menu() {
         ?>
+        <?php
+    }
+
+    public function metabox_list_users() {
+        ?>
+        <table class="widefat striped">
+            <thead>
+            <tr>
+                <th>Available Users IDs For Remote Form</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <?php
+                    $roles    = [];
+                    $wp_roles = wp_roles()->roles;
+                    foreach ( $wp_roles as $role_name => $role_obj ) {
+                        if ( ! empty( $role_obj['capabilities']['access_contacts'] ) ) {
+                            $roles[] = $role_name;
+                        }
+                    }
+
+                    $potential_user_list = get_users(
+                        [
+                            'order'    => 'ASC',
+                            'orderby'  => 'display_name',
+                            'role__in' => $roles,
+                        ]
+                    );
+
+                    if ( ! empty( $potential_user_list ) ) {
+                        echo '<select style="min-width: 50%;">';
+                        foreach ( $potential_user_list as $potential_user ) {
+                            $value = $potential_user->ID;
+                            $name  = $potential_user->display_name . ' [ id: ' . $value . ' ]';
+                            ?>
+                            <option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_attr( $name ); ?></option>
+                            <?php
+                        }
+                        echo '</select>';
+                    }
+                    ?>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
         <?php
     }
 

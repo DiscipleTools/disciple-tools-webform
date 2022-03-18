@@ -1532,6 +1532,7 @@ class DT_Webform_Active_Form_Post_Type
                                         }
                                         ?>
                                     </select>
+                                    <p class="description"><?php echo esc_html( $v['description'] ) ?></p>
                                 </td>
                             </tr>
 
@@ -1557,6 +1558,7 @@ class DT_Webform_Active_Form_Post_Type
                                         }
                                         ?>
                                     </select>
+                                    <p class="description"><?php echo esc_html( $v['description'] ) ?></p>
                                 </td>
                             </tr>
                             <?php
@@ -1589,10 +1591,9 @@ class DT_Webform_Active_Form_Post_Type
                             }
 
 
-                            echo '<tr valign="top"><th scope="row"><label for="' . esc_attr( $k ) . '">' . esc_attr( $v['name'] ) . '</label></th><td>';
-
                             if ( is_this_dt() ) {
                                 ?>
+                                <tr><th scope="row"><label for="<?php echo esc_html( $k ); ?>"><?php echo esc_html( esc_attr( $v['name'] ) ); ?></label></th><td>
                                 <select name="<?php echo esc_attr( $k ); ?>" class="regular-text">
                                     <option value="default_user">Default User</option>
                                     <?php foreach ( $potential_user_list as $potential_user ): ?>
@@ -1600,15 +1601,17 @@ class DT_Webform_Active_Form_Post_Type
                                             value="<?php echo esc_attr( $potential_user->ID ); ?>" <?php if ( $potential_user->ID == $selected_value || ! $selected_value && $potential_user->ID == $base_user->ID ): ?> selected <?php endif; ?> ><?php echo esc_attr( $potential_user->display_name ); ?></option>
                                     <?php endforeach; ?>
                                 </select>
+                                <p class="description"><?php echo esc_html( $v['description'] ) ?></p>
                                 <?php
                             } else {
                                 ?>
-                                <input type="text" name="<?php echo esc_attr( $k ); ?>" class="regular-text"
+                                <tr><th scope="row"><label for="<?php echo esc_html( $k ); ?>" title="<?php echo esc_html( $v['description'] ?? "" ); ?>">Assign to User ID</label></th><td>
+                                <input type="number" name="<?php echo esc_attr( $k ); ?>" class="regular-text" placeholder="Leave blank for default user"
                                        value="<?php echo esc_attr( $selected_value ?? '' ); ?>"/>
+                                <p class="description">ID of the User to assign new contacts to</p>
                                 <?php
                             }
 
-                            echo '<p class="description">' . esc_html( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
                             break;
                         case 'number':
@@ -1853,7 +1856,7 @@ class DT_Webform_Active_Form_Post_Type
         ];
         $fields['assigned_to'] = [
             'name'        => 'Assign To User',
-            'description' => '',
+            'description' => 'The User new contacts will be assigned to',
             'type'        => 'assigned_to',
             'default'     => '',
             'label'       => 'This field must be a number. This number is the user_id number from Disciple.Tools. This can be found in the Admin > User section. See tutorial for more help.',
@@ -1863,7 +1866,7 @@ class DT_Webform_Active_Form_Post_Type
         ];
         $fields['source'] = [
             'name'        => 'Source',
-            'description' => '',
+            'description' => 'Created contacts will have this source',
             'type'        => 'source',
             'default'     => '',
             'label'       => 'Source',
@@ -1873,7 +1876,7 @@ class DT_Webform_Active_Form_Post_Type
         ];
         $fields['overall_status'] = [
             'name'        => 'Overall Status',
-            'description' => '',
+            'description' => 'Created contact will have this status',
             'type'        => 'overall_status',
             'default'     => '',
             'label'       => 'Source',

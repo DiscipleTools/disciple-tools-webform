@@ -453,7 +453,7 @@ class DT_Webform_Menu
         <table class="widefat striped">
             <thead>
             <tr>
-                <th>Available Users</th>
+                <th>Available Users IDs For Remote Form</th>
             </tr>
             </thead>
             <tbody>

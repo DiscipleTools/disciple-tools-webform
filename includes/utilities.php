@@ -1186,7 +1186,7 @@ class DT_Webform_Utilities {
                                     <fieldset>
                                         <?php
                                         foreach ( $list as $item ) {
-                                            echo '<input type="checkbox" name="' . esc_attr( $dt_webform_key ) . '" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '<br>';
+                                            echo '<label><input type="checkbox" name="' . esc_attr( $dt_webform_key ) . '" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</label><br>';
                                         }
                                         ?>
                                     </fieldset>
@@ -1441,7 +1441,7 @@ class DT_Webform_Utilities {
                                         if ( 0 == $index ) {
                                             $checked = 'checked';
                                         }
-                                        echo '<span class="span-radio"><input type="radio" class="input-' . esc_attr( $dt_webform_value['type'] ) . '" name="' . esc_attr( $dt_webform_value['key'] ) . '" value="' . esc_html( $item ) . '" ' . esc_attr( $checked ) . '>' . esc_html( $item ) . '</span>';
+                                        echo '<label class="span-radio"><input type="radio" class="input-' . esc_attr( $dt_webform_value['type'] ) . '" name="' . esc_attr( $dt_webform_value['key'] ) . '" value="' . esc_html( $item ) . '" ' . esc_attr( $checked ) . '>' . esc_html( $item ) . '</label>';
                                     }
                                     ?>
                                     </div>

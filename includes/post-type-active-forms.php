@@ -1012,7 +1012,7 @@ class DT_Webform_Active_Form_Post_Type
                     <select name="<?php echo esc_attr( $unique_key ) ?>[selected]">
                         <option value=""></option>
                         <option <?php echo esc_attr( $check_to_submit_selected ) ?>
-                            value="check_to_submit"><?php echo esc_attr__( 'Check To Submit', 'dt_webform' ) ?></option>
+                            value="check_to_submit"><?php echo esc_attr__( 'Require checkbox checked', 'dt_webform' ) ?></option>
                     </select>
                 </td>
                 <?php

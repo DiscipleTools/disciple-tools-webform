@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Load useful function from the theme
+ */
+if ( !defined( 'DT_FUNCTIONS_READY' ) && file_exists( get_template_directory() . '/dt-core/global-functions.php' ) ){
+    require_once get_template_directory() . '/dt-core/global-functions.php';
+}
+
 /* CORE FUNCTIONS */
 if ( ! function_exists( 'is_this_dt' ) ) {
     function is_this_dt(): bool

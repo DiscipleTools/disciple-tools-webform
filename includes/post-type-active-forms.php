@@ -828,16 +828,21 @@ class DT_Webform_Active_Form_Post_Type
                 <br>
 
                 <p>Attributes</p>
-                <strong>id:</strong> Webform id; which can be found within the URL's post parameter.<br><br>
-                <strong>button_only:</strong> A boolean (True/False) attribute. If True, then shortcode to be converted
-                into a URL which points to corresponding webform. However, if False; then shortcode to be converted into
-                actual webform.<br><br>
-                <strong>campaigns:</strong> Specify additional metadata tag information; which will be added to
-                Campaigns DT field, following contact creation.<br><br>
-
-                <a href="<?php echo esc_url( apply_shortcodes( '[dt-webform id="' . $post->ID . '" button_only="true" campaigns=""]' ) ) ?>"
-                   target="_blank">Open shortcode in its own window.</a>
             </div>
+            <p>
+                <strong>id:</strong> The ID of this webform
+            </p>
+            <p>
+                <strong>button_only:</strong> Optional. <br>
+                A boolean (true/false) attribute. If "true", only a button will be displayed and it will link to the webform on its own page
+                <a href="<?php echo esc_url( apply_shortcodes( '[dt-webform id="' . $post->ID . '" button_only="true" campaigns=""]' ) ) ?>"
+                   target="_blank">here.</a>
+            </p>
+            <p>
+                <strong>campaigns:</strong> Optional. <br>
+                Tags that will be passed on to the "Campaigns" field on the new D.T contact
+            </p>
+
             <br>
 
             <hr>

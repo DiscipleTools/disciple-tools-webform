@@ -976,12 +976,12 @@ class DT_Webform_Utilities {
                 src="<?php echo esc_url( $public_url ) ?>jquery.validate.min.js"></script>
         <script type="text/javascript"
                 src="<?php echo esc_url( $public_url ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ) ) ?>"></script>
-
+        <?php // @codingStandardsIgnoreEnd ?>
         <?php $swurl = $public_url . 'sw.js' ?>
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function () {
-                    navigator.serviceWorker.register('<?php echo $swurl ?>').then(function (registration) {
+                    navigator.serviceWorker.register('<?php echo esc_html( $swurl ) ?>').then(function (registration) {
                         // Registration was successful
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     }, function (err) {
@@ -993,15 +993,15 @@ class DT_Webform_Utilities {
         </script>
         <script>
             window.TRANSLATION = {
-                'required': "<?php echo $dt_webform_meta['js_string_required'] ?? esc_html__( 'Required', 'dt_webform' ) ?>",
-                'characters_required': "<?php echo $dt_webform_meta['js_string_char_required'] ?? esc_html__( "At least {0} characters required!", 'dt_webform' ) ?>",
-                'submit_in': "<?php echo $dt_webform_meta['js_string_submit_in'] ?? esc_html__( 'Submit in', 'dt_webform' ) ?>",
-                'submit': "<?php echo $dt_webform_meta['js_string_submit'] ?? esc_html__( 'Submit', 'dt_webform' ) ?>",
-                'success': "<?php echo $dt_webform_meta['js_string_success'] ?? esc_html__( 'Success', 'dt_webform' ) ?>",
-                'failure': "<?php echo $dt_webform_meta['js_string_failure'] ?? esc_html__( 'Sorry, Something went wrong', 'dt_webform' ) ?>",
+                'required': "<?php echo esc_html( $dt_webform_meta['js_string_required'] ?? __( 'Required', 'dt_webform' ) ) ?>",
+                'characters_required': "<?php echo esc_html( $dt_webform_meta['js_string_char_required'] ?? __( "At least {0} characters required!", 'dt_webform' ) ) ?>",
+                'submit_in': "<?php echo esc_html( $dt_webform_meta['js_string_submit_in'] ?? __( 'Submit in', 'dt_webform' ) ) ?>",
+                'submit': "<?php echo esc_html( $dt_webform_meta['js_string_submit'] ?? __( 'Submit', 'dt_webform' ) ) ?>",
+                'success': "<?php echo esc_html( $dt_webform_meta['js_string_success'] ?? __( 'Success', 'dt_webform' ) ) ?>",
+                'failure': "<?php echo esc_html( $dt_webform_meta['js_string_failure'] ?? __( 'Sorry, Something went wrong', 'dt_webform' ) ) ?>",
             }
             window.SETTINGS = {
-                'spinner': ' <span class="spinner"><img src="<?php echo $public_url ?>spinner.svg" width="20px" /></span>',
+                'spinner': ' <span class="spinner"><img src="<?php echo esc_html( $public_url ) ?>spinner.svg" width="20px" /></span>',
                 'rest_url': "<?php echo esc_url_raw( rest_url() ) ?>",
             }
             <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>
@@ -1036,23 +1036,25 @@ class DT_Webform_Utilities {
                     } else if ( ! is_this_dt() ) {
                         require_once( plugin_dir_path( __DIR__ ) . 'dt-mapping/geocode-api/mapbox-api.php' );
                     }
-                    if ( class_exists("DT_Mapbox_API")){
+                    if ( class_exists( "DT_Mapbox_API" ) ){
+                        // @codingStandardsIgnoreStart
                         ?>
-                        <script type="text/javascript" src="<?php echo DT_Mapbox_API::$mapbox_gl_js ?>"></script>
-                        <link rel="stylesheet" href="<?php echo DT_Mapbox_API::$mapbox_gl_css ?>" type="text/css"
+                        <script type="text/javascript" src="<?php echo esc_html( DT_Mapbox_API::$mapbox_gl_js ) ?>"></script>
+                        <link rel="stylesheet" href="<?php echo esc_html( DT_Mapbox_API::$mapbox_gl_css ) ?>" type="text/css"
                               media="all">
                         <?php
+                        // @codingStandardsIgnoreEnd
 
                     }
                     break;
                 endif;
             endforeach;
-        }
-        // @codingStandardsIgnoreEnd ?>
+        } ?>
+
 
         <style>
             <?php echo esc_attr( self::get_theme( $dt_webform_meta['theme'] ?? 'wide-heavy', $dt_webform_token ) ) ?>
-            .email {
+            #contact-form #section-email .email {
                 display: none;
             }
         </style>

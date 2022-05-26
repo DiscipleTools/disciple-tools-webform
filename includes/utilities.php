@@ -1009,7 +1009,7 @@ class DT_Webform_Utilities {
                 'rest_url': "<?php echo esc_url_raw( rest_url() ) ?>",
             }
             window.dtMapbox = {
-                'google_map_key': "<?php echo esc_html( get_option( 'dt_google_map_key' ) ) ;?>"
+                'google_map_key': "<?php echo esc_html( get_option( 'dt_google_map_key' ) );?>"
             }
             <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>
             jQuery(document).ready(function () {

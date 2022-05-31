@@ -976,6 +976,10 @@ class DT_Webform_Utilities {
                 src="<?php echo esc_url( $public_url ) ?>jquery.validate.min.js"></script>
         <script type="text/javascript"
                 src="<?php echo esc_url( $public_url ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ) ) ?>"></script>
+        <?php if( get_option( 'dt_google_map_key' ) ) { ?>
+            <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=<?php echo esc_html( get_option( 'dt_google_map_key' ) ); ?>"
+        <?php } ?>
         <?php // @codingStandardsIgnoreEnd ?>
         <?php $swurl = $public_url . 'sw.js' ?>
         <script>
@@ -1003,6 +1007,9 @@ class DT_Webform_Utilities {
             window.SETTINGS = {
                 'spinner': ' <span class="spinner"><img src="<?php echo esc_html( $public_url ) ?>spinner.svg" width="20px" /></span>',
                 'rest_url': "<?php echo esc_url_raw( rest_url() ) ?>",
+            }
+            window.dtMapbox = {
+                'google_map_key': "<?php echo esc_html( get_option( 'dt_google_map_key' ) );?>"
             }
             <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>
             jQuery(document).ready(function () {
@@ -1311,8 +1318,34 @@ class DT_Webform_Utilities {
                                         }
 
                                         function close_all_lists(selection_id) {
+                                            if( 'address' === selection_id ) {
+                                                let address = jQuery('#mapbox-search').val()
+                                                jQuery('#<?php echo esc_attr( $dt_webform_value['key'] ) ?>-label').text( address)
+                                            }
+                                            if ( dtMapbox.google_map_key ) {
+                                                jQuery('#mapbox-search').val(window.mapbox_result_features[selection_id].description)
+                                                jQuery('#mapbox-autocomplete-list').empty()
+                                                let spinner = jQuery('#mapbox-spinner-button').show()
 
-                                            jQuery('#mapbox-search').val(window.mapbox_result_features[selection_id].place_name)
+                                                const geocoder = new google.maps.Geocoder();
+                                                geocoder.geocode({ placeId: window.mapbox_result_features[selection_id].place_id }, (results, status) => {
+                                                    if (status !== "OK") {
+                                                        console.log("Geocoder failed due to: " + status);
+                                                        return;
+                                                    }
+
+                                                    jQuery('#<?php echo esc_attr( $dt_webform_value['key'] ) ?>-lng').text(results[0].geometry.location.lng())
+                                                    jQuery('#<?php echo esc_attr( $dt_webform_value['key'] ) ?>-lat').text( results[0].geometry.location.lat())
+                                                    jQuery('#<?php echo esc_attr( $dt_webform_value['key'] ) ?>-level').text(convert_level( results[0].types[0] ))
+                                                    jQuery('#<?php echo esc_attr( $dt_webform_value['key'] ) ?>-label').text( results[0].formatted_address)
+
+                                                    spinner.hide()
+
+                                                })
+
+
+                                            } else {
+                                            jQuery('#mapbox-search').val(`${window.mapbox_result_features[selection_id].matching_place_name? window.mapbox_result_features[selection_id].matching_place_name : window.mapbox_result_features[selection_id].place_name}`)
                                             jQuery('#mapbox-autocomplete-list').empty()
                                             let spinner = jQuery('#mapbox-spinner-button').show()
 
@@ -1324,6 +1357,20 @@ class DT_Webform_Utilities {
                                             spinner.hide()
 
                                         }
+                                        }
+                                        //This is from lodash.escape but just loading what we need instead of loading all of lodash
+                                        var escape = function escape(str) {
+                                            var map = {
+                                                '&': '&amp;',
+                                                '<': '&lt;',
+                                                '>': '&gt;',
+                                                '"': '&quot;',
+                                                "'": '&#39;'
+                                            };
+                                            return str.replace(/[&<>"']/g, function (m) {
+                                                return map[m];
+                                            });
+                                        };
 
                                         function mapbox_autocomplete(address) {
                                             console.log('mapbox_autocomplete: ' + address)
@@ -1349,7 +1396,7 @@ class DT_Webform_Utilities {
                                                 list.empty()
 
                                                 jQuery.each(data.features, function (index, value) {
-                                                    list.append(`<div data-value="${index}">${value.place_name}</div>`)
+                                                    list.append(`<div data-value="${index}">${value.matching_place_name? value.matching_place_name : value.place_name}</div>`)
                                                 })
 
                                                 jQuery('#mapbox-autocomplete-list div').on("click", function (e) {
@@ -1362,6 +1409,69 @@ class DT_Webform_Utilities {
 
                                             }); // end get request
                                         } // end validate
+
+                                        function google_autocomplete(address){
+                                            if ( address.length < 1 ) {
+                                                jQuery('#mapbox-clear-autocomplete').hide()
+                                                return;
+                                            }
+
+                                            let service = new google.maps.places.AutocompleteService();
+                                            service.getPlacePredictions({ 'input': address }, function(predictions, status ) {
+                                                let list = jQuery('#mapbox-autocomplete-list')
+                                                list.empty()
+
+                                                if ( status === 'OK' ) {
+                                                jQuery.each( predictions, function( index, value ) {
+                                                    if ( 4 > index ) {
+                                                    list.append(`<div data-value="${index}">${escape(value.description)}</div>`)
+                                                    }
+                                                })
+
+                                                jQuery('#mapbox-autocomplete-list div').on("click", function (e) {
+                                                    close_all_lists(e.target.attributes['data-value'].value);
+                                                });
+
+                                                // Set globals
+                                                window.mapbox_result_features = predictions
+                                                }
+                                                else if ( status === 'ZERO_RESULTS' ) {
+                                                list.append(`<div>No Results Found</div>`)
+                                                // list.append(`<div data-value="address" style="font-weight:bold;">${escape( window.dtMapbox.translations.use )}: <span dir="auto">"${escape( address )}"</span></div>`)
+
+                                                jQuery('#mapbox-autocomplete-list div').on("click", function (e) {
+                                                    close_all_lists(e.target.attributes['data-value'].value);
+                                                });
+                                                }
+                                                else {
+                                                console.log('Predictions was not successful for the following reason: ' + status)
+                                                }
+                                            })
+                                            }
+
+                                            function convert_level( level ) {
+                                                switch(level){
+                                                    case 'administrative_area_level_0':
+                                                    level = 'admin0'
+                                                    break
+                                                    case 'administrative_area_level_1':
+                                                    level = 'admin1'
+                                                    break
+                                                    case 'administrative_area_level_2':
+                                                    level = 'admin2'
+                                                    break
+                                                    case 'administrative_area_level_3':
+                                                    level = 'admin3'
+                                                    break
+                                                    case 'administrative_area_level_4':
+                                                    level = 'admin4'
+                                                    break
+                                                    case 'administrative_area_level_5':
+                                                    level = 'admin5'
+                                                    break
+                                                }
+                                                return level
+                                            }
                                         window.validate_timer_id = '';
 
                                         function validate_timer() {
@@ -1374,7 +1484,11 @@ class DT_Webform_Utilities {
                                             // set timer
                                             window.validate_timer_id = setTimeout(function () {
                                                 // call geocoder
-                                                mapbox_autocomplete(jQuery('#mapbox-search').val())
+                                                if ( dtMapbox.google_map_key ) {
+                                                    google_autocomplete( jQuery('#mapbox-search').val() )
+                                                } else {
+                                                    mapbox_autocomplete( jQuery('#mapbox-search').val() )
+                                                }
 
                                                 // toggle buttons back
                                                 jQuery('#mapbox-spinner-button').hide()

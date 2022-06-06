@@ -279,7 +279,7 @@ if ( ! class_exists( 'DT_Mapbox_API' ) ) {
                         "post" => $post_record ?? false,
                         "map_key" => self::get_key(),
                         "mirror_source" => dt_get_location_grid_mirror( true ),
-                        "google_map_key" => ( class_exists( "Disciple_Tools_Google_Geocode_API" ) && Disciple_Tools_Google_Geocode_API::get_key() ) ? Disciple_Tools_Google_Geocode_API::get_key() : false,
+                        "google_map_key" => ( Disciple_Tools_Google_Geocode_API::get_key() ) ? Disciple_Tools_Google_Geocode_API::get_key() : false,
                         "spinner_url" => get_stylesheet_directory_uri() . '/spinner.svg',
                         "theme_uri" => get_stylesheet_directory_uri(),
                         "translations" => array(
@@ -295,7 +295,7 @@ if ( ! class_exists( 'DT_Mapbox_API' ) ) {
                 add_action( 'wp_head', [ 'DT_Mapbox_API', 'mapbox_search_widget_css' ] );
 
                 // load Google Geocoder if key is present.
-                if ( class_exists( "Disciple_Tools_Google_Geocode_API" ) && Disciple_Tools_Google_Geocode_API::get_key() ){
+                if ( Disciple_Tools_Google_Geocode_API::get_key() ){
                     Disciple_Tools_Google_Geocode_API::load_google_geocoding_scripts();
                 }
             }

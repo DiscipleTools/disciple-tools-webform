@@ -264,12 +264,12 @@ class DT_Webform_Menu
     }
 
     public function verify_site_active( $site_id ) : bool {
-        $sites = Site_Link_System::get_list_of_sites_by_type( [ 'create_contacts', 'create_update_contacts' ], 'post_ids' );
+        $sites = Site_Link_System::get_site_keys();
         if ( empty( $sites ) ) {
             return false;
         }
         foreach ( $sites as $site ) {
-            if ( $site == $site_id ) {
+            if ( $site["post_id"] == $site_id ) {
                 return true;
             }
         }

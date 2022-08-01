@@ -121,7 +121,7 @@ class DT_Webform_Utilities {
 
         $contact_defaults = json_decode( $result['body'], true );
         if ( isset( $contact_defaults["fields"]['sources'] ) ) {
-            set_transient( 'dt_webform_contact_defaults', $contact_defaults["fields"], 60 *60 *24 );
+            set_transient( 'dt_webform_contact_defaults', $contact_defaults["fields"], DAY_IN_SECONDS );
             return $contact_defaults["fields"];
         } else {
             return new WP_Error( __METHOD__, 'Remote response from DT server malformed.' );

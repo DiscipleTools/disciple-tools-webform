@@ -264,12 +264,12 @@ class DT_Webform_Menu
     }
 
     public function verify_site_active( $site_id ) : bool {
-        $sites = Site_Link_System::get_list_of_sites_by_type( [ 'create_contacts', 'create_update_contacts' ], 'post_ids' );
+        $sites = Site_Link_System::get_site_keys();
         if ( empty( $sites ) ) {
             return false;
         }
         foreach ( $sites as $site ) {
-            if ( $site == $site_id ) {
+            if ( $site["post_id"] == $site_id ) {
                 return true;
             }
         }
@@ -289,7 +289,7 @@ class DT_Webform_Menu
             ?><script>window.location.href = '<?php echo esc_url( admin_url() ) ?>admin.php?page=dt_webform&tab=settings'</script><?php
         }
 
-        $sites = Site_Link_System::get_list_of_sites_by_type( [ 'create_contacts', 'create_update_contacts' ] );
+        $sites = Site_Link_System::get_site_keys();
 
         $selected_site = dt_get_webform_site_link();
 
@@ -315,24 +315,14 @@ class DT_Webform_Menu
                             ?>
                             You must select a site link to unlock the webform plugin.<br>
                             <select class="regular-text" name="site-link">
-                                <?php
+                                <option value=""></option>
+                                <?php foreach ( $sites as $site ) : ?>
 
-                                echo '<option value=""></option>';
-                                foreach ( $sites as $site ) {
-
-                                    echo '<option value="'. esc_attr( $site['id'] ).'"';
-
-                                    if ( $site['id'] === $selected_site ) {
-                                        echo ' selected';
-                                    }
-                                    echo '>';
-
-                                    echo esc_html( $site['name'] );
-
-                                    echo '</option>';
-                                }
-
-                                ?>
+                                    <option value="<?php echo esc_html( $site['post_id'] ); ?>"
+                                        <?php selected( $site['post_id'] === $selected_site ) ?>>
+                                    <?php echo esc_html( $site['label'] ); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                             <button class="button" type="submit">Save</button>
                             <?php if ( $selected_site ){ ?>

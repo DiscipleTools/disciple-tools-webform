@@ -293,7 +293,9 @@ class DT_Webform_Endpoints
 
         // assign user
         if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) && $form_meta["assigned_to"] !== "default_user" ) {
-            $fields['assigned_to'] = $form_meta['assigned_to'];
+            if ( is_numeric( $form_meta['assigned_to'] ) ){
+                $fields['assigned_to'] = $form_meta['assigned_to'];
+            }
             $fields['overall_status'] = 'assigned';
             if ( isset( $form_meta["overall_status"] ) && !empty( $form_meta["overall_status"] ) ){
                 $fields['overall_status'] = $form_meta["overall_status"];
@@ -330,15 +332,12 @@ class DT_Webform_Endpoints
             ];
 
             $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts', $args );
-            dt_write_log( $result );
+
             if ( is_wp_error( $result ) ) {
                 return new WP_Error( 'failed_remote_post', $result->get_error_message() );
             }
 
             $body = json_decode( $result['body'], true );
-
-//            dt_write_log( 'Post Result' );
-//            dt_write_log( $body );
 
             if ( isset( $body['ID'] ) ) {
                 return $result;

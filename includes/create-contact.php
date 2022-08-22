@@ -119,8 +119,6 @@ class DT_Webform_Endpoints
      * @return bool|\WP_Error
      */
     public function create_contact_record( $params ) {
-//        dt_write_log( __METHOD__ );
-//        dt_write_log( $params );
 
         // set vars
         $check_permission = false;
@@ -137,8 +135,7 @@ class DT_Webform_Endpoints
         // get form data: remote verse local form
         $form_meta = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
 
-//        dt_write_log( '$form_meta' );
-//        dt_write_log( $form_meta );
+        $remote_settings = DT_Webform_Utilities::get_contact_defaults();
 
         // name
         $fields['title'] = $new_lead_meta['name'];
@@ -265,7 +262,7 @@ class DT_Webform_Endpoints
         }
 
         // source
-        if ( ! empty( $form_meta['source'] ) ) {
+        if ( ! empty( $form_meta['source'] ) && !empty( $remote_settings['sources']['default'] ) ) {
             if ( ! isset( $fields['sources'] ) ) {
                 $fields['sources'] = [ "values" => [] ];
             }

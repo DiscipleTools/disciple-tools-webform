@@ -1553,7 +1553,8 @@ class DT_Webform_Active_Form_Post_Type
                             echo '</td><tr/>' . "\n";
                             break;
                         case 'source':
-                            ?>
+                            $contact_defaults = $this->contact_fields;
+                            if ( isset( $contact_defaults['sources']['default'] ) ) : ?>
                             <tr>
                                 <th><label for="">Source</label></th>
                                 <td>
@@ -1561,7 +1562,6 @@ class DT_Webform_Active_Form_Post_Type
                                         <option value="web">Web</option>
                                         <option disabled>-----</option>
                                         <?php
-                                        $contact_defaults = $this->contact_fields;
                                         $selected_value = get_post_meta( $post_id, 'source', true );
                                         foreach ( $contact_defaults['sources']['default']  as $kk => $vv ) {
                                             echo '<option value="' . esc_attr( $kk ) . '" ';
@@ -1576,7 +1576,7 @@ class DT_Webform_Active_Form_Post_Type
                                 </td>
                             </tr>
 
-                            <?php
+                            <?php endif;
                             break;
                         case 'overall_status':
                             ?>

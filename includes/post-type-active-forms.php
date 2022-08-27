@@ -2144,7 +2144,7 @@ class DT_Webform_Active_Form_Post_Type
 
         // remove connections
         foreach ( $contact_defaults as $key => $field ) {
-            if ( in_array( $field['type'], $types_to_ignore ) ) {
+            if ( isset( $field['type'] ) && in_array( $field['type'], $types_to_ignore ) ) {
                 unset( $contact_defaults[$key] );
             }
             else if ( array_search( $key, $keys_to_ignore ) !== false ) {

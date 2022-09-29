@@ -122,6 +122,7 @@ class DT_Webform_Endpoints
 
         // set vars
         $check_permission = false;
+        $create_args = [];
         $fields = [];
         $notes = [];
         $new_lead_meta = $params;
@@ -141,13 +142,16 @@ class DT_Webform_Endpoints
         $fields['title'] = $new_lead_meta['name'];
 
         // phone
+        $create_args['check_for_duplicates'] = [];
         if ( isset( $new_lead_meta['phone'] ) && ! empty( $new_lead_meta['phone'] ) ) {
             $fields['contact_phone'] = [ [ "value" => $new_lead_meta['phone'] ] ];
+            $create_args['check_for_duplicates'][] = 'contact_phone';
         }
 
         // email
         if ( isset( $new_lead_meta['email'] ) && ! empty( $new_lead_meta['email'] ) ) {
             $fields['contact_email'] = [ [ "value" => $new_lead_meta['email'] ] ];
+            $create_args['check_for_duplicates'][] = 'contact_email';
         }
 
         // locations
@@ -306,7 +310,7 @@ class DT_Webform_Endpoints
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'create_contacts' );
-            $result = DT_Posts::create_post( "contacts", $fields, false, false );
+            $result = DT_Posts::create_post( "contacts", $fields, false, false, $create_args );
 
         } else { // Create contact if remote
 
@@ -322,7 +326,10 @@ class DT_Webform_Endpoints
 
             $args = [
                 'method' => 'POST',
-                'body' => $fields,
+                'body' => [
+                    'fields' => $fields,
+                    'args' => $create_args
+                ],
                 'headers' => [
                     'Authorization' => 'Bearer ' . $site['transfer_token'],
                 ],

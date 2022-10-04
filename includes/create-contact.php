@@ -326,16 +326,18 @@ class DT_Webform_Endpoints
 
             $args = [
                 'method' => 'POST',
-                'body' => [
-                    'fields' => $fields,
-                    'args' => $create_args
-                ],
+                'body' => $fields,
                 'headers' => [
                     'Authorization' => 'Bearer ' . $site['transfer_token'],
                 ],
             ];
 
-            $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts', $args );
+            $check_dups = '';
+            if ( ! empty( $create_args['check_for_duplicates'] ) ) {
+                $check_dups = '?check_dups=' . implode( ',', $create_args['check_for_duplicates'] );
+            }
+
+            $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts' . $check_dups, $args );
 
             if ( is_wp_error( $result ) ) {
                 return new WP_Error( 'failed_remote_post', $result->get_error_message() );

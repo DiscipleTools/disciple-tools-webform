@@ -338,12 +338,12 @@ class DT_Webform_Endpoints
                 ],
             ];
 
-            $check_dups = '';
+            $check_for_duplicates = '';
             if ( ! empty( $create_args['check_for_duplicates'] ) ) {
-                $check_dups = '?check_dups=' . implode( ',', $create_args['check_for_duplicates'] );
+                $check_for_duplicates = '?check_for_duplicates=' . implode( ',', $create_args['check_for_duplicates'] );
             }
 
-            $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts' . $check_dups, $args );
+            $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts' . $check_for_duplicates, $args );
 
             if ( is_wp_error( $result ) ) {
                 return new WP_Error( 'failed_remote_post', $result->get_error_message() );

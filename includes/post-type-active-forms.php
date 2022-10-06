@@ -200,7 +200,9 @@ class DT_Webform_Active_Form_Post_Type
             return;
         }
 
-        $core_fields = $this->get_core_fields( $post->ID );
+        $core_fields    = $this->get_core_fields( $post->ID );
+        $post_meta      = dt_get_simple_post_meta( $post->ID );
+        $check_for_dups = $post_meta['check_for_dups'] ?? false;
         ?>
         <table class="widefat striped">
             <thead>
@@ -246,6 +248,13 @@ class DT_Webform_Active_Form_Post_Type
             }
             ?>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"><label for="check_for_dups"><?php esc_html_e( 'Check For Duplicates:' ) ?></label></td>
+                    <td><input name="check_for_dups" id="check_for_dups" type="checkbox" <?php echo $check_for_dups ? 'checked' : '' ?>></td>
+                    <td></td>
+                </tr>
+            </tfoot>
         </table>
         <?php
     }
@@ -1464,6 +1473,9 @@ class DT_Webform_Active_Form_Post_Type
 
         $array = $this->filter_for_core_fields( $_POST );
 
+        // Ensure check_dups is captured in all states.
+        $array['check_for_dups'] = $array['check_for_dups'] ?? false;
+
         foreach ( $array as $key => $value ) {
             if ( ! get_post_meta( $post_id, $key ) ) {
                 add_post_meta( $post_id, $key, $value, true );
@@ -2180,6 +2192,9 @@ class DT_Webform_Active_Form_Post_Type
                 return true;
             }
             if ( strpos( $key, 'email_field' ) === 0 ) {
+                return true;
+            }
+            if ( strpos( $key, 'check_for_dups' ) === 0 ) {
                 return true;
             }
             return false;

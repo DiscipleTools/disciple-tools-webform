@@ -122,10 +122,10 @@ class DT_Webform_Endpoints
 
         // set vars
         $check_permission = false;
-        $create_args = [];
-        $fields = [];
-        $notes = [];
-        $new_lead_meta = $params;
+        $create_args      = [];
+        $fields           = [];
+        $notes            = [];
+        $new_lead_meta    = $params;
 
 
         // check required fields
@@ -134,8 +134,8 @@ class DT_Webform_Endpoints
         }
 
         // get form data: remote verse local form
-        $form_meta = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
-
+        $form_meta       = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
+        $check_for_dups  = ( isset( $form_meta['check_for_dups'] ) && $form_meta['check_for_dups'] );
         $remote_settings = DT_Webform_Utilities::get_contact_defaults();
 
         // name
@@ -145,13 +145,19 @@ class DT_Webform_Endpoints
         $create_args['check_for_duplicates'] = [];
         if ( isset( $new_lead_meta['phone'] ) && ! empty( $new_lead_meta['phone'] ) ) {
             $fields['contact_phone'] = [ [ "value" => $new_lead_meta['phone'] ] ];
-            $create_args['check_for_duplicates'][] = 'contact_phone';
+
+            if ( $check_for_dups ) {
+                $create_args['check_for_duplicates'][] = 'contact_phone';
+            }
         }
 
         // email
         if ( isset( $new_lead_meta['email'] ) && ! empty( $new_lead_meta['email'] ) ) {
             $fields['contact_email'] = [ [ "value" => $new_lead_meta['email'] ] ];
-            $create_args['check_for_duplicates'][] = 'contact_email';
+
+            if ( $check_for_dups ) {
+                $create_args['check_for_duplicates'][] = 'contact_email';
+            }
         }
 
         // locations

@@ -134,9 +134,9 @@ class DT_Webform_Endpoints
         }
 
         // get form data: remote verse local form
-        $form_meta       = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
-        $check_for_dups  = ( isset( $form_meta['check_for_dups'] ) && $form_meta['check_for_dups'] );
-        $remote_settings = DT_Webform_Utilities::get_contact_defaults();
+        $form_meta            = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
+        $check_for_duplicates = ( isset( $form_meta['check_for_duplicates'] ) && $form_meta['check_for_duplicates'] );
+        $remote_settings      = DT_Webform_Utilities::get_contact_defaults();
 
         // name
         $fields['title'] = $new_lead_meta['name'];
@@ -146,7 +146,7 @@ class DT_Webform_Endpoints
         if ( isset( $new_lead_meta['phone'] ) && ! empty( $new_lead_meta['phone'] ) ) {
             $fields['contact_phone'] = [ [ "value" => $new_lead_meta['phone'] ] ];
 
-            if ( $check_for_dups ) {
+            if ( $check_for_duplicates ) {
                 $create_args['check_for_duplicates'][] = 'contact_phone';
             }
         }
@@ -155,7 +155,7 @@ class DT_Webform_Endpoints
         if ( isset( $new_lead_meta['email'] ) && ! empty( $new_lead_meta['email'] ) ) {
             $fields['contact_email'] = [ [ "value" => $new_lead_meta['email'] ] ];
 
-            if ( $check_for_dups ) {
+            if ( $check_for_duplicates ) {
                 $create_args['check_for_duplicates'][] = 'contact_email';
             }
         }

@@ -200,7 +200,7 @@ class DT_Webform_Active_Form_Post_Type
             return;
         }
 
-        $core_fields = $this->get_core_fields( $post->ID );
+        $core_fields    = $this->get_core_fields( $post->ID );
         ?>
         <table class="widefat striped">
             <thead>
@@ -1464,6 +1464,9 @@ class DT_Webform_Active_Form_Post_Type
 
         $array = $this->filter_for_core_fields( $_POST );
 
+        // Ensure check_for_duplicates is captured in all states.
+        $array['check_for_duplicates'] = $array['check_for_duplicates'] ?? false;
+
         foreach ( $array as $key => $value ) {
             if ( ! get_post_meta( $post_id, $key ) ) {
                 add_post_meta( $post_id, $key, $value, true );
@@ -1696,7 +1699,22 @@ class DT_Webform_Active_Form_Post_Type
                             echo '<p class="description">' . esc_attr( $v['description'] ) . '</p>' . "\n";
                             echo '</td><tr/>' . "\n";
                             break;
-
+                        case 'check_for_duplicates':
+                            $post_meta = dt_get_simple_post_meta( $post_id );
+                            $check_for_duplicates = $post_meta['check_for_duplicates'] ?? false;
+                            ?>
+                            <tr>
+                                <th><label
+                                        for="<?php echo esc_attr( $k ); ?>"><?php echo esc_attr( $v['name'] ); ?></label>
+                                </th>
+                                <td>
+                                    <input name="<?php echo esc_attr( $k ); ?>" id="<?php echo esc_attr( $k ); ?>"
+                                           type="checkbox" <?php echo $check_for_duplicates ? 'checked' : '' ?>>
+                                    <p class="description"><?php echo esc_html( $v['description'] ) ?></p>
+                                </td>
+                            </tr>
+                            <?php
+                            break;
                         default:
                             break;
                     }
@@ -1918,6 +1936,16 @@ class DT_Webform_Active_Form_Post_Type
             'name'        => 'Overall Status',
             'description' => 'Created contact will have this status',
             'type'        => 'overall_status',
+            'default'     => '',
+            'label'       => 'Source',
+            'required'    => 'no',
+            'hidden'      => 'yes',
+            'section'     => 'info',
+        ];
+        $fields['check_for_duplicates'] = [
+            'name'        => 'Check For Phone Or Email Duplicates',
+            'description' => 'Search for existing contacts with matching phone/email values and update record. New contact records are created if no duplicates are found.',
+            'type'        => 'check_for_duplicates',
             'default'     => '',
             'label'       => 'Source',
             'required'    => 'no',
@@ -2180,6 +2208,9 @@ class DT_Webform_Active_Form_Post_Type
                 return true;
             }
             if ( strpos( $key, 'email_field' ) === 0 ) {
+                return true;
+            }
+            if ( strpos( $key, 'check_for_duplicates' ) === 0 ) {
                 return true;
             }
             return false;

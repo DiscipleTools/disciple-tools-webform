@@ -122,9 +122,10 @@ class DT_Webform_Endpoints
 
         // set vars
         $check_permission = false;
-        $fields = [];
-        $notes = [];
-        $new_lead_meta = $params;
+        $create_args      = [];
+        $fields           = [];
+        $notes            = [];
+        $new_lead_meta    = $params;
 
 
         // check required fields
@@ -133,21 +134,30 @@ class DT_Webform_Endpoints
         }
 
         // get form data: remote verse local form
-        $form_meta = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
-
-        $remote_settings = DT_Webform_Utilities::get_contact_defaults();
+        $form_meta            = maybe_unserialize( DT_Webform_Utilities::get_form_meta( $params['token'] ) );
+        $check_for_duplicates = ( isset( $form_meta['check_for_duplicates'] ) && $form_meta['check_for_duplicates'] );
+        $remote_settings      = DT_Webform_Utilities::get_contact_defaults();
 
         // name
         $fields['title'] = $new_lead_meta['name'];
 
         // phone
+        $create_args['check_for_duplicates'] = [];
         if ( isset( $new_lead_meta['phone'] ) && ! empty( $new_lead_meta['phone'] ) ) {
             $fields['contact_phone'] = [ [ "value" => $new_lead_meta['phone'] ] ];
+
+            if ( $check_for_duplicates ) {
+                $create_args['check_for_duplicates'][] = 'contact_phone';
+            }
         }
 
         // email
         if ( isset( $new_lead_meta['email'] ) && ! empty( $new_lead_meta['email'] ) ) {
             $fields['contact_email'] = [ [ "value" => $new_lead_meta['email'] ] ];
+
+            if ( $check_for_duplicates ) {
+                $create_args['check_for_duplicates'][] = 'contact_email';
+            }
         }
 
         // locations
@@ -306,7 +316,7 @@ class DT_Webform_Endpoints
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'create_contacts' );
-            $result = DT_Posts::create_post( "contacts", $fields, false, false );
+            $result = DT_Posts::create_post( "contacts", $fields, false, false, $create_args );
 
         } else { // Create contact if remote
 
@@ -328,7 +338,12 @@ class DT_Webform_Endpoints
                 ],
             ];
 
-            $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts', $args );
+            $check_for_duplicates = '';
+            if ( ! empty( $create_args['check_for_duplicates'] ) ) {
+                $check_for_duplicates = '?check_for_duplicates=' . implode( ',', $create_args['check_for_duplicates'] );
+            }
+
+            $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts' . $check_for_duplicates, $args );
 
             if ( is_wp_error( $result ) ) {
                 return new WP_Error( 'failed_remote_post', $result->get_error_message() );

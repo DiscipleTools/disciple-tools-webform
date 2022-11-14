@@ -78,20 +78,20 @@ class DT_Webform_Endpoints
 
         // Honeypot
         if ( isset( $params['email2'] ) && ! empty( $params['email2'] ) ) {
-            return new WP_Error( "teapot_failure", "Oops. Busted you, robot. Shame, shame.", [ 'status' => 418 ] );
+            return new WP_Error( 'teapot_failure', 'Oops. Busted you, robot. Shame, shame.', [ 'status' => 418 ] );
         } else {
             unset( $params['email2'] );
         }
 
         // Token Validation
         if ( ! isset( $params['token'] ) || empty( $params['token'] ) ) {
-            return new WP_Error( "token_failure", "Token missing.", [ 'status' => 400 ] );
+            return new WP_Error( 'token_failure', 'Token missing.', [ 'status' => 400 ] );
         } else {
             $token = sanitize_text_field( wp_unslash( $params['token'] ) );
             $form_id = DT_Webform_Active_Form_Post_Type::check_if_valid_token( $token );
 
             if ( ! $form_id ) { // if token is not valid, then error
-                return new WP_Error( "token_failure", "Token not valid.", [ 'status' => 401 ] );
+                return new WP_Error( 'token_failure', 'Token not valid.', [ 'status' => 401 ] );
             }
 
             $params['form_title'] = get_the_title( $form_id );
@@ -144,7 +144,7 @@ class DT_Webform_Endpoints
         // phone
         $create_args['check_for_duplicates'] = [];
         if ( isset( $new_lead_meta['phone'] ) && ! empty( $new_lead_meta['phone'] ) ) {
-            $fields['contact_phone'] = [ [ "value" => $new_lead_meta['phone'] ] ];
+            $fields['contact_phone'] = [ [ 'value' => $new_lead_meta['phone'] ] ];
 
             if ( $check_for_duplicates ) {
                 $create_args['check_for_duplicates'][] = 'contact_phone';
@@ -153,7 +153,7 @@ class DT_Webform_Endpoints
 
         // email
         if ( isset( $new_lead_meta['email'] ) && ! empty( $new_lead_meta['email'] ) ) {
-            $fields['contact_email'] = [ [ "value" => $new_lead_meta['email'] ] ];
+            $fields['contact_email'] = [ [ 'value' => $new_lead_meta['email'] ] ];
 
             if ( $check_for_duplicates ) {
                 $create_args['check_for_duplicates'][] = 'contact_email';
@@ -164,7 +164,7 @@ class DT_Webform_Endpoints
         if ( isset( $new_lead_meta['location'] ) && ! empty( $new_lead_meta['location'] ) ) {
             if ( ! ( empty( $new_lead_meta['location']['lat'] ?? null ) || empty( $new_lead_meta['location']['lat'] ?? null ) ) ) {
                 $fields['location_grid_meta'] = [
-                    "values" => [
+                    'values' => [
                         [
                             'lat' => $new_lead_meta['location']['lat'],
                             'lng' => $new_lead_meta['location']['lng'],
@@ -209,10 +209,10 @@ class DT_Webform_Endpoints
 
                             // other fields
                             case 'tel':
-                                $fields['contact_phone'][] = [ "value" => $lead_value ];
+                                $fields['contact_phone'][] = [ 'value' => $lead_value ];
                                 break;
                             case 'email':
-                                $fields['contact_email'][] = [ "value" => $lead_value ];
+                                $fields['contact_email'][] = [ 'value' => $lead_value ];
                                 break;
                             case 'key_select':
                             case 'dropdown':
@@ -253,7 +253,7 @@ class DT_Webform_Endpoints
                                 if ( !isset( $fields[$field['dt_field']] ) ){
                                     $fields[$field['dt_field']] = [];
                                 }
-                                $fields[$field['dt_field']][] = [ "value" => $lead_value ];
+                                $fields[$field['dt_field']][] = [ 'value' => $lead_value ];
                                 break;
                             case 'multi_select':
                                 if ( is_array( $lead_value ) ) {
@@ -274,14 +274,14 @@ class DT_Webform_Endpoints
         // source
         if ( ! empty( $form_meta['source'] ) && !empty( $remote_settings['sources']['default'] ) ) {
             if ( ! isset( $fields['sources'] ) ) {
-                $fields['sources'] = [ "values" => [] ];
+                $fields['sources'] = [ 'values' => [] ];
             }
-            $fields['sources']['values'] = [ [ "value" => $form_meta['source'] ] ];
+            $fields['sources']['values'] = [ [ 'value' => $form_meta['source'] ] ];
         }
 
         // metadata - campaigns
         if ( isset( $new_lead_meta['meta_campaigns'] ) && ! empty( $new_lead_meta['meta_campaigns'] ) ) {
-            $fields['campaigns']['values'] = [ [ "value" => $new_lead_meta['meta_campaigns'] ] ];
+            $fields['campaigns']['values'] = [ [ 'value' => $new_lead_meta['meta_campaigns'] ] ];
         }
 
         // ip address
@@ -299,24 +299,24 @@ class DT_Webform_Endpoints
         $fields['notes'] = $notes;
 
         // assign user
-        if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) && $form_meta["assigned_to"] !== "default_user" ) {
+        if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) && $form_meta['assigned_to'] !== 'default_user' ) {
             if ( is_numeric( $form_meta['assigned_to'] ) ){
                 $fields['assigned_to'] = $form_meta['assigned_to'];
             }
             $fields['overall_status'] = 'assigned';
-            if ( isset( $form_meta["overall_status"] ) && !empty( $form_meta["overall_status"] ) ){
-                $fields['overall_status'] = $form_meta["overall_status"];
+            if ( isset( $form_meta['overall_status'] ) && !empty( $form_meta['overall_status'] ) ){
+                $fields['overall_status'] = $form_meta['overall_status'];
             }
         }
 
-        $fields = apply_filters( "dt_webform_fields_before_submit", $fields );
+        $fields = apply_filters( 'dt_webform_fields_before_submit', $fields );
         // Post to contact
         if ( is_this_dt() ) { // Create contact if hosted in DT
 
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'create_contacts' );
-            $result = DT_Posts::create_post( "contacts", $fields, false, false, $create_args );
+            $result = DT_Posts::create_post( 'contacts', $fields, false, false, $create_args );
 
         } else { // Create contact if remote
 
@@ -358,8 +358,8 @@ class DT_Webform_Endpoints
                 dt_write_log( 'Fail Contact Create' );
                 dt_write_log( $body );
                 dt_write_log( $fields );
-                wp_mail( $email, 'Failed Form Post', maybe_serialize( $fields ) . '\n' . $body["message"] ?: "" );
-                return new WP_Error( 'failed_remote_post', $body["message"] ?? maybe_serialize( $body ), isset( $body["data"] ) ? $body["data"] : [ "status" => 400 ] );
+                wp_mail( $email, 'Failed Form Post', maybe_serialize( $fields ) . '\n' . $body['message'] ?: '' );
+                return new WP_Error( 'failed_remote_post', $body['message'] ?? maybe_serialize( $body ), isset( $body['data'] ) ? $body['data'] : [ 'status' => 400 ] );
 
                 // @todo slack (failed contact insert)
 //                $data = array(

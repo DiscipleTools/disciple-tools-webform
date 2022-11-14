@@ -35,7 +35,7 @@ class DT_Mapping_Module_Migration_0006 extends DT_Mapping_Module_Migration {
             // TEST for presence of source files
             $dir = wp_upload_dir();
             $uploads_dir = trailingslashit( $dir['basedir'] );
-            if ( ! file_exists( $uploads_dir . "location_grid_download/" . $file ) ) {
+            if ( ! file_exists( $uploads_dir . 'location_grid_download/' . $file ) ) {
                 error_log( 'Failed to find ' . $file );
                 throw new Exception( 'Failed to find ' . $file );
             }
@@ -61,7 +61,7 @@ class DT_Mapping_Module_Migration_0006 extends DT_Mapping_Module_Migration {
                 }
                 if ( $count === 500 ) {
                     $query .= ';';
-                    $query = str_replace( ", ;", ";", $query ); //remove last comma
+                    $query = str_replace( ', ;', ';', $query ); //remove last comma
 
                     $wpdb->query( $query );  //phpcs:ignore
                     $query = "INSERT IGNORE INTO $wpdb->dt_location_grid VALUES ";
@@ -70,7 +70,7 @@ class DT_Mapping_Module_Migration_0006 extends DT_Mapping_Module_Migration {
             }
             //add the last queries
             $query .= ';';
-            $query = str_replace( ", ;", ";", $query ); //remove last comma
+            $query = str_replace( ', ;', ';', $query ); //remove last comma
             $wpdb->query( $query );  //phpcs:ignore
 
         }

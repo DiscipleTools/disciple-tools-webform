@@ -41,11 +41,11 @@ class DT_Mapping_Module_Migration_0007 extends DT_Mapping_Module_Migration {
             if ( ! file_exists( $uploads_dir . 'location_grid_download' ) ) {
                 mkdir( $uploads_dir . 'location_grid_download' );
             }
-            if ( file_exists( $uploads_dir . "location_grid_download/geonames_ref_table.tsv.zip" ) ) {
-                unlink( $uploads_dir . "location_grid_download/geonames_ref_table.tsv.zip" );
+            if ( file_exists( $uploads_dir . 'location_grid_download/geonames_ref_table.tsv.zip' ) ) {
+                unlink( $uploads_dir . 'location_grid_download/geonames_ref_table.tsv.zip' );
             }
-            if ( file_exists( $uploads_dir . "location_grid_download/geonames_ref_table.tsv" ) ) {
-                unlink( $uploads_dir . "location_grid_download/geonames_ref_table.tsv" );
+            if ( file_exists( $uploads_dir . 'location_grid_download/geonames_ref_table.tsv' ) ) {
+                unlink( $uploads_dir . 'location_grid_download/geonames_ref_table.tsv' );
             }
 
             // get mirror source file url
@@ -53,9 +53,9 @@ class DT_Mapping_Module_Migration_0007 extends DT_Mapping_Module_Migration {
 
             $gn_source_url = $mirror_source . 'location_grid/geonames_ref_table.tsv.zip';
 
-            $zip_file = $uploads_dir . "location_grid_download/geonames_ref_table.tsv.zip";
+            $zip_file = $uploads_dir . 'location_grid_download/geonames_ref_table.tsv.zip';
 
-            $zip_resource = fopen( $zip_file, "w" );
+            $zip_resource = fopen( $zip_file, 'w' );
 
             $ch_start = curl_init();
             curl_setopt( $ch_start, CURLOPT_URL, $gn_source_url );
@@ -71,26 +71,26 @@ class DT_Mapping_Module_Migration_0007 extends DT_Mapping_Module_Migration {
             $page = curl_exec( $ch_start );
             if ( !$page )
             {
-                error_log( "Error :- ".curl_error( $ch_start ) );
+                error_log( 'Error :- '.curl_error( $ch_start ) );
             }
             curl_close( $ch_start );
 
             if ( ! class_exists( 'ZipArchive' ) ){
-                error_log( "PHP ZipArchive is not installed or enabled." );
+                error_log( 'PHP ZipArchive is not installed or enabled.' );
                 throw new Exception( 'PHP ZipArchive is not installed or enabled.' );
             }
             $zip = new ZipArchive();
             $extract_path = $uploads_dir . 'location_grid_download';
-            if ( $zip->open( $zip_file ) != "true" )
+            if ( $zip->open( $zip_file ) != 'true' )
             {
-                error_log( "Error :- Unable to open the Zip File" );
+                error_log( 'Error :- Unable to open the Zip File' );
             }
 
             $zip->extractTo( $extract_path );
             $zip->close();
             /** End resource download */
             dt_write_log( 'end remote get' );
-            if ( file_exists( $uploads_dir . "location_grid_download/geonames_ref_table.tsv.zip" ) ) {
+            if ( file_exists( $uploads_dir . 'location_grid_download/geonames_ref_table.tsv.zip' ) ) {
                 dt_write_log( 'file exists' );
             }
 
@@ -99,7 +99,7 @@ class DT_Mapping_Module_Migration_0007 extends DT_Mapping_Module_Migration {
             // load list to array, make geonameid key
             $geonames_ref = [];
             $geonmes_ref_raw = array_map( function( $v ){return str_getcsv( $v, "\t" );
-            }, file( $uploads_dir . "location_grid_download/geonames_ref_table.tsv" ) );
+            }, file( $uploads_dir . 'location_grid_download/geonames_ref_table.tsv' ) );
             if ( empty( $geonmes_ref_raw ) ) {
                 throw new Exception( 'Failed to build array from remote file.' );
             }
@@ -114,25 +114,25 @@ class DT_Mapping_Module_Migration_0007 extends DT_Mapping_Module_Migration {
 
             $used_geonames = $wpdb->get_results( "SELECT DISTINCT meta_value FROM $wpdb->postmeta where meta_key = 'geonames'", ARRAY_A );
             foreach ( $used_geonames as $ug ){
-                if ( isset( $geonames_ref[$ug["meta_value"]] ) ) {
+                if ( isset( $geonames_ref[$ug['meta_value']] ) ) {
                     $wpdb->query( $wpdb->prepare( "
                         UPDATE $wpdb->postmeta
                         SET meta_key = 'location_grid',
                             meta_value = %s
                         WHERE meta_key = 'geonames' and meta_value = %s
-                        ", $geonames_ref[$ug["meta_value"]]['grid_id'], $ug["meta_value"]
+                        ", $geonames_ref[$ug['meta_value']]['grid_id'], $ug['meta_value']
                     ) );
                 }
             }
             $used_activity_geonames = $wpdb->get_results( "SELECT DISTINCT meta_value FROM $wpdb->dt_activity_log where meta_key = 'geonames'", ARRAY_A );
             foreach ( $used_activity_geonames as $ug ){
-                if ( isset( $geonames_ref[$ug["meta_value"]] ) ) {
+                if ( isset( $geonames_ref[$ug['meta_value']] ) ) {
                     $wpdb->query( $wpdb->prepare( "
                         UPDATE $wpdb->dt_activity_log
                         SET meta_key = 'location_grid',
                             meta_value = %s
                         WHERE meta_key = 'geonames' and meta_value = %s
-                        ", $geonames_ref[$ug["meta_value"]]['grid_id'], $ug["meta_value"]
+                        ", $geonames_ref[$ug['meta_value']]['grid_id'], $ug['meta_value']
                     ) );
                 }
             }
@@ -224,14 +224,14 @@ class DT_Mapping_Module_Migration_0007 extends DT_Mapping_Module_Migration {
 
             // migrate focus
             $default_map_settings = get_option( 'dt_mapping_module_starting_map_level' );
-            if ( !empty( $default_map_settings["children"] ) ){
+            if ( !empty( $default_map_settings['children'] ) ){
                 $new_children = [];
-                foreach ( $default_map_settings["children"] as $c ){
+                foreach ( $default_map_settings['children'] as $c ){
                     if ( isset( $geonames_ref[$c] ) ) {
-                        $new_children[] = $geonames_ref[$c]["grid_id"];
+                        $new_children[] = $geonames_ref[$c]['grid_id'];
                     }
                 }
-                $default_map_settings["children"] = $new_children;
+                $default_map_settings['children'] = $new_children;
                 update_option( 'dt_mapping_module_starting_map_level', $default_map_settings, false );
             }
 
@@ -249,7 +249,7 @@ class DT_Mapping_Module_Migration_0007 extends DT_Mapping_Module_Migration {
                 // save new custom location to location_grid
                 foreach ( $custom_locations as $value ) {
                     if ( isset( $geonames_ref[ $value['parent_id'] ] ) ) {
-                        $parent_location_grid_id = $geonames_ref[ $value['parent_id'] ]["grid_id"];
+                        $parent_location_grid_id = $geonames_ref[ $value['parent_id'] ]['grid_id'];
                         $level                   = 10;
                         $level_name              = 'place';
 

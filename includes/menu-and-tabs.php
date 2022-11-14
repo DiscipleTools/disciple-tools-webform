@@ -49,9 +49,9 @@ class DT_Webform_Menu
         }
 
         global $pagenow;
-        add_action( "admin_menu", [ $this, "register_menu" ] );
+        add_action( 'admin_menu', [ $this, 'register_menu' ] );
         if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'dt_webform' == sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) {
-            add_action( "admin_enqueue_scripts", [ $this, 'scripts' ] );
+            add_action( 'admin_enqueue_scripts', [ $this, 'scripts' ] );
             add_action( 'admin_head', [ $this, 'custom_admin_head' ] );
         }
 
@@ -164,8 +164,8 @@ class DT_Webform_Menu
         // determine active tabs
         $active_tab = 'forms';
 
-        if ( isset( $_GET["tab"] ) ) {
-            $active_tab = sanitize_key( wp_unslash( $_GET["tab"] ) );
+        if ( isset( $_GET['tab'] ) ) {
+            $active_tab = sanitize_key( wp_unslash( $_GET['tab'] ) );
         }
 
         $this->tab_loader( $title, $active_tab, $tab_bar, $link );
@@ -197,13 +197,13 @@ class DT_Webform_Menu
             <?php
             switch ( $active_tab ) {
 
-                case "help":
+                case 'help':
                     $this->tab_help();
                     break;
-                case "settings":
+                case 'settings':
                     $this->tab_settings();
                     break;
-                case "forms":
+                case 'forms':
                     $this->tab_forms();
                     break;
                 default:
@@ -269,7 +269,7 @@ class DT_Webform_Menu
             return false;
         }
         foreach ( $sites as $site ) {
-            if ( $site["post_id"] == $site_id ) {
+            if ( $site['post_id'] == $site_id ) {
                 return true;
             }
         }
@@ -336,11 +336,11 @@ class DT_Webform_Menu
                                     </strong>
                                 </span>
                                 <?php $site_link = Site_Link_System::get_site_connection_vars( $selected_site );
-                                if ( ! is_wp_error( $site_link ) && isset( $site_link["url"] ) ){
+                                if ( ! is_wp_error( $site_link ) && isset( $site_link['url'] ) ){
 
                                     echo "<script type='text/javascript'>
                                     jQuery(document).ready(function () {
-                                        check_link_status('" . esc_attr( $site_link["transfer_token"] ) ."', '" . esc_attr( $site_link["url"] ) . "', '" . esc_attr( md5( $selected_site ) ) . "')
+                                        check_link_status('" . esc_attr( $site_link['transfer_token'] ) ."', '" . esc_attr( $site_link['url'] ) . "', '" . esc_attr( md5( $selected_site ) ) . "')
                                     })
 
                                     function check_link_status( transfer_token, url, id ) {

@@ -358,7 +358,7 @@ class DT_Webform_Endpoints
                 dt_write_log( 'Fail Contact Create' );
                 dt_write_log( $body );
                 dt_write_log( $fields );
-                wp_mail( $email, 'Failed Form Post', maybe_serialize( $fields ) . '\n' . $body['message'] ?: '' );
+                wp_mail( $email, 'Failed Form Post', maybe_serialize( $fields ) . '\n' . $body['message'] ?? '' );
                 return new WP_Error( 'failed_remote_post', $body['message'] ?? maybe_serialize( $body ), isset( $body['data'] ) ? $body['data'] : [ 'status' => 400 ] );
 
                 // @todo slack (failed contact insert)

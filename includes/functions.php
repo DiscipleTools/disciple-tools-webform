@@ -21,7 +21,7 @@ if ( ! function_exists( 'is_this_dt' ) ) {
         }
 
         // main theme check
-        $is_theme_dt = class_exists( "Disciple_Tools" );
+        $is_theme_dt = class_exists( 'Disciple_Tools' );
         if ( $is_theme_dt ) {
             return true;
         }
@@ -87,13 +87,13 @@ if ( ! is_this_dt() ) {
                 global $dt_write_log_microtime;
                 $now = microtime( true );
                 if ( $dt_write_log_microtime > 0 ) {
-                    $elapsed_log = sprintf( "[elapsed:%5dms]", ( $now - $dt_write_log_microtime ) * 1000 );
+                    $elapsed_log = sprintf( '[elapsed:%5dms]', ( $now - $dt_write_log_microtime ) * 1000 );
                 } else {
-                    $elapsed_log = "[elapsed:-------]";
+                    $elapsed_log = '[elapsed:-------]';
                 }
                 $dt_write_log_microtime = $now;
                 if ( is_array( $log ) || is_object( $log ) ) {
-                    error_log( $elapsed_log . " " . print_r( $log, true ) );
+                    error_log( $elapsed_log . ' ' . print_r( $log, true ) );
                 } else {
                     error_log( "$elapsed_log $log" );
                 }
@@ -154,7 +154,7 @@ if ( ! is_this_dt() ) {
 
             $mirror = wp_cache_get( __METHOD__, $url_only );
             if ( $mirror ) {
-                return $url_only ? $mirror["url"] : $mirror;
+                return $url_only ? $mirror['url'] : $mirror;
             }
 
             $mirror = get_option( 'dt_location_grid_mirror' );
@@ -207,12 +207,12 @@ if ( ! is_this_dt() ) {
 
     if ( ! function_exists( 'dt_get_url_path' ) ) {
         function dt_get_url_path( $ignore_query_parameters = false ) {
-            if ( isset( $_SERVER["HTTP_HOST"] ) ) {
-                $url  = ( !isset( $_SERVER["HTTPS"] ) || @( $_SERVER["HTTPS"] != 'on' ) ) ? 'http://'. sanitize_text_field( wp_unslash( $_SERVER["HTTP_HOST"] ) ) : 'https://'. sanitize_text_field( wp_unslash( $_SERVER["HTTP_HOST"] ) );
-                if ( isset( $_SERVER["REQUEST_URI"] ) ) {
-                    $url .= sanitize_text_field( wp_unslash( $_SERVER["REQUEST_URI"] ) );
+            if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+                $url  = ( !isset( $_SERVER['HTTPS'] ) || @( $_SERVER['HTTPS'] != 'on' ) ) ? 'http://'. sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : 'https://'. sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) );
+                if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+                    $url .= sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
                 }
-                $url = trim( str_replace( get_site_url(), "", $url ), '/' );
+                $url = trim( str_replace( get_site_url(), '', $url ), '/' );
                 if ( $ignore_query_parameters ){
                     return strtok( $url, '?' ); //allow get parameters
                 }
@@ -236,8 +236,8 @@ if ( ! function_exists( 'dt_webform_no_disciple_tools_theme_found' ) ) {
         global $dt_streams_required_dt_theme_version;
         $wp_theme = wp_get_theme();
         $current_version = $wp_theme->version;
-        $message = __( "'Disciple.Tools - Webform' plugin requires 'Disciple.Tools' theme to work. Please activate 'Disciple.Tools' theme or make sure it is latest version.", "dt_webform" );
-        if ( $wp_theme->get_template() === "disciple-tools-theme" ){
+        $message = __( "'Disciple.Tools - Webform' plugin requires 'Disciple.Tools' theme to work. Please activate 'Disciple.Tools' theme or make sure it is latest version.", 'dt_webform' );
+        if ( $wp_theme->get_template() === 'disciple-tools-theme' ){
             $message .= ' ' . sprintf( esc_html__( 'Current Disciple.Tools version: %1$s, required version: %2$s', 'dt_webform' ), esc_html( $current_version ), esc_html( $dt_streams_required_dt_theme_version ) );
         }
         ?>

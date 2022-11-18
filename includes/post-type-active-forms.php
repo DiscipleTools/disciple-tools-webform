@@ -891,8 +891,8 @@ class DT_Webform_Active_Form_Post_Type
                 if ( ! empty( $data['title'] ) ) {
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[title]" value="'.esc_html( $data['title'] ).'" style="width:100%;" />';
                 }
-                if ( is_array( $data["labels"] ) ){
-                    $data["labels"] = implode( "\r\n", $data["labels"] );
+                if ( is_array( $data['labels'] ) ){
+                    $data['labels'] = implode( "\r\n", $data['labels'] );
                 }
                 ?>
                  <hr>
@@ -900,7 +900,7 @@ class DT_Webform_Active_Form_Post_Type
                           style="width:100%;"
                           rows="5"
                           name="<?php echo esc_attr( $unique_key ) ?>[labels]"
-                          placeholder="One value per line. Underscores allowed. No spaces or special characters." /><?php echo esc_textarea( $data["labels"] ) ?></textarea>
+                          placeholder="One value per line. Underscores allowed. No spaces or special characters." /><?php echo esc_textarea( $data['labels'] ) ?></textarea>
 
             </td>
             <!-- Values-->
@@ -1390,7 +1390,7 @@ class DT_Webform_Active_Form_Post_Type
                 return $post_id;
             }
         }
-        if ( get_post_status( $post_id ) === "draft" ){
+        if ( get_post_status( $post_id ) === 'draft' ){
             wp_update_post( [
                 'ID' => $post_id,
                 'post_status' => 'publish'
@@ -1648,7 +1648,7 @@ class DT_Webform_Active_Form_Post_Type
                                 <?php
                             } else {
                                 ?>
-                                <tr><th scope="row"><label for="<?php echo esc_html( $k ); ?>" title="<?php echo esc_html( $v['description'] ?? "" ); ?>">Assign to User ID</label></th><td>
+                                <tr><th scope="row"><label for="<?php echo esc_html( $k ); ?>" title="<?php echo esc_html( $v['description'] ?? '' ); ?>">Assign to User ID</label></th><td>
                                 <input type="number" name="<?php echo esc_attr( $k ); ?>" class="regular-text" placeholder="Leave blank for default user"
                                        value="<?php echo esc_attr( $selected_value ?? '' ); ?>"/>
                                 <p class="description">ID of the User to assign new contacts to</p>

@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  *Plugin Name: Disciple.Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple.Tools - Webform extends the Disciple.Tools system to send and receive remote submissions from webform contacts.
- * Version:  5.6.1
+ * Version:  5.7.0
  * Text Domain: disciple-tools-webform
  * Domain Path: /languages
  * Author name: Disciple.Tools
@@ -393,7 +393,7 @@ register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
  * @see https://github.com/DiscipleTools/disciple-tools-version-control/wiki/How-to-Update-the-Starter-Plugin
  */
 add_action( 'plugins_loaded', function (){
-    if ( is_admin() && !( is_multisite() && class_exists( "DT_Multisite" ) ) || wp_doing_cron() ){
+    if ( is_admin() && !( is_multisite() && class_exists( 'DT_Multisite' ) ) || wp_doing_cron() ){
         // Check for plugin updates
         if ( ! class_exists( 'Puc_v4_Factory' ) ) {
             $dir_path           = trailingslashit( plugin_dir_path( __FILE__ ) );

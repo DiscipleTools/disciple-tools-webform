@@ -120,9 +120,9 @@ class DT_Webform_Utilities {
         }
 
         $contact_defaults = json_decode( $result['body'], true );
-        if ( isset( $contact_defaults["fields"] ) ) {
-            set_transient( 'dt_webform_contact_defaults', $contact_defaults["fields"], DAY_IN_SECONDS );
-            return $contact_defaults["fields"];
+        if ( isset( $contact_defaults['fields'] ) ) {
+            set_transient( 'dt_webform_contact_defaults', $contact_defaults['fields'], DAY_IN_SECONDS );
+            return $contact_defaults['fields'];
         } else {
             return new WP_Error( __METHOD__, 'Remote response from DT server malformed.' );
         }
@@ -998,7 +998,7 @@ class DT_Webform_Utilities {
         <script>
             window.TRANSLATION = {
                 'required': "<?php echo esc_html( $dt_webform_meta['js_string_required'] ?? __( 'Required', 'dt_webform' ) ) ?>",
-                'characters_required': "<?php echo esc_html( $dt_webform_meta['js_string_char_required'] ?? __( "At least {0} characters required!", 'dt_webform' ) ) ?>",
+                'characters_required': "<?php echo esc_html( $dt_webform_meta['js_string_char_required'] ?? __( 'At least {0} characters required!', 'dt_webform' ) ) ?>",
                 'submit_in': "<?php echo esc_html( $dt_webform_meta['js_string_submit_in'] ?? __( 'Submit in', 'dt_webform' ) ) ?>",
                 'submit': "<?php echo esc_html( $dt_webform_meta['js_string_submit'] ?? __( 'Submit', 'dt_webform' ) ) ?>",
                 'success': "<?php echo esc_html( $dt_webform_meta['js_string_success'] ?? __( 'Success', 'dt_webform' ) ) ?>",
@@ -1043,7 +1043,7 @@ class DT_Webform_Utilities {
                     } else if ( ! is_this_dt() ) {
                         require_once( plugin_dir_path( __DIR__ ) . 'dt-mapping/geocode-api/mapbox-api.php' );
                     }
-                    if ( class_exists( "DT_Mapbox_API" ) ){
+                    if ( class_exists( 'DT_Mapbox_API' ) ){
                         // @codingStandardsIgnoreStart
                         ?>
                         <script type="text/javascript" src="<?php echo esc_html( DT_Mapbox_API::$mapbox_gl_js ) ?>"></script>

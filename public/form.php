@@ -1,9 +1,6 @@
 <?php
-if ( ! isset( $_SERVER['DOCUMENT_ROOT'] ) ) {
-    die( 'missing server info' );
-}
-// @codingStandardsIgnoreLine
-require( $_SERVER[ 'DOCUMENT_ROOT' ] . '/wp-load.php' ); // loads the wp framework when called
+$wordpress_root_path = preg_replace( '/wp-content(?!.*wp-content).*/', '', __DIR__ );
+require_once( $wordpress_root_path . 'wp-load.php' ); // loads the wp framework when called
 
 if ( ! isset( $_GET['token'] ) || empty( $_GET['token'] ) ) {
     die( 'missing token' );

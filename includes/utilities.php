@@ -1646,7 +1646,7 @@ class DT_Webform_Utilities {
         <div class="section" id="submit-button-container">
             <span style="color:red" class="form-submit-error"></span>
             <br>
-            <button type="button" class="submit-button ignore" id="submit-button" onclick="check_form()"
+            <button type="button" class="submit-button ignore" id="submit-button" onclick="dt_check_form()"
                     disabled><?php esc_attr_e( 'Submit', 'dt_webform' ) ?></button>
             <span class="spinner" style="display:none;"></span>
         </div>

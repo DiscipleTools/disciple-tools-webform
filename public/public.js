@@ -1,9 +1,9 @@
 //check online status
-window.addEventListener('online', checkStorage);
-window.addEventListener('load', checkStorage);
+window.addEventListener('online', dt_check_storage);
+window.addEventListener('load', dt_check_storage);
 
 //Get URL Parameters
-let getUrlParameter = function getUrlParameter(sParam) {
+let dt_get_url_parameter = function dt_get_url_parameter(sParam) {
     let sPageURL = decodeURIComponent(window.location.search.substring(1)),
         sURLVariables = sPageURL.split('&'),
         sParameterName,
@@ -18,16 +18,16 @@ let getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-function check_form() {
+function dt_check_form() {
     let validator = jQuery('#contact-form').validate();
     let status = validator.form()
     if( status ) {
-        get_data();
+        dt_get_data();
     }
-    translate_form_strings()
+    dt_translate_form_strings()
 }
 
-function storeData(data) {
+function dt_store_data(data) {
   // save data in localStorage
 
   if (typeof Storage !== 'undefined') {
@@ -44,7 +44,7 @@ function storeData(data) {
   return false;
 }
 
-async function submit_form(data) {
+async function dt_submit_form(data) {
   return fetch(window.SETTINGS.rest_url + 'dt-public/v1/webform/form_submit', {
     method: 'POST',
     headers: {
@@ -66,7 +66,7 @@ async function submit_form(data) {
   });
 }
 
-function get_data() {
+function dt_get_data() {
   var submitButtonContainer = document.querySelector('#submit-button-container');
   var submitButton = document.querySelector('#submit-button');
 
@@ -105,23 +105,23 @@ function get_data() {
 
   if (!navigator.onLine) {
     // user is offline, store data locally
-    const stored = storeData(data);
+    const stored = dt_store_data(data);
     let message = '<strong>You appear to be offline right now. </strong>';
     if (stored) {
       message += 'Your data was saved and will be submitted once you come back online.';
 
-      document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount())
+      document.querySelector("#offlineWarningContainer").innerText = dt_offline_count_message(dt_offline_count())
     }
     jQuery("#submit-button-container .spinner").remove();
     document.querySelector("form").reset();
 
-    removeOfflineWarning();
+    dt_remove_offline_warning();
 
     submitButtonContainer.insertAdjacentHTML("beforeend", `<div class="offlineWarning">${message}</div>`);
-    setTimeout(removeOfflineWarning, 2000);
+    setTimeout(dt_remove_offline_warning, 2000);
 
   } else {
-    submit_form(JSON.stringify(data)).then((response) => {
+    dt_submit_form(JSON.stringify(data)).then((response) => {
       submitButton.disabled = false;
       jQuery("#submit-button-container .spinner").remove()
       if ( response ){
@@ -133,45 +133,45 @@ function get_data() {
   }
 }
 
-function removeOfflineWarning() {
+function dt_remove_offline_warning() {
   if (document.querySelector(".offlineWarning")) {
     document.querySelector(".offlineWarning").remove();
   }
 }
 
-function offlineCount() {
+function dt_offline_count() {
   const token = new URLSearchParams(location.search).get('token');
-  let offlineCount = 0;
+  let dt_offline_count = 0;
 
   for (let i=0; i< localStorage.length; i++) {
     let key = localStorage.key(i);
     if (key.includes(token)) {
-      offlineCount++
+      dt_offline_count++
     }
   }
 
-  return offlineCount;
+  return dt_offline_count;
 }
 
-function offlineCountMessage(offlineCount) {
+function dt_offline_count_message(dt_offline_count) {
   let message;
-  if (offlineCount == 1) {
-    message = `You have ${offlineCount} contact stored offline, reconnect to the internet to save this contact`
+  if (dt_offline_count == 1) {
+    message = `You have ${dt_offline_count} contact stored offline, reconnect to the internet to save this contact`
   }
-  else if (offlineCount > 1) {
-    message = `You have ${offlineCount} contacts stored offline, reconnect to the internet to save these contact`
+  else if (dt_offline_count > 1) {
+    message = `You have ${dt_offline_count} contacts stored offline, reconnect to the internet to save these contact`
   }
   return message ? message : "";
 }
 
-function translate_form_strings() {
+function dt_translate_form_strings() {
   jQuery("label:contains('This field is required.')").html(window.TRANSLATION.required)
 }
 
-async function checkStorage() {
+async function dt_check_storage() {
   // check if we have saved data in localStorage
   if (typeof Storage !== 'undefined') {
-    if (offlineCount() > 0) {document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount());}
+    if (dt_offline_count() > 0) {document.querySelector("#offlineWarningContainer").innerText = dt_offline_count_message(dt_offline_count());}
     const token = new URLSearchParams(location.search).get('token');
 
     for (let i=0; i< localStorage.length; i++) {
@@ -182,10 +182,10 @@ async function checkStorage() {
         // we have saved form data, try to submit it
         const item = JSON.parse(fromLocalStore);
 
-        submit_form(JSON.stringify(item)).then(function(res) {
+        dt_submit_form(JSON.stringify(item)).then(function(res) {
             if (res === 200) {
               localStorage.removeItem(key);
-              document.querySelector("#offlineWarningContainer").innerText = offlineCountMessage(offlineCount());
+              document.querySelector("#offlineWarningContainer").innerText = dt_offline_count_message(dt_offline_count());
             }
           });
         }
@@ -197,12 +197,12 @@ async function checkStorage() {
 
 jQuery(document).ready(function () {
 
-    if ( getUrlParameter('success') ) {
+    if ( dt_get_url_parameter('success') ) {
       jQuery('#report').empty().append( `<div id="success">${window.TRANSLATION.success}</div><br>`);
     }
 
-    // check_form()
-    translate_form_strings()
+    // dt_check_form()
+    dt_translate_form_strings()
 
     let button = jQuery('#submit-button')
     button.html( window.TRANSLATION.submit ).prop('disabled', true)

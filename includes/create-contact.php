@@ -219,11 +219,7 @@ class DT_Webform_Endpoints
                             case 'multi_radio':
                             case 'multi_select':
                                 if ( is_array( $lead_value ) ) {
-                                    $concat_item = '';
-                                    foreach ( $lead_value as $item ) {
-                                        $concat_item .= $item . ' | ';
-                                    }
-                                    $notes[$lead_key] = $field['title'] . ': ' . esc_html( $concat_item );
+                                    $notes[$lead_key] = $field['title'] . ': ' . esc_html( join( ' | ', $lead_value ) );
                                 } else {
                                     $notes[$lead_key] = $field['title'] . ': ' . esc_html( $lead_value );
                                 }

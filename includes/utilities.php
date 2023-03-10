@@ -588,7 +588,6 @@ class DT_Webform_Utilities {
                     .input-multi_select {
                         padding: .5em;
                         font-size: 1em;
-                        width: 100%;
                         border: 1px solid lightgray;
                     }
                     .input-key_select {
@@ -749,7 +748,6 @@ class DT_Webform_Utilities {
                     .input-multi_select {
                         padding: .5em;
                         font-size: 1em;
-                        width: 100%;
                         border: 1px solid lightgray;
                     }
                     .input-key_select {
@@ -1193,11 +1191,11 @@ class DT_Webform_Utilities {
                                         <?php echo esc_attr( $dt_webform_value['title'] ) ?>
                                     </label>
                                     <fieldset>
-                                        <?php
-                                        foreach ( $list as $item ) {
-                                            echo '<label><input type="checkbox" name="' . esc_attr( $dt_webform_key ) . '" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</label><br>';
-                                        }
-                                        ?>
+                                    <?php
+                                    foreach ( $list as $item ) {
+                                        echo '<label><input type="checkbox" name="' . esc_attr( $dt_webform_key ) . '" value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</label><br>';
+                                    }
+                                    ?>
                                     </fieldset>
                                 </div>
                                 <?php
@@ -1542,7 +1540,6 @@ class DT_Webform_Utilities {
                             }
                             break;
                         case 'multi_radio':
-                        case 'multi_select':
                             $list = DT_Webform_Active_Form_Post_Type::make_labels_array( $dt_webform_value['labels'] );
                             if ( count( $list ) > 0 ) {
                                 ?>
@@ -1562,6 +1559,27 @@ class DT_Webform_Utilities {
                                     ?>
                                     </div>
                                     <br style="clear: both;"/>
+                                </div>
+                                <?php
+                            }
+                            break;
+                        case 'multi_select':
+                            $list = DT_Webform_Active_Form_Post_Type::make_labels_array( $dt_webform_value['labels'] );
+                            if ( count( $list ) > 0 ) {
+                                ?>
+                                <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                     class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
+                                    <label for="<?php echo esc_attr( $dt_webform_key ) ?>"
+                                           class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['title'] ) ?></label>
+                                    <fieldset>
+                                    <?php
+                                    foreach ( $list as $index => $item ) {
+                                        echo '<label><input type="checkbox" name="' . esc_attr( $dt_webform_key ) . '" value="' . esc_attr( $item ) . '">' . esc_html( $item ) . '</label><br>';
+//                                        $checked = '';
+//                                        echo '<label><input type="checkbox" class="input-' . esc_attr( $dt_webform_value['type'] ) . '" name="' . esc_attr( $dt_webform_value['key'] ) . '" value="' . esc_html( $item ) . '" ' . esc_attr( $checked ) . '>' . esc_html( $item ) . '</label>';
+                                    }
+                                    ?>
+                                    </fieldset>
                                 </div>
                                 <?php
                             }

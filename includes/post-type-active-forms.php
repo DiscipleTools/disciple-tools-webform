@@ -297,6 +297,7 @@ class DT_Webform_Active_Form_Post_Type
 
                             // multi labels, multi values
                             case 'dropdown':
+                            case 'multi_select':
                             case 'multi_radio':
                                 $this->template_row_other_multi( $unique_key, $data );
                                 break;
@@ -402,6 +403,7 @@ class DT_Webform_Active_Form_Post_Type
                                     <option value="email"><?php echo esc_attr__( 'Email', 'dt_webform' ) ?></option>
                                     <option value="checkbox"><?php echo esc_attr__( 'Checkbox', 'dt_webform' ) ?></option>
                                     <option value="dropdown"><?php echo esc_attr__( 'Dropdown', 'dt_webform' ) ?></option>
+                                    <option value="multi_select"><?php echo esc_attr__( 'Multi-Select Checkboxes', 'dt_webform' ) ?></option>
                                     <option value="multi_radio"><?php echo esc_attr__( 'Multi-Select Radio', 'dt_webform' ) ?></option>
                                     <option value="note"><?php echo esc_attr__( 'Note', 'dt_webform' ) ?></option>
                                </select>`
@@ -682,6 +684,7 @@ class DT_Webform_Active_Form_Post_Type
 
                 switch ( type ) {
                     case 'multi_radio':
+                    case 'multi_select':
                     case 'key_select':
                     case 'dropdown':
                         labels.empty().append(multi_title).append('<hr>').append(multi_label)
@@ -2242,7 +2245,11 @@ class DT_Webform_Active_Form_Post_Type
             return [];
         }
 
-        return array_filter( explode( PHP_EOL, $labels ) );
+        $labels = array_filter( explode( PHP_EOL, $labels ) );
+        foreach ( $labels as $index => $item ) {
+            $labels[$index] = trim( $item );
+        }
+        return $labels;
     }
 
     public static function match_dt_field_labels_with_values( $labels, array $values ) : array {

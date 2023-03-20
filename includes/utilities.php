@@ -1377,12 +1377,17 @@ class DT_Webform_Utilities {
                                             }
 
                                             let root = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
-                                            let settings = '.json?types=country,region,postcode,district,place,locality,neighborhood,address&limit=6&access_token='
                                             let key = '<?php echo esc_attr( DT_Mapbox_API::get_key() ) ?>'
 
-                                            let url = root + encodeURI(address) + settings + key
+                                            let args = {
+                                                access_token: key,
+                                                types: 'country,region,postcode,district,place,locality,neighborhood,address',
+                                                limit: 6
+                                            }
 
-                                            jQuery.get(url, function (data) {
+                                            let url = root + encodeURI(address) + '.json'
+
+                                            jQuery.get(url, args, function (data) {
                                                 console.log(data)
                                                 if (data.features.length < 1) {
                                                     // destroy lists

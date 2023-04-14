@@ -116,6 +116,18 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
             return get_option( $prefix . '_api_keys', [] );
         }
 
+        public static function get_site_key_by_dev_key( $dev_key ) {
+            $keys = self::get_site_keys();
+            if ( ! empty( $keys ) ) {
+                foreach ( $keys as $key ) {
+                    if ( $key['dev_key'] === $dev_key ) {
+                        return $key;
+                    }
+                }
+            }
+            return false;
+        }
+
         /**
          * GET A LIST OF SITES BY CONNECTION TYPE
          *
@@ -443,9 +455,9 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                             </strong>
                         </span>
                         <script>
-                            jQuery(document).ready(function () {
-                                check_link_status('<?php echo esc_attr( $post->ID ); ?>', '<?php echo esc_attr( md5( $post->ID ) ); ?>');
-                            })
+                          jQuery(document).ready(function () {
+                            check_link_status('<?php echo esc_attr( $post->ID ); ?>', '<?php echo esc_attr( md5( $post->ID ) ); ?>');
+                          })
                         </script>
                         <?php
                     } else {
@@ -518,7 +530,7 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                     strtolower( $this->singular ),
                     // translators: Publish box date format, see http://php.net/date
                     '<strong>' . date_i18n( __( 'M j, Y @ G:i' ),
-                    strtotime( $post->post_date ) ) . '</strong>'
+                        strtotime( $post->post_date ) ) . '</strong>'
                 ),
                 10 => sprintf( '%1$s draft updated. %2$s%3$s%4$s', $this->singular, strtolower( $this->singular ), '', '' ),
             ];
@@ -907,9 +919,9 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                             </tr>
 
                             <script>
-                                jQuery(document).ready(function () {
-                                    check_link_status('<?php echo esc_attr( $post_id ); ?>', '<?php echo esc_attr( md5( $post_id ) ); ?>');
-                                })
+                              jQuery(document).ready(function () {
+                                check_link_status('<?php echo esc_attr( $post_id ); ?>', '<?php echo esc_attr( md5( $post_id ) ); ?>');
+                              })
                             </script>
                         <?php endif; // check for non-wp ?>
                     </table>
@@ -1044,12 +1056,12 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
 
             if ( $uri && ( strpos( $uri, 'edit.php' ) && strpos( $uri, 'post_type=site_link_system' ) ) || ( strpos( $uri, 'post-new.php' ) && strpos( $uri, 'post_type=site_link_system' ) ) ) : ?>
                 <script>
-                    jQuery(function($) {
-                        $(`<div><a href="https://disciple.tools/user-docs/getting-started-info/admin/site-links/" style="margin-bottom:15px;" target="_blank">
+                  jQuery(function($) {
+                    $(`<div><a href="https://disciple.tools/user-docs/getting-started-info/admin/site-links/" style="margin-bottom:15px;" target="_blank">
                         <img style="height:15px" class="help-icon" src="<?php echo esc_html( get_template_directory_uri() . '/dt-assets/images/help.svg' ) ?>"/>
                         Site link documentation</a></div>`).insertAfter(
-                            '#wpbody-content .wrap .wp-header-end:eq(0)')
-                    });
+                      '#wpbody-content .wrap .wp-header-end:eq(0)')
+                  });
                 </script>
             <?php endif;
         }
@@ -1494,12 +1506,14 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
 
         // Adds the type of connection to the site link system
         public function default_site_link_type( $type ){
-            $post_types = DT_Posts::get_post_types();
-            foreach ( $post_types ?? [] as $post_type ){
-                $post_type_settings = DT_Posts::get_post_settings( $post_type, false );
+            if ( class_exists( 'DT_Posts' ) ){
+                $post_types = DT_Posts::get_post_types();
+                foreach ( $post_types ?? [] as $post_type ){
+                    $post_type_settings = DT_Posts::get_post_settings( $post_type, false );
 
-                $type['create_' . $post_type] = sprintf( __( 'Create %s', 'disciple_tools' ), $post_type_settings['label_plural'] );
-                $type['create_update_' . $post_type] = sprintf( __( 'Create and Update %s', 'disciple_tools' ), $post_type_settings['label_plural'] );
+                    $type['create_' . $post_type] = sprintf( __( 'Create %s', 'disciple_tools' ), $post_type_settings['label_plural'] );
+                    $type['create_update_' . $post_type] = sprintf( __( 'Create and Update %s', 'disciple_tools' ), $post_type_settings['label_plural'] );
+                }
             }
 
             return $type;
@@ -1507,14 +1521,16 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
 
         // Add the specific capabilities needed for the site to site linking.
         public function default_site_link_capabilities( $args ){
-            $post_types = DT_Posts::get_post_types();
-            foreach ( $post_types ?? [] as $post_type ){
-                if ( 'create_' . $post_type === $args['connection_type'] ){
-                    $args['capabilities'][] = 'create_' . $post_type;
-                }
-                if ( 'create_update_' . $post_type === $args['connection_type'] ){
-                    $args['capabilities'][] = 'create_' . $post_type;
-                    $args['capabilities'][] = 'update_any_' . $post_type;
+            if ( class_exists( 'DT_Posts' ) ){
+                $post_types = DT_Posts::get_post_types();
+                foreach ( $post_types ?? [] as $post_type ){
+                    if ( 'create_' . $post_type === $args['connection_type'] ){
+                        $args['capabilities'][] = 'create_' . $post_type;
+                    }
+                    if ( 'create_update_' . $post_type === $args['connection_type'] ){
+                        $args['capabilities'][] = 'create_' . $post_type;
+                        $args['capabilities'][] = 'update_any_' . $post_type;
+                    }
                 }
             }
 

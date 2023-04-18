@@ -62,7 +62,7 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
             if ( empty( $this->dt_webform_core_fields ) ){
                 $this->magic->redirect_to_expired_landing_page();
             }
-        } else{
+        } else {
             $this->magic->redirect_to_expired_landing_page();
         }
 
@@ -127,7 +127,7 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
                 <div id="offlineWarningContainer"></div>
             </div> <!-- wrapper-->
             <?php
-        } else{
+        } else {
             $this->magic->redirect_to_expired_landing_page();
         }
     }

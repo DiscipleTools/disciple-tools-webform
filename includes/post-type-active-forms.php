@@ -1981,6 +1981,16 @@ class DT_Webform_Active_Form_Post_Type
             'hidden'      => 'yes',
             'section'     => 'info',
         ];
+        $fields['url_redirect_success'] = [
+            'name'        => 'Redirect On Success',
+            'description' => 'URL to redirect towards, following a successful record creation. Leave blank for default action.',
+            'type'        => 'text',
+            'default'     => '',
+            'label'       => 'Redirect On Success',
+            'required'    => 'no',
+            'hidden'      => 'yes',
+            'section'     => 'info',
+        ];
 
         return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()

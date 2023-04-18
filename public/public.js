@@ -125,7 +125,11 @@ function dt_get_data() {
       submitButton.disabled = false;
       jQuery("#submit-button-container .spinner").remove()
       if ( response ){
-        jQuery('#contact-form').html(window.TRANSLATION.success)
+        if (window.SETTINGS.url_redirect_success) {
+          window.location.href = window.SETTINGS.url_redirect_success;
+        } else {
+          jQuery('#contact-form').html(window.TRANSLATION.success);
+        }
       } else {
         jQuery('.form-submit-error').html(window.TRANSLATION.failure)
       }

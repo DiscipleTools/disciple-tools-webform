@@ -54,6 +54,11 @@ try {
 function dt_webform() {
     global $dt_webform_required_dt_theme_version;
 
+    // Call required helper classes
+    require_once( 'includes/utilities.php' );
+    require_once( 'includes/post-type-active-forms.php' );
+    require_once( 'magic-link/magic-link-webform-app.php' );
+
     if ( is_this_dt() ) {
         $wp_theme = wp_get_theme();
         $version = $wp_theme->version;

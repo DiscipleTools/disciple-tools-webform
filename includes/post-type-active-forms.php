@@ -18,6 +18,7 @@ class DT_Webform_Active_Form_Post_Type
     public $form_type;
     public $post_id;
     public $contact_fields;
+    public $magic_link_key = 'webform_ml_magic_key';
 
     /**
      * DT_Webform_Active_Form_Post_Type The single instance of DT_Webform_Active_Form_Post_Type.
@@ -53,6 +54,7 @@ class DT_Webform_Active_Form_Post_Type
             add_action( 'save_post', [ $this, 'save_core_fields' ] );
             add_action( 'save_post', [ $this, 'save_extra_fields' ] );
             add_action( 'save_post', [ $this, 'save_token' ] );
+            add_action( 'save_post', [ $this, 'save_magic_link' ] );
 
             global $pagenow;
             if ( $pagenow === 'post.php' ) {
@@ -853,7 +855,22 @@ class DT_Webform_Active_Form_Post_Type
                 <p>Unique Form ID</p>
                 <?php echo esc_attr( get_post_meta( $post->ID, 'token', true ) ) ?>
             </div>
+
             <?php
+            $magic_link_key_value = get_post_meta( $post->ID, $this->magic_link_key, true );
+            if ( !empty( $magic_link_key_value ) ){
+                ?>
+                <br>
+                <hr>
+                <div style="text-align:center;">
+                    <p>Magic Link</p>
+                    <p>
+                        <a href="<?php echo esc_url( site_url( '/webform/ml/' . $magic_link_key_value ) ) ?>?token=<?php echo esc_attr( $token ) ?>"
+                           target="_blank">Open magic link in its own window.</a>
+                    </p>
+                </div>
+                <?php
+            }
         }
     }
 
@@ -1445,6 +1462,15 @@ class DT_Webform_Active_Form_Post_Type
         $token = bin2hex( random_bytes( 16 ) );
         add_post_meta( $post_id, 'token', $token, true );
         return $post_id;
+    }
+
+    public function save_magic_link( $post_id ){
+        if ( get_post_type() !== $this->post_type ){
+            return $post_id;
+        }
+
+        // Refresh form's magic link.
+        update_post_meta( $post_id, $this->magic_link_key, dt_create_unique_key() );
     }
 
     public function save_core_fields( $post_id ) {

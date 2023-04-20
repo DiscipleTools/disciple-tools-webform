@@ -38,9 +38,7 @@
        the WordPress namespaces. -->
   <rule ref="WordPress">
 
-
     <!-- TODO: enable these rules: -->
-
     <exclude name="WordPress.Files.FileName.InvalidClassFileName" />
     <exclude name="WordPress.WP.I18n.MissingTranslatorsComment" />
     <exclude name="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar" />
@@ -64,8 +62,6 @@
     <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.SpaceBeforeBrace" />
     <exclude name="Generic.PHP.ForbiddenFunctions.FoundWithAlternative" />
     <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed" />
-    <exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
-    <exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
     <exclude name="PSR2.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE" />
     <exclude name="PSR2.ControlStructures.SwitchDeclaration.BreakIndent" />
     <exclude name="PSR2.ControlStructures.SwitchDeclaration.SpaceBeforeColonCASE" />
@@ -120,7 +116,7 @@
     <exclude name="Squiz.PHP.EmbeddedPhp.NoSemicolon" />
     <exclude name="Squiz.PHP.EmbeddedPhp.SpacingBeforeClose" />
     <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound" />
-    <!-- <exclude name="Squiz.Strings.DoubleQuoteUsage.NotRequired" /> -->
+    <!-- <exclude name="Squiz.Strings.DoubleQuoteUsage.NotRequired" />-->
     <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EmptyLines" />
     <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndFile" />
     <!-- <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine" /> -->
@@ -142,6 +138,9 @@
     <exclude name="WordPress.Arrays.CommaAfterArrayItem.NoSpaceAfterComma" />
     <exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceAfterComma" />
     <exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceBeforeComma" />
+    <exclude name="WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound" />
+    <exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+    <exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
     <exclude name="WordPress.PHP.YodaConditions.NotYoda" />
     <!-- <exclude name="WordPress.WhiteSpace.CastStructureSpacing.NoSpaceBeforeOpenParenthesis" /> -->
     <!-- <exclude name="WordPress.WhiteSpace.ControlStructureSpacing.BlankLineAfterEnd" /> -->
@@ -161,8 +160,6 @@
     <!-- <exclude name="WordPress.WhiteSpace.OperatorSpacing.NoSpaceBefore" /> -->
     <!-- <exclude name="WordPress.WhiteSpace.OperatorSpacing.SpacingAfter" /> -->
     <!-- <exclude name="WordPress.WhiteSpace.OperatorSpacing.SpacingBefore" /> -->
-    <exclude name="WordPress.WP.EnqueuedResourceParameters.MissingVersion" />
-    <exclude name="WordPress.WP.EnqueuedResourceParameters.NoExplicitVersion" />
 
   </rule>
 
@@ -206,11 +203,6 @@
   </rule>
   <rule ref="Squiz.WhiteSpace.LogicalOperatorSpacing"/>
   <rule ref="PEAR.NamingConventions.ValidClassName"/>
-  <!--<rule ref="WordPress.NamingConventions.PrefixAllGlobals">-->
-  <!--<properties>-->
-  <!--<property name="prefixes" type="array" value="dt,Disciple_Tools" />-->
-  <!--</properties>-->
-  <!--</rule>-->
 
   <!-- Maybe these rules will be enabled in the future: -->
   <!-- <rule ref="Generic.Files.LineLength"/> -->
@@ -227,6 +219,7 @@
   <!-- <rule ref="PEAR.NamingConventions.ValidVariableName"/> -->
   <!-- <rule ref="PSR2.Files.ClosingTag"/> -->
   <!-- <rule ref="Squiz.PHP.ForbiddenFunctions"/> -->
+  <!-- <rule ref="Generic.Arrays.DisallowLongArraySyntax"/> -->
 
   <rule ref="WordPress.Security.ValidatedSanitizedInput">
     <properties>
@@ -236,6 +229,6 @@
     </properties>
   </rule>
 
-
 </ruleset>
+
 

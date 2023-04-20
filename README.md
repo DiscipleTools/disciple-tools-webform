@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/DiscipleTools/disciple-tools-webform.svg?branch=master)](https://travis-ci.com/DiscipleTools/disciple-tools-webform)
+![Build Status](https://github.com/DiscipleTools/disciple-tools-webform/actions/workflows/ci.yml/badge.svg?branch=master)
 
 ![Plugin Banner](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/documentation/webform-banner.png)
 # Disciple.Tools - Webform

@@ -529,8 +529,7 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                     $this->singular,
                     strtolower( $this->singular ),
                     // translators: Publish box date format, see http://php.net/date
-                    '<strong>' . date_i18n( __( 'M j, Y @ G:i' ),
-                        strtotime( $post->post_date ) ) . '</strong>'
+                    '<strong>' . date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) . '</strong>'
                 ),
                 10 => sprintf( '%1$s draft updated. %2$s%3$s%4$s', $this->singular, strtolower( $this->singular ), '', '' ),
             ];

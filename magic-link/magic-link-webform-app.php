@@ -36,11 +36,15 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
         parent::__construct();
 
         /**
-         * Test if other URL...?
+         * Test if other URL and ensure parts are present...
          */
 
         $url = dt_get_url_path();
         if ( strpos( $url, $this->root . '/' . $this->type ) === false ){
+            return;
+        }
+
+        if ( !is_array( $this->parts ) || !isset( $this->parts['public_key'] ) ){
             return;
         }
 
@@ -49,7 +53,7 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
          * web-form assets.
          */
 
-        $this->dt_webform_token = $this->fetch_incoming_link_param( 'token' );
+        $this->dt_webform_token = $this->parts['public_key'];
         if ( !empty( $this->dt_webform_token ) ){
             $this->page_title = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $this->dt_webform_token )['header_title_field']['label'] ?? $this->page_title;
             $this->dt_webform_campaigns = $this->fetch_incoming_link_param( 'campaigns' ) ?? '';
@@ -78,6 +82,8 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
     }
 
     public function dt_magic_url_base_allowed_css( $allowed_css ){
+        $allowed_css[] = 'webform-public-css';
+
         return $allowed_css;
     }
 
@@ -86,6 +92,8 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
     }
 
     public function wp_enqueue_scripts(){
+        $plugin_url = str_replace( 'magic-link/', '', trailingslashit( plugin_dir_url( __FILE__ ) ) );
+        wp_enqueue_style( 'webform-public-css', $plugin_url . 'public/public.css', [], 1 );
     }
 
     /**

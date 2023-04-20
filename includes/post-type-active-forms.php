@@ -815,9 +815,7 @@ class DT_Webform_Active_Form_Post_Type
 
             <hr>
             <?php
-            $site = dt_webform()->public_uri;
-            $token = get_metadata( 'post', $post->ID, 'token', true );
-            $full_link = esc_url( $site ) .'form.php?token='. esc_attr( $token );
+            $full_link = $this->get_magic_link_url( $post->ID );
             ?>
             <label for="embed-code">QR Direct Link</label><br>
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=323a68&data=<?php echo esc_url( $full_link ) ?>" title="<?php echo esc_url( $full_link ) ?>" alt="<?php echo esc_url( $full_link ) ?>" style="width:100%;"/><br><a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=323a68&data=<?php echo esc_url( $full_link ) ?>">direct link</a>
@@ -855,22 +853,8 @@ class DT_Webform_Active_Form_Post_Type
                 <p>Unique Form ID</p>
                 <?php echo esc_attr( get_post_meta( $post->ID, 'token', true ) ) ?>
             </div>
-
+            <br>
             <?php
-            $magic_link_key_value = get_post_meta( $post->ID, $this->magic_link_key, true );
-            if ( !empty( $magic_link_key_value ) ){
-                ?>
-                <br>
-                <hr>
-                <div style="text-align:center;">
-                    <p>Magic Link</p>
-                    <p>
-                        <a href="<?php echo esc_url( site_url( '/webform/ml/' . $magic_link_key_value ) ) ?>?token=<?php echo esc_attr( $token ) ?>"
-                           target="_blank">Open magic link in its own window.</a>
-                    </p>
-                </div>
-                <?php
-            }
         }
     }
 
@@ -1470,7 +1454,7 @@ class DT_Webform_Active_Form_Post_Type
         }
 
         // Refresh form's magic link.
-        update_post_meta( $post_id, $this->magic_link_key, dt_create_unique_key() );
+        update_post_meta( $post_id, $this->magic_link_key, get_post_meta( $post_id, 'token', true ) );
     }
 
     public function save_core_fields( $post_id ) {
@@ -2310,11 +2294,10 @@ class DT_Webform_Active_Form_Post_Type
 
     public function direct_link() {
         global $post;
-        $token = get_metadata( 'post', $post->ID, 'token', true );
-        $site = dt_webform()->public_uri;
+        $site = $this->get_magic_link_url( $post->ID );
         ?>
         <div style="text-align:center;">
-            <a href="<?php echo esc_url( $site ) ?>form.php?token=<?php echo esc_attr( $token ) ?>" target="_blank">Open form in its own window.</a>
+            <a href="<?php echo esc_url( $site ) ?>" target="_blank">Open form in its own window.</a>
         </div>
         <?php
     }
@@ -2330,11 +2313,17 @@ class DT_Webform_Active_Form_Post_Type
             $height = '550px';
             update_post_meta( $post_id, 'height', $height );
         }
-        $token = get_metadata( 'post', $post_id, 'token', true );
-        $site = dt_webform()->public_uri;
+        $site = $this->get_magic_link_url( $post_id );
 
-        return '<iframe src="'. esc_url( $site ) .'form.php?token='. esc_attr( $token )
+        return '<iframe src="'. esc_url( $site )
             .'" style="width:'. esc_attr( $width ) .';height:'. esc_attr( $height ) .';" frameborder="0"></iframe>';
+    }
+
+    public function get_magic_link_url( $post_id ){
+        $token = get_metadata( 'post', $post_id, 'token', true );
+        $magic_link_key_value = get_post_meta( $post_id, $this->magic_link_key, true ) ?? $token;
+
+        return site_url( '/webform/ml/' . $magic_link_key_value );
     }
 
 }

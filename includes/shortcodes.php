@@ -22,10 +22,11 @@ function webform_shortcodes_handler( $atts ): string {
         if ( $params['button_only'] === 'true' ) {
 
             // Construct public url
-            $public_url = trailingslashit( trailingslashit( plugin_dir_url( __DIR__ ) ) . 'public' ) . 'form.php?token=' . esc_attr( $token );
+            $magic_link_key_value = get_post_meta( $params['id'], 'webform_ml_magic_key', true ) ?? $token;
+            $public_url = site_url( '/webform/ml/' . $magic_link_key_value );
 
             // If present, append additional url parameters
-            $campaigns  = ! empty( $params['campaigns'] ) ? '&campaigns=' . esc_attr( $params['campaigns'] ) : '';
+            $campaigns  = ! empty( $params['campaigns'] ) ? '?campaigns=' . esc_attr( $params['campaigns'] ) : '';
             $public_url .= $campaigns;
 
             return $public_url;

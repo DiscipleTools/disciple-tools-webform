@@ -1,0 +1,346 @@
+#geocoder {
+    padding-bottom: 10px;
+}
+
+#map {
+    width: 66%;
+    height: 400px;
+    float: left;
+}
+
+#list {
+    width: 33%;
+    float: right;
+}
+
+#selected_values {
+    width: 66%;
+    float: left;
+}
+
+.selection-container {
+    padding: 15px 10px;
+    border: 1px solid lightgray;
+    margin: 5px;
+    font-weight: bold;
+    float: left;
+}
+
+.selection-remove {
+    padding-left: 10px;
+    color: red;
+    cursor: pointer;
+}
+
+.results-button-column {
+    width: 10px;
+    padding-right: 10px;
+    vertical-align: top;
+}
+
+.results-add-button {
+}
+
+.results-title-column {
+}
+
+.results-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.results-row {
+    padding-bottom: 5px;
+}
+
+.results-table {
+}
+
+.results-table td {
+    padding-bottom: 15px;
+}/* mapbox autocomplete elements*/
+
+#mapbox-search {
+    margin: 0;
+}
+
+#mapbox-search-wrapper {
+    margin: 0 0 1rem;
+}
+
+.mapbox-autocomplete {
+    /*the container must be positioned relative:*/
+    position: relative;
+}
+
+.mapbox-autocomplete-items {
+    position: absolute;
+    border: 1px solid #e6e6e6;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+.mapbox-autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.mapbox-autocomplete-items div:hover {
+    /*when hovering an item:*/
+    background-color: #00aeff;
+    color: #ffffff;
+}
+
+.mapbox-autocomplete-active {
+    /*when navigating through the items using the arrow keys:*/
+    background-color: #00aeff !important;
+    color: #ffffff;
+}
+
+#mapbox-spinner-button {
+    border-radius: 0;
+    display: none;
+}/* end mapbox elements*/
+
+#wrapper {
+    margin: auto;
+    max-width: 1000px;
+}
+
+#contact-form {
+}
+
+#title {
+    font-size: 2em;
+    font-weight: bolder;
+    padding: .5em 0;
+}
+
+#description {
+    padding: .5em 0;
+}
+
+#section-name {
+}
+
+#section-phone {
+}
+
+#section-email {
+}
+
+#name {
+}
+
+#phone {
+}
+
+#email {
+}
+
+.section {
+    padding: 10px 0;
+    width: 100%;
+}
+
+.section-multi_select {
+}
+
+.section-key_select {
+}
+
+.section-dropdown {
+}
+
+.section-multi_radio {
+}
+
+.section-checkbox {
+    padding: 0;
+}
+
+.section-tel {
+}
+
+.section-email {
+}
+
+.section-text {
+}
+
+.section-date {
+}
+
+.section-header {
+    font-size: 2em;
+    font-weight: bolder;
+    padding-top: .5em;
+}
+
+.section-description {
+}
+
+.section-note {
+}
+
+.section-map {
+    padding-bottom: 10px;
+}
+
+.section-custom_label {
+    font-size: 1.2em;
+}
+
+.input-text {
+    padding: .5em;
+    font-size: 1em;
+    width: 100%;
+    border: 1px solid lightgray;
+}
+
+.input-communication_channel {
+    padding: .5em;
+    font-size: 1em;
+    width: 100%;
+    border: 1px solid lightgray;
+}
+
+.input-date {
+    padding: .5em;
+    font-size: 1em;
+    width: 100%;
+}
+
+.input-textarea {
+    height: 80px;
+    padding: .5em;
+    font-size: 1.5em;
+    font-family: Arial;
+    border: .5px solid #ccc;
+}
+
+.input-checkbox {
+}
+
+.input-multi_radio {
+    font-size: 1.1em;
+}
+
+.span-radio {
+    float: left;
+    padding: 5px;
+}
+
+.input-tel {
+    padding: .5em;
+    font-size: 1em;
+    width: 100%;
+}
+
+.input-email {
+    padding: .5em;
+    font-size: 1em;
+    width: 100%;
+}
+
+.input-multi_select {
+    padding: .5em;
+    font-size: 1em;
+    border: 1px solid lightgray;
+}
+
+.input-key_select {
+    padding: .5em;
+    font-size: 1em;
+    width: 100%;
+    border: 1px solid lightgray;
+}
+
+.input-dropdown {
+    padding: .5em;
+    font-size: 1em;
+    width: 100%;
+    border: 1px solid lightgray;
+}
+
+.input-note {
+    padding: .5em;
+    font-size: 1.2em;
+    font-family: Arial;
+    width: 100%;
+    border: .5px solid #ccc;
+}
+
+button.submit-button {
+    padding: 1em;
+    font-weight: bolder;
+}
+
+.input-label {
+    font-size: 1.2em;
+    display: inline-block;
+}
+
+.label-dropdown {
+}
+
+.label-multi_radio {
+    margin-bottom: 10px;
+}
+
+.label-checkbox {
+}
+
+.label-tel {
+}
+
+.label-email {
+}
+
+.label-text {
+}
+
+.label-note {
+}
+
+.label-map {
+}
+
+.label-map-instructions {
+    color: grey;
+}
+
+.offlineWarning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+    padding: 1em;
+    font-size: 1.2em;
+    margin: 1em 0;
+    border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
+}
+
+.hr {
+  }
+
+.hr-divider {
+}
+
+label.error {
+    color: red;
+    font-size: .8em;
+}
+
+fieldset {
+    border: none;
+}
+
+#contact-form #section-email .email {
+    display: none;
+}

@@ -57,6 +57,15 @@ function dt_webform() {
     // Call required helper classes
     require_once( 'includes/utilities.php' );
     require_once( 'includes/post-type-active-forms.php' );
+
+    if ( !class_exists( 'DT_Magic_URL' ) ){
+        require_once( 'magic-link/magic-url-class.php' );
+    }
+
+    if ( !class_exists( 'DT_Magic_Url_Base' ) ){
+        require_once( 'magic-link/magic-url-base.php' );
+    }
+
     require_once( 'magic-link/magic-link-webform-app.php' );
 
     if ( is_this_dt() ) {

@@ -22,7 +22,7 @@ function webform_shortcodes_handler( $atts ): string {
         if ( $params['button_only'] === 'true' ) {
 
             // Construct public url
-            if( is_this_dt() ){
+            if ( is_this_dt() ){
                 $magic_link_key_value = get_post_meta( $params['id'], 'webform_ml_magic_key', true ) ?? $token;
                 $public_url = site_url( '/webform/ml/' . $magic_link_key_value );
             } else {

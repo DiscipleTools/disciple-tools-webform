@@ -58,17 +58,8 @@ function dt_webform() {
     require_once( 'includes/utilities.php' );
     require_once( 'includes/post-type-active-forms.php' );
 
-    if ( !class_exists( 'DT_Magic_URL' ) ){
-        require_once( 'magic-link/magic-url-class.php' );
-    }
-
-    if ( !class_exists( 'DT_Magic_Url_Base' ) ){
-        require_once( 'magic-link/magic-url-base.php' );
-    }
-
-    require_once( 'magic-link/magic-link-webform-app.php' );
-
     if ( is_this_dt() ) {
+        require_once( 'magic-link/magic-link-webform-app.php' );
         $wp_theme = wp_get_theme();
         $version = $wp_theme->version;
         if ( $version < $dt_webform_required_dt_theme_version ) {

@@ -82,8 +82,6 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
     }
 
     public function dt_magic_url_base_allowed_css( $allowed_css ){
-        $allowed_css[] = 'webform-public-css';
-
         return $allowed_css;
     }
 
@@ -92,8 +90,6 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
     }
 
     public function wp_enqueue_scripts(){
-        $plugin_url = str_replace( 'magic-link/', '', trailingslashit( plugin_dir_url( __FILE__ ) ) );
-        wp_enqueue_style( 'webform-public-css', $plugin_url . 'public/public.css', [], 1 );
     }
 
     /**
@@ -104,10 +100,82 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
     public function header_style(){
         ?>
         <style>
+            /* Override default styles, suitable for ML display. */
             body {
                 background-color: white;
                 padding: 1em;
             }
+
+            button {
+                border: 2px solid black;
+                border-radius: 4px !important;
+                padding: 10em;
+                font-weight: bolder;
+            }
+
+            input {
+                border-radius: 4px !important;
+            }
+
+            select {
+
+                /* styling */
+                background-color: white;
+                border: thin solid blue;
+                border-radius: 4px;
+                display: inline-block;
+                font: inherit;
+                line-height: 1.5em;
+                padding: 0.5em 3.5em 0.5em 1em;
+
+                /* reset */
+                margin: 0;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
+
+            select:-moz-focusring {
+                color: transparent;
+                text-shadow: 0 0 0 #000;
+            }
+
+            select {
+                background-image:
+                    linear-gradient(45deg, transparent 50%, gray 50%),
+                    linear-gradient(135deg, gray 50%, transparent 50%),
+                    linear-gradient(to right, #ccc, #ccc);
+                background-position:
+                    calc(100% - 15px) calc(1em + 2px),
+                    calc(100% - 10px) calc(1em + 2px),
+                    calc(100% - 2.5em) 0.5em;
+                background-size:
+                    5px 5px,
+                    5px 5px,
+                    1px 1.5em;
+                background-repeat: no-repeat;
+            }
+
+            select:focus {
+                background-image:
+                    linear-gradient(45deg, black 50%, transparent 50%),
+                    linear-gradient(135deg, transparent 50%, black 50%),
+                    linear-gradient(to right, #ccc, #ccc);
+                background-position:
+                    calc(100% - 10px) 1em,
+                    calc(100% - 15px) 1em,
+                    calc(100% - 2.5em) 0.5em;
+                background-size:
+                    5px 5px,
+                    5px 5px,
+                    1px 1.5em;
+                background-repeat: no-repeat;
+                border-color: black;
+                outline: 0;
+            }
+
         </style>
         <?php
     }

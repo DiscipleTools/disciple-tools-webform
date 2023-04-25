@@ -1658,6 +1658,9 @@ class DT_Webform_Utilities {
                             <?php
 
                             break;
+                        case 'custom_hook':
+                            do_action( 'dt_webform_field', $dt_webform_value['labels'] ?? null );
+                            break;
                         default:
                             break;
                     } // end switch

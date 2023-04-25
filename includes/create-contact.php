@@ -267,6 +267,17 @@ class DT_Webform_Endpoints
                     }
                 }
             }
+
+            if ( isset( $remote_settings[$lead_key]['type'] ) ){
+                if ( is_array( $lead_value ) && in_array( $remote_settings[$lead_key]['type'], [ 'tags', 'multi_select' ], true ) ){
+                    if ( !isset( $fields[$lead_key] ) ){
+                        $fields[$lead_key] = [ 'values' => [] ];
+                    }
+                    foreach ( $lead_value as $item ){
+                        $fields[$lead_key]['values'][] = [ 'value' => $item ];
+                    }
+                }
+            }
         }
 
         // source

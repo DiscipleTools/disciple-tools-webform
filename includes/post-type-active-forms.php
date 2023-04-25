@@ -307,6 +307,7 @@ class DT_Webform_Active_Form_Post_Type
                             case 'email':
                             case 'text':
                             case 'note':
+                            case 'custom_hook':
                                 $this->template_row_other_label_field( $unique_key, $data );
                                 break;
 
@@ -406,6 +407,7 @@ class DT_Webform_Active_Form_Post_Type
                                     <option value="multi_select"><?php echo esc_attr__( 'Multi-Select Checkboxes', 'dt_webform' ) ?></option>
                                     <option value="multi_radio"><?php echo esc_attr__( 'Multi-Select Radio', 'dt_webform' ) ?></option>
                                     <option value="note"><?php echo esc_attr__( 'Note', 'dt_webform' ) ?></option>
+                                    <option value="custom_hook"><?php echo esc_attr__( 'Custom Hook', 'dt_webform' ) ?></option>
                                </select>`
 
             function change_selection( id ) {
@@ -695,6 +697,7 @@ class DT_Webform_Active_Form_Post_Type
                     case 'tel':
                     case 'email':
                     case 'note':
+                    case 'custom_hook':
                         labels.empty().html(single_label)
                         values.empty()
                         break;

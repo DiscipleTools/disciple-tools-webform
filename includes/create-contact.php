@@ -97,6 +97,8 @@ class DT_Webform_Endpoints
             $params['form_title'] = get_the_title( $form_id );
         }
 
+        $params['referer'] = $request->get_header( 'referer' );
+
         // Insert new lead
         $this->filter_params( $params );
         return $this->create_contact_record( $params );
@@ -268,7 +270,7 @@ class DT_Webform_Endpoints
         }
 
         // source
-        if ( ! empty( $form_meta['source'] ) && !empty( $remote_settings['sources']['default'] ) ) {
+        if ( ! empty( $form_meta['source'] ) && !is_wp_error( $remote_settings ) && !empty( $remote_settings['sources']['default'] ) ) {
             if ( ! isset( $fields['sources'] ) ) {
                 $fields['sources'] = [ 'values' => [] ];
             }
@@ -281,8 +283,13 @@ class DT_Webform_Endpoints
         }
 
         // ip address
-        if ( ! empty( $new_lead_meta['ip_address'] ) ) {
-            $notes['ip_address'] = __( 'IP Address: ', 'dt_webform' ) . $new_lead_meta['ip_address'];
+//        if ( ! empty( $new_lead_meta['ip_address'] ) ) {
+//            $notes['ip_address'] = __( 'IP Address: ', 'dt_webform' ) . $new_lead_meta['ip_address'];
+//        }
+
+        //form submitted on page
+        if ( !empty( $params['referer'] ) ){
+            $notes['ref'] = 'Submitted on: ' . $params['referer'];
         }
 
         // form source
@@ -292,7 +299,8 @@ class DT_Webform_Endpoints
             $notes['form_title'] = __( 'Source Form: ', 'dt_webform' )  . $new_lead_meta['form_title'];
         }
 
-        $fields['notes'] = $notes;
+        //submit extra notes as one comment
+        $fields['notes'] = [ implode( "\r\n", $notes ) ];
 
         // assign user
         if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) && $form_meta['assigned_to'] !== 'default_user' ) {
@@ -312,6 +320,7 @@ class DT_Webform_Endpoints
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'create_contacts' );
+            $current_user->display_name = 'D.T Webform' . ( $new_lead_meta['form_title'] ? ': ' . $new_lead_meta['form_title'] : '' );
             $result = DT_Posts::create_post( 'contacts', $fields, false, false, $create_args );
 
         } else { // Create contact if remote
@@ -356,29 +365,6 @@ class DT_Webform_Endpoints
                 dt_write_log( $fields );
                 wp_mail( $email, 'Failed Form Post', maybe_serialize( $fields ) . '\n' . $body['message'] ?? '' );
                 return new WP_Error( 'failed_remote_post', $body['message'] ?? maybe_serialize( $body ), isset( $body['data'] ) ? $body['data'] : [ 'status' => 400 ] );
-
-                // @todo slack (failed contact insert)
-//                $data = array(
-//                    'payload'   => json_encode( array(
-//                            "channel"       =>  '#errors',
-//                            "text"          =>  'Failed Coaching Request: ' . maybe_serialize( $body ) . ' --- ' . maybe_serialize( $fields ),
-//                            "username"        =>  'error-bot',
-//                            "icon_emoji"    =>  'ghost'
-//                        )
-//                    )
-//                );
-//                // Post our data via the slack webhook endpoint using wp_remote_post
-//                $posting_to_slack = wp_remote_post( 'https://hooks.slack.com/services/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', array(
-//                        'method' => 'POST',
-//                        'timeout' => 30,
-//                        'redirection' => 5,
-//                        'httpversion' => '1.0',
-//                        'blocking' => true,
-//                        'headers' => array(),
-//                        'body' => $data,
-//                        'cookies' => array()
-//                    )
-//                );
             }
         }
 

@@ -1005,6 +1005,7 @@ class DT_Webform_Utilities {
             window.SETTINGS = {
                 'spinner': ' <span class="spinner"><img src="<?php echo esc_html( $public_url ) ?>spinner.svg" width="20px" /></span>',
                 'rest_url': "<?php echo esc_url_raw( rest_url() ) ?>",
+                'url_redirect_success': "<?php echo esc_html( $dt_webform_meta['url_redirect_success'] ?? '' ) ?>"
             }
             window.dtMapbox = {
                 'google_map_key': "<?php echo esc_html( get_option( 'dt_google_map_key' ) );?>"

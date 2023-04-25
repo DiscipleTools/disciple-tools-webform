@@ -54,17 +54,7 @@ try {
 function dt_webform() {
     global $dt_webform_required_dt_theme_version;
 
-    // Call required helper classes
-    require_once( 'includes/utilities.php' );
-    require_once( 'includes/post-type-active-forms.php' );
-
-    if ( !class_exists( 'Site_Link_System' ) ){
-        require_once( 'includes/site-link-post-type.php' );
-        Site_Link_System::instance();
-    }
-
     if ( is_this_dt() ) {
-        require_once( 'magic-link/magic-link-webform-app.php' );
         $wp_theme = wp_get_theme();
         $version = $wp_theme->version;
         if ( $version < $dt_webform_required_dt_theme_version ) {
@@ -82,6 +72,10 @@ function dt_webform() {
     }
 
     if ( is_admin() ) {
+        return DT_Webform::get_instance();
+    }
+
+    if ( function_exists( 'dt_get_url_path' ) && strpos( dt_get_url_path(), 'webform/ml' ) !== false ) {
         return DT_Webform::get_instance();
     }
 
@@ -172,20 +166,25 @@ class DT_Webform {
         // LOAD FILES
 
         require_once( 'includes/create-contact.php' );
+        require_once( 'includes/utilities.php' );
+        require_once( 'includes/post-type-active-forms.php' );
 
         // Not Disciple.Tools : remote support files
         if ( ! is_this_dt() ) {
             require_once( 'dt-mapping/geocode-api/mapbox-api.php' );
 
+            if ( !class_exists( 'Site_Link_System' ) ){
+                require_once( 'includes/site-link-post-type.php' );
+                Site_Link_System::instance();
+            }
+
             add_action( 'init', [ $this, 'dt_set_permalink_structure' ] );
             add_action( 'update_option_permalink_structure', [ $this, 'dt_permalink_structure_changed_callback' ] );
         }
 
-        // REST support files
-        $is_rest = dt_is_rest();
-        if ( $is_rest || is_admin() ) {
-            require_once( 'includes/utilities.php' );
-            require_once( 'includes/post-type-active-forms.php' );
+
+        if ( is_this_dt() ){
+            require_once( 'magic-link/magic-link-webform-app.php' );
         }
 
         // Admin area

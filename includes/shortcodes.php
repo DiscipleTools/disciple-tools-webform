@@ -37,6 +37,9 @@ function webform_shortcodes_handler( $atts ): string {
             return $public_url;
 
         } else {
+            // Call required helper classes
+            require_once( 'utilities.php' );
+            require_once( 'post-type-active-forms.php' );
 
             // Determine meta and associated form fields
             $dt_webform_meta        = DT_Webform_Utilities::get_form_meta( $token );

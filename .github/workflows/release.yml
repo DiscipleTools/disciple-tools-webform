@@ -18,12 +18,12 @@ jobs:
 
     # - name: Run test suite
     #   run: composer run-script test
-    # cp -r * disciple-tools-webform.php admin metrics network post-type includes languages magic-link spinner.svg version-control.json LICENSE SECURITY.md disciple-tools-webform/ |
+    # cp -r * disciple-tools-webform.php admin metrics network post-type includes languages spinner.svg version-control.json LICENSE SECURITY.md disciple-tools-webform/ |
     # Below borrowed from https://github.com/actions/upload-release-asset
     - name: Build project
       run: |
         mkdir disciple-tools-webform
-        cp -r disciple-tools-webform.php dt-mapping includes languages public spinner.svg version-control.json LICENSE SECURITY.md disciple-tools-webform/
+        cp -r disciple-tools-webform.php dt-mapping includes languages magic-link public spinner.svg version-control.json LICENSE SECURITY.md disciple-tools-webform/
         zip -r disciple-tools-webform.zip disciple-tools-webform
     - name: Create Release
       id: create_release

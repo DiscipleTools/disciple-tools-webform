@@ -58,6 +58,11 @@ function dt_webform() {
     require_once( 'includes/utilities.php' );
     require_once( 'includes/post-type-active-forms.php' );
 
+    if ( !class_exists( 'Site_Link_System' ) ){
+        require_once( 'includes/site-link-post-type.php' );
+        Site_Link_System::instance();
+    }
+
     if ( is_this_dt() ) {
         require_once( 'magic-link/magic-link-webform-app.php' );
         $wp_theme = wp_get_theme();
@@ -171,8 +176,6 @@ class DT_Webform {
         // Not Disciple.Tools : remote support files
         if ( ! is_this_dt() ) {
             require_once( 'dt-mapping/geocode-api/mapbox-api.php' );
-            require_once( 'includes/site-link-post-type.php' );
-            Site_Link_System::instance();
 
             add_action( 'init', [ $this, 'dt_set_permalink_structure' ] );
             add_action( 'update_option_permalink_structure', [ $this, 'dt_permalink_structure_changed_callback' ] );

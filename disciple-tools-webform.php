@@ -163,11 +163,6 @@ class DT_Webform {
         // Admin and settings variables
         $this->version             = '4.0';
 
-        // LOAD FILES
-
-        require_once( 'includes/create-contact.php' );
-        require_once( 'includes/utilities.php' );
-        require_once( 'includes/post-type-active-forms.php' );
 
         // Not Disciple.Tools : remote support files
         if ( ! is_this_dt() ) {
@@ -182,6 +177,9 @@ class DT_Webform {
             add_action( 'update_option_permalink_structure', [ $this, 'dt_permalink_structure_changed_callback' ] );
         }
 
+        require_once( 'includes/create-contact.php' );
+        require_once( 'includes/utilities.php' );
+        require_once( 'includes/post-type-active-forms.php' );
 
         if ( is_this_dt() ){
             require_once( 'magic-link/magic-link-webform-app.php' );

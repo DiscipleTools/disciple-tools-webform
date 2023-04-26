@@ -2326,6 +2326,12 @@ class DT_Webform_Active_Form_Post_Type
         $token = get_metadata( 'post', $post_id, 'token', true );
         $magic_link_key_value = get_post_meta( $post_id, $this->magic_link_key, true ) ?? $token;
 
+        // Ensure to auto-generate a valid magic link value if needed.
+        if ( empty( $magic_link_key_value ) ){
+            $this->save_magic_link( $post_id );
+            $magic_link_key_value = $token;
+        }
+
         return site_url( '/webform/ml/' . $magic_link_key_value );
     }
 

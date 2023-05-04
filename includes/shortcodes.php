@@ -9,7 +9,8 @@ function webform_shortcodes_handler( $atts ): string {
     $params = shortcode_atts( array(
         'id'          => '', // Blank post id
         'button_only' => 'false', // If true, return url; otherwise return form elements
-        'campaigns'   => '' // Additional campaign metadata
+        'campaigns'   => '', // Additional campaign metadata
+        'source' => '' // Additional source metadata
     ), $atts );
 
     // Fetch corresponding form token
@@ -34,6 +35,9 @@ function webform_shortcodes_handler( $atts ): string {
             $campaigns  = ! empty( $params['campaigns'] ) ? $ign . 'campaigns=' . esc_attr( $params['campaigns'] ) : '';
             $public_url .= $campaigns;
 
+            $ource = !empty( $params['source'] ) ? ( empty( $campaigns ) ? '?' : '&' ) . 'source=' . esc_attr( $params['source'] ) : '';
+            $public_url .= $ource;
+
             return $public_url;
 
         } else {
@@ -48,7 +52,7 @@ function webform_shortcodes_handler( $atts ): string {
 
             // Generate html to be returned
             $public_url = trailingslashit( plugin_dir_url( __DIR__ ) ) . 'public/';
-            $form_html    = DT_Webform_Utilities::get_form_html( $token, get_metadata_campaigns( $params['campaigns'] ), $dt_webform_core_fields, $dt_webform_fields, $public_url );
+            $form_html    = DT_Webform_Utilities::get_form_html( $token, get_metadata_param( 'campaigns', $params['campaigns'] ), get_metadata_param( 'source', $params['source'] ), $dt_webform_core_fields, $dt_webform_fields, $public_url );
             $scripts_html = DT_Webform_Utilities::get_form_html_scripts_and_styles( $token, $dt_webform_meta, $dt_webform_fields, $public_url );
 
             // Generate html to be returned
@@ -70,14 +74,14 @@ function webform_shortcodes_handler( $atts ): string {
     return '';
 }
 
-function get_metadata_campaigns( $atts_campaigns ): string {
+function get_metadata_param( $key, $atts ): string {
 
     /**
-     * Default to incoming request campaigns param; otherwise,
-     * revert to shortcode campaigns attribute; if present!
+     * Default to incoming request param; otherwise,
+     * revert to shortcode attribute; if present!
      */
 
-    $request_campaigns = ! empty( $_GET['campaigns'] ) ? sanitize_text_field( wp_unslash( $_GET['campaigns'] ) ) : '';
+    $request = ! empty( $_GET[$key] ) ? sanitize_text_field( wp_unslash( $_GET[$key] ) ) : '';
 
-    return ! empty( $request_campaigns ) ? $request_campaigns : $atts_campaigns ?? '';
+    return ! empty( $request ) ? $request : $atts ?? '';
 }

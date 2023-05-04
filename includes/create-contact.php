@@ -288,6 +288,14 @@ class DT_Webform_Endpoints
             $fields['sources']['values'] = [ [ 'value' => $form_meta['source'] ] ];
         }
 
+        // Capture metadata based sources.
+        if ( isset( $new_lead_meta['meta_source'] ) && !empty( $new_lead_meta['meta_source'] ) ){
+            if ( !isset( $fields['sources'] ) ){
+                $fields['sources'] = [ 'values' => [] ];
+            }
+            $fields['sources']['values'] = [ [ 'value' => $new_lead_meta['meta_source'] ] ];
+        }
+
         // metadata - campaigns
         if ( isset( $new_lead_meta['meta_campaigns'] ) && ! empty( $new_lead_meta['meta_campaigns'] ) ) {
             $fields['campaigns']['values'] = [ [ 'value' => $new_lead_meta['meta_campaigns'] ] ];

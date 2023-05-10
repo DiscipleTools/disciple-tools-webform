@@ -830,7 +830,7 @@ class DT_Webform_Active_Form_Post_Type
                                  href="https://github.com/DiscipleTools/disciple-tools-webform/wiki/1.-How-to-Build-a-Simple-Form#6-copy-embed-code-and-paste-into-website">?</a>]
                 </p>
                 <textarea id="embed_code_shortcode"
-                          style="width:100%; height:75px;">[dt-webform id="<?php echo esc_attr( $post->ID ); ?>" button_only="false" campaigns=""]</textarea>
+                          style="width:100%; height:75px;">[dt-webform id="<?php echo esc_attr( $post->ID ); ?>" button_only="false" campaigns="" source=""]</textarea>
                 <br>
 
                 <p>Attributes</p>
@@ -846,9 +846,12 @@ class DT_Webform_Active_Form_Post_Type
             </p>
             <p>
                 <strong>campaigns:</strong> Optional. <br>
-                Tags that will be passed on to the "Campaigns" field on the new D.T contact
+                Tags that will be passed on to the "Campaigns" field on the new D.T contact.
             </p>
-
+            <p>
+                <strong>source:</strong> Optional. <br>
+                Ability to specify different sources on the new D.T contact.
+            </p>
             <br>
 
             <hr>

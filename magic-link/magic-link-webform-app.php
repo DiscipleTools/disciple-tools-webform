@@ -19,6 +19,7 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
 
     private $dt_webform_token = null;
     private $dt_webform_campaigns = null;
+    private $dt_webform_source = null;
     private $dt_webform_meta = null;
     private $dt_webform_core_fields = null;
     private $dt_webform_fields = null;
@@ -57,6 +58,7 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
         if ( !empty( $this->dt_webform_token ) ){
             $this->page_title = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $this->dt_webform_token )['header_title_field']['label'] ?? $this->page_title;
             $this->dt_webform_campaigns = $this->fetch_incoming_link_param( 'campaigns' ) ?? '';
+            $this->dt_webform_source = $this->fetch_incoming_link_param( 'source' ) ?? '';
             $this->dt_webform_meta = DT_Webform_Utilities::get_form_meta( $this->dt_webform_token );
             $this->dt_webform_core_fields = DT_Webform_Active_Form_Post_Type::get_core_fields_by_token( $this->dt_webform_token );
             $this->dt_webform_fields = DT_Webform_Active_Form_Post_Type::get_extra_fields( $this->dt_webform_token );
@@ -115,7 +117,7 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
             ?>
             <div id="wrapper">
                 <form id="contact-form" action="">
-                    <?php DT_Webform_Utilities::echo_form_html( $this->dt_webform_token, $this->dt_webform_campaigns, $this->dt_webform_core_fields, $this->dt_webform_fields, $this->dt_webform_public_url ); ?>
+                    <?php DT_Webform_Utilities::echo_form_html( $this->dt_webform_token, $this->dt_webform_campaigns, $this->dt_webform_source, $this->dt_webform_core_fields, $this->dt_webform_fields, $this->dt_webform_public_url ); ?>
                 </form>
 
                 <div id="report"></div>

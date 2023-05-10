@@ -228,7 +228,7 @@ class DT_Webform_Utilities {
                         font-size: 1.2em;
                         margin: 1em 0;
                         border-top: 1em solid HSLA(47, 100%, 48%, 1.00);
-                    },
+                    }
                     label.error {
                         color: red;
                         font-size: .8em;

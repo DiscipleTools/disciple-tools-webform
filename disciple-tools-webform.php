@@ -1,5 +1,4 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 /**
  *Plugin Name: Disciple.Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
@@ -22,7 +21,10 @@ if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
  * @version 4.5 Bug fixes
  * @version 4.5.1 Minor updated to allow html in descriptions and headers.
  */
-$dt_webform_required_dt_theme_version = '1.0';
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$dt_webform_required_dt_theme_version = '1.34.1';
 
 require_once( 'includes/functions.php' );
 require_once( 'includes/shortcodes.php' );
@@ -401,7 +403,7 @@ register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
 add_action( 'plugins_loaded', function (){
     if ( is_admin() && !( is_multisite() && class_exists( 'DT_Multisite' ) ) || wp_doing_cron() ){
         // Check for plugin updates
-        if ( ! class_exists( 'Puc_v4_Factory' ) ) {
+        if ( !class_exists( '\YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
             $dir_path           = trailingslashit( plugin_dir_path( __FILE__ ) );
             $includes_path      = trailingslashit( $dir_path . 'includes' );
             $admin_path         = trailingslashit( $includes_path . 'admin' );
@@ -409,8 +411,8 @@ add_action( 'plugins_loaded', function (){
                 require( $admin_path . 'libraries/plugin-update-checker/plugin-update-checker.php' );
             }
         }
-        if ( class_exists( 'Puc_v4_Factory' ) ){
-            Puc_v4_Factory::buildUpdateChecker(
+        if ( class_exists( '\YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ){
+            PucFactory::buildUpdateChecker(
                 'https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/version-control.json',
                 __FILE__,
                 'disciple-tools-webform'

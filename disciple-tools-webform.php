@@ -115,7 +115,7 @@ class DT_Webform {
     public $remote_path;
     public $assets_path;
     public $public_uri;
-    public string $includes_uri;
+    public $includes_uri;
 
     /**
      * Returns the instance.

@@ -123,7 +123,7 @@ if ( ! is_this_dt() ) {
             $current_url = wp_parse_url( add_query_arg( array() ) );
             $is_rest = strpos( $current_url['path'] ?? '', $rest_url['path'] ?? '', 0 ) === 0;
             if ( $namespace ){
-                return $is_rest && strpos( $current_url['path'], $namespace ) != false;
+                return $is_rest && strpos( $current_url['path'] ?? '', $namespace ) != false;
             } else {
                 return $is_rest;
             }

@@ -964,14 +964,15 @@ class DT_Webform_Utilities {
          * to load an entire site header. Therefore these files are to ignore standards.
          */
         // @codingStandardsIgnoreStart
-
+        if ( !wp_script_is( 'jquery', 'enqueued' ) ){
+            ?>
+            <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery.min.js?v=1"></script>
+            <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery-migrate.min.js"></script>
+            <?php
+        }
         ?>
 
-        <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery.min.js"></script>
-        <script type="text/javascript"
-                src="<?php echo esc_url( $public_url ) ?>jquery-migrate.min.js"></script>
-        <script type="text/javascript"
-                src="<?php echo esc_url( $public_url ) ?>jquery.validate.min.js"></script>
+        <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery.validate.min.js"></script>
         <script type="text/javascript"
                 src="<?php echo esc_url( $public_url ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ) ) ?>"></script>
         <?php if( get_option( 'dt_google_map_key' ) ) { ?>

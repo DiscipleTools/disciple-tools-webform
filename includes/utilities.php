@@ -964,6 +964,7 @@ class DT_Webform_Utilities {
          * to load an entire site header. Therefore these files are to ignore standards.
          */
         // @codingStandardsIgnoreStart
+        $test = wp_script_is( 'jquery', 'enqueued' );
         if ( !wp_script_is( 'jquery', 'enqueued' ) ){
             ?>
             <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery.min.js?v=1"></script>
@@ -971,7 +972,8 @@ class DT_Webform_Utilities {
             <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery.validate.min.js"></script>
             <?php
         } else {
-            wp_enqueue_script( 'jquery-validate' , $public_url . 'jquery.validate.min.js', array( 'jquery' ), '1.17.0', true );
+            wp_enqueue_script( 'jquery-migrate');
+            wp_enqueue_script( 'jquery-validate' , $public_url . 'jquery.validate.min.js', array( 'jquery' ), '1.17.0', false );
         }
         ?>
 

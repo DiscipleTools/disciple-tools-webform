@@ -89,6 +89,7 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
 
     public function dt_magic_url_base_allowed_js( $allowed_js ){
         $allowed_js[] = 'jquery-validate';
+        $allowed_js[] = 'dt-webform-public';
         return $allowed_js;
     }
 

@@ -964,21 +964,20 @@ class DT_Webform_Utilities {
          * to load an entire site header. Therefore these files are to ignore standards.
          */
         // @codingStandardsIgnoreStart
-        $test = wp_script_is( 'jquery', 'enqueued' );
         if ( !wp_script_is( 'jquery', 'enqueued' ) ){
             ?>
             <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery.min.js?v=1"></script>
             <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery-migrate.min.js"></script>
             <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>jquery.validate.min.js"></script>
+            <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ) ) ?>"></script>
             <?php
         } else {
             wp_enqueue_script( 'jquery-migrate');
             wp_enqueue_script( 'jquery-validate' , $public_url . 'jquery.validate.min.js', array( 'jquery' ), '1.17.0', false );
+            wp_enqueue_script( 'dt-webform-public' , $public_url . 'public.js', array( 'jquery' ), filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ), false );
         }
         ?>
 
-        <script type="text/javascript"
-                src="<?php echo esc_url( $public_url ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ) ) ?>"></script>
         <?php if( get_option( 'dt_google_map_key' ) ) { ?>
             <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?libraries=places&key=<?php echo esc_html( get_option( 'dt_google_map_key' ) ); ?>"

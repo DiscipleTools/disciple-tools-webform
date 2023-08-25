@@ -140,13 +140,20 @@ class DT_Webform_Endpoints
         $check_for_duplicates = ( isset( $form_meta['check_for_duplicates'] ) && $form_meta['check_for_duplicates'] );
         $remote_settings      = DT_Webform_Utilities::get_contact_defaults();
 
+        // form description
+        if ( !empty( $form_meta['form_description'] ) ) {
+            $notes['form_description'] = __( 'Description', 'dt_webform' ) . ': ' . esc_html( $form_meta['form_description'] );
+        }
+
         // name
         $fields['title'] = $new_lead_meta['name'];
+        $notes['title'] = __( 'Title', 'dt_webform' ) . ': ' . $new_lead_meta['name'];
 
         // phone
         $create_args['check_for_duplicates'] = [];
         if ( isset( $new_lead_meta['phone'] ) && ! empty( $new_lead_meta['phone'] ) ) {
             $fields['contact_phone'] = [ [ 'value' => $new_lead_meta['phone'] ] ];
+            $notes['contact_phone'] = __( 'Phone', 'dt_webform' ) . ': ' . $new_lead_meta['phone'];
 
             if ( $check_for_duplicates ) {
                 $create_args['check_for_duplicates'][] = 'contact_phone';
@@ -156,6 +163,7 @@ class DT_Webform_Endpoints
         // email
         if ( isset( $new_lead_meta['email'] ) && ! empty( $new_lead_meta['email'] ) ) {
             $fields['contact_email'] = [ [ 'value' => $new_lead_meta['email'] ] ];
+            $notes['contact_email'] = __( 'Email', 'dt_webform' ) . ': ' . $new_lead_meta['email'];
 
             if ( $check_for_duplicates ) {
                 $create_args['check_for_duplicates'][] = 'contact_email';
@@ -175,6 +183,7 @@ class DT_Webform_Endpoints
                         ]
                     ]
                 ];
+                $notes['location_grid_meta'] = __( 'Location', 'dt_webform' ) . ': ' . esc_html( $fields['location_grid_meta']['values'][0]['label'] );
             }
         }
 
@@ -246,17 +255,24 @@ class DT_Webform_Endpoints
                             case 'text':
                             case 'key_select':
                                 $fields[$field['dt_field']] = $lead_value;
+                                $notes[$lead_key] = ( $field['title'] ?? $field['dt_field'] ) . ': ' . esc_html( $lead_value );
                                 break;
                             case 'communication_channel':
                                 if ( !isset( $fields[$field['dt_field']] ) ){
                                     $fields[$field['dt_field']] = [];
                                 }
                                 $fields[$field['dt_field']][] = [ 'value' => $lead_value ];
+                                $notes[$lead_key] = ( $field['title'] ?? $field['dt_field'] ) . ': ' . esc_html( $lead_value );
                                 break;
                             case 'multi_select':
                                 if ( is_array( $lead_value ) ) {
+                                    $items = [];
                                     foreach ( $lead_value as $item ) {
                                         $fields[$field['dt_field']]['values'][] = [ 'value' => $item ];
+                                        $items[] = $item;
+                                    }
+                                    if ( !empty( $items ) ){
+                                        $notes[$lead_key] = ( $field['title'] ?? $field['dt_field'] ) . ': ' . esc_html( implode( ' | ', $items ) );
                                     }
                                 }
                                 break;
@@ -286,6 +302,7 @@ class DT_Webform_Endpoints
                 $fields['sources'] = [ 'values' => [] ];
             }
             $fields['sources']['values'] = [ [ 'value' => $form_meta['source'] ] ];
+            $notes['sources'] = __( 'Source: ', 'dt_webform' ) . $form_meta['source'];
         }
 
         // Capture metadata based sources.
@@ -294,11 +311,13 @@ class DT_Webform_Endpoints
                 $fields['sources'] = [ 'values' => [] ];
             }
             $fields['sources']['values'] = [ [ 'value' => $new_lead_meta['meta_source'] ] ];
+            $notes['sources_meta'] = __( 'Meta Source: ', 'dt_webform' ) . $new_lead_meta['meta_source'];
         }
 
         // metadata - campaigns
         if ( isset( $new_lead_meta['meta_campaigns'] ) && ! empty( $new_lead_meta['meta_campaigns'] ) ) {
             $fields['campaigns']['values'] = [ [ 'value' => $new_lead_meta['meta_campaigns'] ] ];
+            $notes['campaigns'] = __( 'Campaigns: ', 'dt_webform' ) . $new_lead_meta['meta_campaigns'];
         }
 
         // ip address

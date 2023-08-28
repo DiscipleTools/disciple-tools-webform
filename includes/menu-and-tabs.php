@@ -509,7 +509,7 @@ class DT_Webform_Menu
                 </thead>
                 <tbody>
                 <tr>
-                    <td>If a form is filled out, but he system fails to create a record in Disciple.Tools, the failed form can be emailed to an administrator. </td>
+                    <td>If a form is filled out, but the system fails to create a record in Disciple.Tools, the failed form can be emailed to an administrator. </td>
                 </tr>
                 <tr>
                     <td>

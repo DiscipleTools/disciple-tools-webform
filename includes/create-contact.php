@@ -187,9 +187,6 @@ class DT_Webform_Endpoints
             }
         }
 
-//        dt_write_log( '$new_lead_meta' );
-//        dt_write_log( $new_lead_meta );
-
         // custom fields
         foreach ( $new_lead_meta as $lead_key => $lead_value ) {
             if ( 'field_' === substr( $lead_key, 0, 6 ) && ! empty( $lead_value ) ) {
@@ -255,6 +252,16 @@ class DT_Webform_Endpoints
                             case 'text':
                             case 'key_select':
                                 $fields[$field['dt_field']] = $lead_value;
+
+                                // Identify corresponding value label.
+                                if ( ( $field['type'] === 'key_select' ) && isset( $field['labels'], $field['values'] ) ) {
+                                    foreach ( DT_Webform_Active_Form_Post_Type::match_dt_field_labels_with_values( $field['labels'], $field['values'] ) ?? [] as $list ) {
+                                        if ( $list['value'] === $lead_value ){
+                                            $lead_value = $list['label'];
+                                        }
+                                    }
+                                }
+
                                 $notes[$lead_key] = ( $field['title'] ?? $field['dt_field'] ) . ': ' . esc_html( $lead_value );
                                 break;
                             case 'communication_channel':
@@ -272,7 +279,21 @@ class DT_Webform_Endpoints
                                         $items[] = $item;
                                     }
                                     if ( !empty( $items ) ){
-                                        $notes[$lead_key] = ( $field['title'] ?? $field['dt_field'] ) . ': ' . esc_html( implode( ' | ', $items ) );
+                                        $select_options = [];
+
+                                        // Identify corresponding value labels.
+                                        if ( isset( $field['labels'], $field['values'] ) ) {
+                                            $list = DT_Webform_Active_Form_Post_Type::match_dt_field_labels_with_values( $field['labels'], $field['values'] );
+                                            foreach ( $items as $item ) {
+                                                foreach ( $list ?? [] as $list_element ) {
+                                                    if ( $list_element['value'] === $item ){
+                                                        $select_options[] = $list_element['label'];
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        $notes[$lead_key] = ( $field['title'] ?? $field['dt_field'] ) . ': ' . esc_html( implode( ' | ', ( ! empty( $select_options ) ) ? $select_options : $items ) );
                                     }
                                 }
                                 break;
@@ -302,7 +323,7 @@ class DT_Webform_Endpoints
                 $fields['sources'] = [ 'values' => [] ];
             }
             $fields['sources']['values'] = [ [ 'value' => $form_meta['source'] ] ];
-            $notes['sources'] = __( 'Source: ', 'dt_webform' ) . $form_meta['source'];
+            $notes['sources'] = __( 'Source: ', 'dt_webform' ) . $remote_settings['sources']['default'][ $form_meta['source'] ]['label'] ?? $form_meta['source'];
         }
 
         // Capture metadata based sources.

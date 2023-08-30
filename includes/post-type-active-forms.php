@@ -1981,6 +1981,16 @@ class DT_Webform_Active_Form_Post_Type
             'hidden'      => 'yes',
             'section'     => 'info',
         ];
+        $fields['form_description'] = [
+            'name'        => 'Form Description',
+            'description' => 'Additional information describing submitted webform.',
+            'type'        => 'text',
+            'default'     => '',
+            'label'       => 'Form Description',
+            'required'    => 'no',
+            'hidden'      => 'yes',
+            'section'     => 'info',
+        ];
 
         return apply_filters( 'dt_custom_webform_forms', $fields, 'dt_webform_forms' );
     } // End get_custom_fields_settings()

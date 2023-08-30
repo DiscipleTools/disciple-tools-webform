@@ -140,6 +140,20 @@ class DT_Webform_Endpoints
         $check_for_duplicates = ( isset( $form_meta['check_for_duplicates'] ) && $form_meta['check_for_duplicates'] );
         $remote_settings      = DT_Webform_Utilities::get_contact_defaults();
 
+
+        // form source
+        if ( ! isset( $new_lead_meta['form_title'] ) || empty( $new_lead_meta['form_title'] ) ) {
+            $notes['form_title'] = __( 'Source Form: Unknown (token: ', 'dt_webform' ) . $new_lead_meta['token'] . ')';
+        } else {
+            $form_name = $new_lead_meta['form_title'];
+            //form submitted on page
+            if ( !empty( $params['referer'] ) ){
+                $form_name = "[$form_name]({$params['referer']})";
+            }
+            $notes['form_title'] = __( 'Source Form: ', 'dt_webform' )  . $form_name;
+        }
+
+
         // form description
         if ( !empty( $form_meta['form_description'] ) ) {
             $notes['form_description'] = __( 'Description', 'dt_webform' ) . ': ' . esc_html( $form_meta['form_description'] );
@@ -147,7 +161,7 @@ class DT_Webform_Endpoints
 
         // name
         $fields['title'] = $new_lead_meta['name'];
-        $notes['title'] = __( 'Title', 'dt_webform' ) . ': ' . $new_lead_meta['name'];
+        $notes['title'] = __( 'Name', 'dt_webform' ) . ': ' . $new_lead_meta['name'];
 
         // phone
         $create_args['check_for_duplicates'] = [];
@@ -346,17 +360,6 @@ class DT_Webform_Endpoints
 //            $notes['ip_address'] = __( 'IP Address: ', 'dt_webform' ) . $new_lead_meta['ip_address'];
 //        }
 
-        //form submitted on page
-        if ( !empty( $params['referer'] ) ){
-            $notes['ref'] = 'Submitted on: ' . $params['referer'];
-        }
-
-        // form source
-        if ( ! isset( $new_lead_meta['form_title'] ) || empty( $new_lead_meta['form_title'] ) ) {
-            $notes['form_title'] = __( 'Source Form: Unknown (token: ', 'dt_webform' ) . $new_lead_meta['token'] . ')';
-        } else {
-            $notes['form_title'] = __( 'Source Form: ', 'dt_webform' )  . $new_lead_meta['form_title'];
-        }
 
         //submit extra notes as one comment
         $fields['notes'] = [ implode( "\r\n", $notes ) ];

@@ -1005,7 +1005,7 @@ class DT_Webform_Utilities {
                 'characters_required': "<?php echo esc_html( $dt_webform_meta['js_string_char_required'] ?? __( 'At least {0} characters required!', 'dt_webform' ) ) ?>",
                 'submit_in': "<?php echo esc_html( $dt_webform_meta['js_string_submit_in'] ?? __( 'Submit in', 'dt_webform' ) ) ?>",
                 'submit': "<?php echo esc_html( $dt_webform_meta['js_string_submit'] ?? __( 'Submit', 'dt_webform' ) ) ?>",
-                'success': "<?php echo esc_html( $dt_webform_meta['js_string_success'] ?? __( 'Success', 'dt_webform' ) ) ?>",
+                'success': "<?php echo esc_html( $dt_webform_meta['js_string_success'] ?? __( 'Success! We have received your submission.', 'dt_webform' ) ) ?>",
                 'failure': "<?php echo esc_html( $dt_webform_meta['js_string_failure'] ?? __( 'Sorry, Something went wrong', 'dt_webform' ) ) ?>",
             }
             window.SETTINGS = {

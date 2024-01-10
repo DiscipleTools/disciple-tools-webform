@@ -1869,7 +1869,7 @@ class DT_Webform_Active_Form_Post_Type
             'name'        => __( 'Success', 'dt_webform' ),
             'description' => __( 'translate: "Success"', 'dt_webform' ),
             'type'        => 'text',
-            'default'     => 'Success',
+            'default'     => 'Success! We have received your submission.',
             'section'     => 'localize',
         ];
         $fields['js_string_failure'] = [

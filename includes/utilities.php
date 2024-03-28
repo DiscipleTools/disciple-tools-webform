@@ -1516,6 +1516,22 @@ class DT_Webform_Utilities {
                             }
 
                             break;
+                        case 'boolean':
+                            // text box
+                            ?>
+                          <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                               class="section single-checkbox section-<?php echo esc_attr( $dt_webform_value['type'] ) ?>">
+                            <input type="checkbox"
+                                   id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                   name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                   class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
+                                   <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>
+                            />
+                            <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                   class="label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_html( $dt_webform_value['labels'] ) ?></label>
+                          </div>
+                            <?php
+                          break;
 
                         default:
                             break;

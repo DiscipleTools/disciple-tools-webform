@@ -311,6 +311,11 @@ class DT_Webform_Endpoints
                                     }
                                 }
                                 break;
+                            case 'boolean':
+                                $fields[$field['dt_field']] = $lead_value === 'on';
+                                $notes[$lead_key] = ( $field['labels'] ?? $field['dt_field'] ) . ': ' . ( $lead_value === 'on' ? 'Yes' : 'No' );
+                                break;
+
                             default:
                                 continue 2;
                                 break;

@@ -286,6 +286,7 @@ class DT_Webform_Active_Form_Post_Type
                             case 'date':
                             case 'communication_channel':
                             case 'text':
+                            case 'boolean':
                                 $this->template_row_dt_field_single( $unique_key, $data );
                                 break;
                             case 'location':
@@ -504,7 +505,7 @@ class DT_Webform_Active_Form_Post_Type
                                 vInput.append(`<input name="field_${unique_key}[values][]" value="${i}" />`)
                             })
                         }
-                        if ( 'text' ===  v.type || 'communication_channel' ===  v.type || 'date' === v.type ) {
+                        if ( 'text' ===  v.type || 'communication_channel' ===  v.type || 'date' === v.type || 'boolean' === v.type ) {
                             labels.append(`<input name="field_${unique_key}[labels]" id="new-labels-${unique_key}" value="${v.name}" />`)
                         }
                     }

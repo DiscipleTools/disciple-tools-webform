@@ -904,6 +904,12 @@ class DT_Webform_Active_Form_Post_Type
                     echo '<input type="text" name="'.esc_attr( $unique_key ).'[title]" value="'.esc_html( $data['title'] ).'" style="width:100%;" />';
                 }
                 if ( is_array( $data['labels'] ) ){
+
+                    // Ensure key_selects starting with not-sets; are replaced with a newline character.
+                    if ( ( $data['type'] === 'key_select' ) && !empty( $data['values'] ) && ( $data['values'][0] === 'not-set' ) ) {
+                        $data['labels'] = array_merge( [ "\r\n" ], array_slice( $data['labels'], 1 ) );
+                    }
+
                     $data['labels'] = implode( "\r\n", $data['labels'] );
                 }
                 ?>

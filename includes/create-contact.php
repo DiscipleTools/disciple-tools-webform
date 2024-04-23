@@ -264,6 +264,7 @@ class DT_Webform_Endpoints
                             // DT Fields
                             case 'date':
                             case 'text':
+                            case 'textarea':
                             case 'key_select':
                                 $fields[$field['dt_field']] = $lead_value;
 

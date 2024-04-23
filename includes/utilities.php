@@ -162,6 +162,7 @@ class DT_Webform_Utilities {
                     }
                     .input-textarea {
                         height:80px;
+                        width: 100%;
                         padding: .2em;
                         font-size: .8em;
                         border: .5px solid #ccc;
@@ -303,6 +304,7 @@ class DT_Webform_Utilities {
                     }
                     .input-textarea {
                         height:80px;
+                        width: 100%;
                         padding: .5em;
                         font-size: 1.2em;
                         border: .5px solid #ccc;
@@ -562,8 +564,9 @@ class DT_Webform_Utilities {
                     }
                     .input-textarea {
                         height:80px;
+                        width: 100%;
                         padding: .5em;
-                        font-size: 1.5em;
+                        font-size: 1em;
                         font-family: Arial;
                         border: .5px solid #ccc;
                     }
@@ -723,6 +726,7 @@ class DT_Webform_Utilities {
                     }
                     .input-textarea {
                         height:80px;
+                        width: 100%;
                         padding: .5em;
                         font-size: 1.2em;
                         border: .5px solid #ccc;
@@ -1222,6 +1226,20 @@ class DT_Webform_Utilities {
                                        name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
                                        class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
                                        value="" <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>/>
+                            </div>
+                            <?php
+                            break;
+                        case 'textarea':
+                            ?>
+                            <div id="section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                 class="section section-<?php echo esc_attr( $dt_webform_value['type'] ) ?> section-<?php echo esc_attr( $dt_webform_value['key'] ) ?>">
+                                <label for="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                       class="input-label label-<?php echo esc_attr( $dt_webform_value['type'] ) ?> label-<?php echo esc_attr( $dt_webform_value['key'] ) ?>"><?php echo esc_attr( $dt_webform_value['labels'] ?? '' ) ?></label>
+                                <textarea type="<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
+                                       id="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                       name="<?php echo esc_attr( $dt_webform_value['key'] ) ?>"
+                                       class="input-<?php echo esc_attr( $dt_webform_value['type'] ) ?>"
+                                        <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>></textarea>
                             </div>
                             <?php
                             break;

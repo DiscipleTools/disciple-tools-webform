@@ -1180,11 +1180,9 @@ class DT_Webform_Utilities {
                                         <?php echo esc_attr( $dt_webform_value['required'] == 'yes' ? 'required' : '' ) ?>
                                     >
                                         <?php
-                                        if ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' ) {
-                                            echo '<option></option>';
-                                        }
+                                        $not_set_selected = ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' );
                                         foreach ( $list as $item ) {
-                                            echo '<option value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</option>';
+                                            echo '<option value="' . esc_attr( $item['value'] ) . '" '. esc_attr( ( $not_set_selected && in_array( $item['value'], [ 'not-set', 'none' ] ) ? 'selected' : '' ) ) .'>' . esc_html( $item['label'] ) . '</option>';
                                         }
                                         ?>
                                     </select>

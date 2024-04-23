@@ -906,11 +906,14 @@ class DT_Webform_Active_Form_Post_Type
                 if ( is_array( $data['labels'] ) ){
 
                     // Ensure key_selects starting with not-sets; are replaced with a newline character.
-                    if ( ( $data['type'] === 'key_select' ) && !empty( $data['values'] ) && ( $data['values'][0] === 'not-set' ) ) {
+                    if ( ( $data['type'] === 'key_select' ) && !empty( $data['values'] ) && in_array( $data['values'][0], [ 'not-set', 'none' ] ) ) {
                         $data['labels'] = array_merge( [ "\r\n" ], array_slice( $data['labels'], 1 ) );
                     }
 
                     $data['labels'] = implode( "\r\n", $data['labels'] );
+                } elseif ( is_string( $data['labels'] ) && !empty( $data['values'] ) && in_array( $data['values'][0], [ 'not-set', 'none' ] ) && !empty( explode( PHP_EOL, $data['labels'] )[0] ) ) {
+                    $breaks = ( substr( $data['labels'], 0, 2 ) === "\r\n" ) ? "\r\n" : "\r\n\r\n";
+                    $data['labels'] = $breaks . $data['labels'];
                 }
                 ?>
                  <hr>
@@ -2298,6 +2301,10 @@ class DT_Webform_Active_Form_Post_Type
 
     public static function match_dt_field_labels_with_values( $labels, array $values ) : array {
         if ( is_string( $labels ) ){
+            if ( isset( $values[0] ) && in_array( $values[0], [ 'not-set', 'none' ] ) && !empty( explode( PHP_EOL, $labels )[0] ) ) {
+                $breaks = ( substr( $labels, 0, 2 ) === "\r\n" ) ? '' : "\r\n";
+                $labels = $breaks . $labels;
+            }
             $labels = self::make_labels_array( $labels );
         }
         if ( empty( $labels ) || empty( $values ) ) {

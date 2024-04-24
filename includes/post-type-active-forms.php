@@ -906,12 +906,12 @@ class DT_Webform_Active_Form_Post_Type
                 if ( is_array( $data['labels'] ) ){
 
                     // Ensure key_selects starting with not-sets; are replaced with a newline character.
-                    if ( ( $data['type'] === 'key_select' ) && !empty( $data['values'] ) && in_array( $data['values'][0], [ 'not-set', 'none' ] ) ) {
+                    if ( ( $data['type'] === 'key_select' ) && !in_array( $data['dt_field'], [ 'seeker_path' ] ) && !empty( $data['values'] ) && in_array( $data['values'][0], [ 'not-set', 'none' ] ) ) {
                         $data['labels'] = array_merge( [ "\r\n" ], array_slice( $data['labels'], 1 ) );
                     }
 
                     $data['labels'] = implode( "\r\n", $data['labels'] );
-                } elseif ( is_string( $data['labels'] ) && !empty( $data['values'] ) && in_array( $data['values'][0], [ 'not-set', 'none' ] ) && !empty( explode( PHP_EOL, $data['labels'] )[0] ) ) {
+                } elseif ( is_string( $data['labels'] ) && !in_array( $data['dt_field'], [ 'seeker_path' ] ) && !empty( $data['values'] ) && in_array( $data['values'][0], [ 'not-set', 'none' ] ) && !empty( explode( PHP_EOL, $data['labels'] )[0] ) ) {
                     $breaks = ( substr( $data['labels'], 0, 2 ) === "\r\n" ) ? "\r\n" : "\r\n\r\n";
                     $data['labels'] = $breaks . $data['labels'];
                 }

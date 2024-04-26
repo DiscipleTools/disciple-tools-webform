@@ -1181,8 +1181,11 @@ class DT_Webform_Utilities {
                                     >
                                         <?php
                                         $not_set_selected = ( isset( $dt_webform_value['selected'] ) && $dt_webform_value['selected'] === 'no' );
+                                        if ( $not_set_selected && isset( $list[0]['value'] ) && !in_array( $list[0]['value'], [ 'not-set', 'none' ] ) ){
+                                            echo '<option></option>';
+                                        }
                                         foreach ( $list as $item ) {
-                                            echo '<option value="' . esc_attr( $item['value'] ) . '" '. esc_attr( ( $not_set_selected && in_array( $item['value'], [ 'not-set', 'none' ] ) ? 'selected' : '' ) ) .'>' . esc_html( $item['label'] ) . '</option>';
+                                            echo '<option value="' . esc_attr( $item['value'] ) . '">' . esc_html( $item['label'] ) . '</option>';
                                         }
                                         ?>
                                     </select>

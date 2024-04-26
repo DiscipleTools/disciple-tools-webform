@@ -912,8 +912,12 @@ class DT_Webform_Active_Form_Post_Type
 
                     $data['labels'] = implode( "\r\n", $data['labels'] );
                 } elseif ( is_string( $data['labels'] ) && !empty( $data['values'] ) && in_array( $data['values'][0], [ 'not-set', 'none' ] ) && !empty( explode( PHP_EOL, $data['labels'] )[0] ) ) {
-                    $breaks = ( substr( $data['labels'], 0, 2 ) === "\r\n" ) ? "\r\n" : "\r\n\r\n";
-                    $data['labels'] = $breaks . $data['labels'];
+
+                    $labels = explode( PHP_EOL, $data['labels'] );
+                    if ( ( count( $data['values'] ) === count( $labels ) ) && empty( trim( $labels[0] ) )   ) {
+                        $breaks = ( substr( $data['labels'], 0, 2 ) === "\r\n" ) ? "\r\n" : "\r\n\r\n";
+                        $data['labels'] = $breaks . $data['labels'];
+                    }
                 }
                 ?>
                  <hr>
@@ -2302,8 +2306,12 @@ class DT_Webform_Active_Form_Post_Type
     public static function match_dt_field_labels_with_values( $labels, array $values ) : array {
         if ( is_string( $labels ) ){
             if ( isset( $values[0] ) && in_array( $values[0], [ 'not-set', 'none' ] ) && !empty( explode( PHP_EOL, $labels )[0] ) ) {
-                $breaks = ( substr( $labels, 0, 2 ) === "\r\n" ) ? '' : "\r\n";
-                $labels = $breaks . $labels;
+
+                $labels_array = explode( PHP_EOL, $labels );
+                if ( ( count( $values ) === count( $labels_array ) ) && empty( trim( $labels_array[0] ) )   ) {
+                    $breaks = ( substr( $labels, 0, 2 ) === "\r\n" ) ? '' : "\r\n";
+                    $labels = $breaks . $labels;
+                }
             }
             $labels = self::make_labels_array( $labels );
         }

@@ -914,7 +914,7 @@ class DT_Webform_Active_Form_Post_Type
                 } elseif ( is_string( $data['labels'] ) && !empty( $data['values'] ) && in_array( $data['values'][0], [ 'not-set', 'none' ] ) && !empty( explode( PHP_EOL, $data['labels'] )[0] ) ) {
 
                     $labels = explode( PHP_EOL, $data['labels'] );
-                    if ( ( count( $data['values'] ) === count( $labels ) ) && empty( trim( $labels[0] ) )   ) {
+                    if ( ( count( $data['values'] ) === count( $labels ) ) && empty( trim( $labels[0] ) ) ) {
                         $breaks = ( substr( $data['labels'], 0, 2 ) === "\r\n" ) ? "\r\n" : "\r\n\r\n";
                         $data['labels'] = $breaks . $data['labels'];
                     }
@@ -2308,7 +2308,7 @@ class DT_Webform_Active_Form_Post_Type
             if ( isset( $values[0] ) && in_array( $values[0], [ 'not-set', 'none' ] ) && !empty( explode( PHP_EOL, $labels )[0] ) ) {
 
                 $labels_array = explode( PHP_EOL, $labels );
-                if ( ( count( $values ) === count( $labels_array ) ) && empty( trim( $labels_array[0] ) )   ) {
+                if ( ( count( $values ) === count( $labels_array ) ) && empty( trim( $labels_array[0] ) ) ) {
                     $breaks = ( substr( $labels, 0, 2 ) === "\r\n" ) ? '' : "\r\n";
                     $labels = $breaks . $labels;
                 }

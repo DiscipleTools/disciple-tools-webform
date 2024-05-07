@@ -131,6 +131,7 @@ class DT_Webform_Active_Form_Post_Type
         'publicly_queryable'    => false,
         'capabilities' => [
             'edit_post' => 'manage_dt',
+            'edit_others_posts' => 'manage_dt',
             'delete_post' => 'manage_dt'
         ],
         'capability_type'       => 'post',

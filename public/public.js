@@ -1,6 +1,7 @@
 //check online status
 window.addEventListener('online', dt_check_storage);
 window.addEventListener('load', dt_check_storage);
+let cf_token = null
 
 //Get URL Parameters
 let dt_get_url_parameter = function dt_get_url_parameter(sParam) {
@@ -25,6 +26,10 @@ function dt_check_form() {
         dt_get_data();
     }
     dt_translate_form_strings()
+}
+
+function save_cf_token(token) {
+  cf_token = token
 }
 
 function dt_store_data(data) {
@@ -101,6 +106,10 @@ function dt_get_data() {
     location.each(function() {
       data.location[jQuery(this).data('type')] = jQuery(this).text()
     })
+  }
+
+  if ( cf_token ) {
+    data.cloudflare_token = cf_token
   }
 
   if (!navigator.onLine) {

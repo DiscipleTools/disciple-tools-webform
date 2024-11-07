@@ -962,6 +962,14 @@ class DT_Webform_Utilities {
     }
 
     public static function echo_form_html_scripts_and_styles( $dt_webform_token, $dt_webform_meta, $dt_webform_fields, $public_url ){
+        $cloudflare_site_key = get_option( 'dt_webform_cf_site_key', '' );
+        $cloudflare_secret_key = get_option( 'dt_webform_cf_secret_key', '' );
+
+        if ( !empty( $cloudflare_site_key ) && !empty( $cloudflare_secret_key ) ) {
+            ?>
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+            <?php
+        }
 
         /**
          * Coding standards require enqueue of files, but for the purpose of a light iframe, we don't want
@@ -1711,6 +1719,20 @@ class DT_Webform_Utilities {
             }
         }
         ?>
+
+        <?php
+        $cloudflare_site_key = get_option( 'dt_webform_cf_site_key', '' );
+        $cloudflare_secret_key = get_option( 'dt_webform_cf_secret_key', '' );
+        if ( !empty( $cloudflare_site_key ) && !empty( $cloudflare_secret_key ) ): ?>
+            <div
+                class="cf-turnstile"
+                data-sitekey="<?php echo esc_html( $cloudflare_site_key ); ?>"
+                data-callback="save_cf_token"
+                data-theme="light"
+                style="margin-top:1em;"
+            ></div>
+        <?php endif; ?>
+
 
         <div class="section" id="submit-button-container">
             <span style="color:red" class="form-submit-error"></span>

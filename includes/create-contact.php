@@ -97,6 +97,29 @@ class DT_Webform_Endpoints
             $params['form_title'] = get_the_title( $form_id );
         }
 
+        //cloudflare turnstile verification if enabled
+        $cloudflare_site_key = get_option( 'dt_webform_cf_site_key', '' );
+        $cloudflare_secret_key = get_option( 'dt_webform_cf_secret_key', '' );
+        if ( !empty( $cloudflare_site_key ) && !empty( $cloudflare_secret_key ) ){
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+            $response = wp_remote_post( $url, [
+                'body' => [
+                    'secret' => $cloudflare_secret_key,
+                    'response' => $params['cloudflare_token'],
+                    'remoteip' => $ip,
+                ],
+            ] );
+
+            if ( is_wp_error( $response ) ) {
+                return new WP_Error( 'cf_token', 'Invalid token', [ 'status' => 400 ] );
+            }
+            $response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+            if ( empty( $response_body['success'] ) ){
+                return new WP_Error( 'cf_token', 'Invalid token', [ 'status' => 400 ] );
+            }
+        }
+
         $params['referer'] = $request->get_header( 'referer' );
 
         // Insert new lead

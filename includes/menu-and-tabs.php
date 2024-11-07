@@ -231,6 +231,8 @@ class DT_Webform_Menu
 
         $this->metabox_fail_email();
 
+        $this->metabox_cloudflare_turnstile();
+
         $this->metabox_dt_fields();
 
         // begin right column template
@@ -520,6 +522,57 @@ class DT_Webform_Menu
                         <?php else : ?>
                             <button class="button" name="action-button" value="save" type="submit">Save</button>
                         <?php endif; ?>
+                    </td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <br>
+        <?php
+    }
+
+    public function metabox_cloudflare_turnstile(){
+        if ( isset( $_POST['recaptcha_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['recaptcha_nonce'] ) ), 'recaptcha' ) && isset( $_POST['cf-submit'] ) ) {
+            $site_key = sanitize_text_field( wp_unslash( $_POST['site_key'] ?? '' ) );
+            $secret_key = sanitize_text_field( wp_unslash( $_POST['secret_key'] ?? '' ) );
+            update_option( 'dt_webform_cf_site_key', $site_key );
+            update_option( 'dt_webform_cf_secret_key', $secret_key );
+        }
+
+        $site_key = get_option( 'dt_webform_cf_site_key', '' );
+        $secret_key = get_option( 'dt_webform_cf_secret_key', '' );
+        ?>
+        <form method="post">
+            <?php wp_nonce_field( 'recaptcha', 'recaptcha_nonce' ) ?>
+            <table class="widefat striped">
+                <thead>
+                <tr><th>Cloudflare Turnstile (recaptcha).</th><th></th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Adds cloudflare verification to limit spam. Similar to google recaptcha. See <a href="https://developers.cloudflare.com/turnstile/">https://developers.cloudflare.com/turnstile/</a> </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        Site Key
+                    </td>
+                    <td>
+                        <input type="text" name="site_key" value="<?php echo esc_attr( $site_key ) ?>" class="regular-text" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Secret key
+                    </td>
+                    <td>
+                        <input type="text" name="secret_key" value="<?php echo esc_attr( $secret_key ) ?>" class="regular-text" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <button class="button" name="cf-submit" value="save" type="submit">Save</button>
                     </td>
                     <td></td>
                 </tr>

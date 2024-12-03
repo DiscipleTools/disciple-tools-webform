@@ -3,7 +3,7 @@
  *Plugin Name: Disciple.Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Disciple.Tools - Webform extends the Disciple.Tools system to send and receive remote submissions from webform contacts.
- * Version: 6.6.0
+ * Version: 6.6.1
  * Text Domain: disciple-tools-webform
  * Domain Path: /languages
  * Author name: Disciple.Tools

@@ -1,23 +1,16 @@
 <?php
-declare(strict_types=1);
 if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 
 /**
- * Legacy migration placeholder.
+ * Class DT_Mapping_Module_Migration_0017
+ * checks east and west are installed correctly
  */
-
-require_once( 'abstract.php' );
-
-/**
- * Class DT_Mapping_Module_Migration_0000
- */
-class DT_Mapping_Module_Migration_0000 extends DT_Mapping_Module_Migration {
+class DT_Mapping_Module_Migration_0017 extends DT_Mapping_Module_Migration {
 
     /**
      * @throws \Exception  Got error when creating table $name.
      */
-    public function up() {
-    }
+    public function up() {}
 
     /**
      * @throws \Exception  Got error when dropping table $name.

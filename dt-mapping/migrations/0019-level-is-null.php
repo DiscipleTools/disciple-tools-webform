@@ -1,22 +1,22 @@
 <?php
-declare(strict_types=1);
 if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 
 /**
- * Legacy migration placeholder.
+ * Class DT_Mapping_Module_Migration_0017
+ * checks east and west are installed correctly
  */
-
-require_once( 'abstract.php' );
-
-/**
- * Class DT_Mapping_Module_Migration_0000
- */
-class DT_Mapping_Module_Migration_0000 extends DT_Mapping_Module_Migration {
+class DT_Mapping_Module_Migration_0019 extends DT_Mapping_Module_Migration {
 
     /**
      * @throws \Exception  Got error when creating table $name.
      */
     public function up() {
+        global $wpdb;
+        if ( ! isset( $wpdb->dt_location_grid ) ) {
+            $wpdb->dt_location_grid = $wpdb->prefix . 'dt_location_grid';
+        }
+
+        $wpdb->query( "UPDATE $wpdb->dt_location_grid SET level = '0' WHERE level is NULL AND level_name = 'admin0'" );
     }
 
     /**

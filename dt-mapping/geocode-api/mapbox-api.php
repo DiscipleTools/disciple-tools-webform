@@ -68,10 +68,12 @@ if ( ! class_exists( 'DT_Mapbox_API' ) ) {
             $address = str_replace( ';', ' ', $address );
             $address = utf8_uri_encode( $address );
 
+            $types = 'country,region,postcode,district,place,locality,neighborhood,address';
+
             if ( $country_code ) {
-                $url = self::$mapbox_endpoint . $address . '.json?types=address&access_token=' . self::get_key();
+                $url = self::$mapbox_endpoint  . $address . '.json?country=' . $country_code . '&types=' . $types . '&access_token=' . self::get_key();
             } else {
-                $url = self::$mapbox_endpoint  . $address . '.json?country=' . $country_code . '&types=address&access_token=' . self::get_key();
+                $url = self::$mapbox_endpoint . $address . '.json?types=' . $types . '&access_token=' . self::get_key();
             }
 
             /** @link https://codex.wordpress.org/Function_Reference/wp_remote_get */
@@ -802,7 +804,6 @@ if ( ! class_exists( 'DT_Mapbox_API' ) ) {
                     return false;
                     break;
             }
-
         }
 
         private static function context_filter( $context, $feature ) {
@@ -831,7 +832,6 @@ if ( ! class_exists( 'DT_Mapbox_API' ) ) {
 
             return $ip;
         }
-
     }
 }
 

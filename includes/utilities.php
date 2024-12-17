@@ -965,7 +965,7 @@ class DT_Webform_Utilities {
         $cloudflare_secret_key = get_option( 'dt_webform_cf_secret_key', '' );
 
         if ( !empty( $cloudflare_site_key ) && !empty( $cloudflare_secret_key ) ) {
-            wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', [], null, [ 'strategy' => 'defer' ] );
+            wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', [], '0', [ 'strategy' => 'defer' ] );
         }
 
         /**

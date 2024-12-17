@@ -23,7 +23,7 @@
   },
   "icon": "https://raw.githubusercontent.com/DiscipleTools/disciple-tools-webform/master/documentation/webform-icon.png",
   "sections": {
-    "description": "Disciple.Tools - Webform",
+    "description": "Build forms for you websites. Submitted forms will create contacts in Disciple.Tools.",
     "installation": "(Required) You must have Disciple.Tools Theme installed before using this plugin. Once Disciple.Tools is installed, you can use the normal Plugin system to install the plugin.",
     "changelog": ""
   }

@@ -101,7 +101,7 @@ class DT_Webform_Endpoints
         $cloudflare_site_key = get_option( 'dt_webform_cf_site_key', '' );
         $cloudflare_secret_key = get_option( 'dt_webform_cf_secret_key', '' );
         if ( !empty( $cloudflare_site_key ) && !empty( $cloudflare_secret_key ) ){
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
             $url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
             $response = wp_remote_post( $url, [
                 'body' => [

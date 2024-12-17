@@ -126,7 +126,6 @@ class DT_Webform_Utilities {
         } else {
             return new WP_Error( __METHOD__, 'Remote response from DT server malformed.' );
         }
-
     }
 
     public static function get_theme( string $theme = 'wide-heavy', string $token = null ) {
@@ -966,9 +965,7 @@ class DT_Webform_Utilities {
         $cloudflare_secret_key = get_option( 'dt_webform_cf_secret_key', '' );
 
         if ( !empty( $cloudflare_site_key ) && !empty( $cloudflare_secret_key ) ) {
-            ?>
-            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
-            <?php
+            wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', [], null, [ 'strategy' => 'defer' ] );
         }
 
         /**

@@ -128,7 +128,7 @@ class DT_Webform_Utilities {
         }
     }
 
-    public static function get_theme( string $theme = 'wide-heavy', string $token = null ) {
+    public static function get_theme( string $theme = 'wide-heavy', ?string $token = null ) {
 
         $meta = self::get_form_meta( $token );
         if ( empty( $meta ) ) {

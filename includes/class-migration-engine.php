@@ -140,7 +140,7 @@ class DT_Webform_Migration_Engine
 
 class DT_Webform_Migration_Lock_Exception extends Exception
 {
-    public function __construct( $message = null, $code = 0, Exception $previous = null ) {
+    public function __construct( $message = null, $code = 0, ?Exception $previous = null ) {
         /*
          * Instead of throwing a simple exception that the migration lock is
          * held, it would be good for the user to if there any previous errors,

@@ -106,8 +106,8 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
         // Get the current URL
         $canonical_url  = ( is_ssl() ? 'https://' : 'http://' );
         if ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
-            $http_host = wp_unslash( sanitize_text_field( $_SERVER['HTTP_HOST'] ) );
-            $request_uri = wp_unslash( sanitize_text_field( $_SERVER['REQUEST_URI'] ) );
+            $http_host = sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) );
+            $request_uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
             $canonical_url .= $http_host . $request_uri;
         }
 

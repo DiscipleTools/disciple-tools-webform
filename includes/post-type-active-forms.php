@@ -203,6 +203,8 @@ class DT_Webform_Active_Form_Post_Type
             return;
         }
 
+        echo '<input type="hidden" name="' . esc_attr( $this->post_type ) . '_noonce" id="' . esc_attr( $this->post_type ) . '_noonce" value="' . esc_attr( wp_create_nonce( 'update_dt_webforms' ) ) . '" />';
+
         $core_fields    = $this->get_core_fields( $post->ID );
         ?>
         <table class="widefat striped">
@@ -250,6 +252,11 @@ class DT_Webform_Active_Form_Post_Type
             ?>
             </tbody>
         </table>
+        <div>
+            <br clear="all">
+            <span style="float:right;" id="update_fields_button"><button type="submit" class="button">Update</button> </span>
+            <br clear="all">
+        </div>
         <?php
     }
 

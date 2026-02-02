@@ -104,14 +104,18 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
      */
     public function header_style(){
         // Get the current URL
-        $canonical_url  = (is_ssl() ? 'https://' : 'http://');
-        $canonical_url .= $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $canonical_url  = ( is_ssl() ? 'https://' : 'http://' );
+        if ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
+            $http_host = sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) );
+            $request_uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+            $canonical_url .= $http_host . $request_uri;
+        }
 
         // Sanitize it (optional but safer)
-        $canonical_url = esc_url($canonical_url);
+        $canonical_url = esc_url( $canonical_url );
 
         // Output the canonical link tag
-        echo '<link rel="canonical" href="' . $canonical_url . '" />' . "\n";
+        echo '<link rel="canonical" href="' . esc_url( $canonical_url ) . '" />' . "\n";
     }
 
     /**

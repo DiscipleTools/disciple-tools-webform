@@ -3,7 +3,7 @@
  *Plugin Name: Disciple.Tools - Webform
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-webform
  * Description: Build forms for you websites. Submitted forms will create contacts in Disciple.Tools.
- * Version: 6.6.3
+ * Version: 6.6.4
  * Text Domain: disciple-tools-webform
  * Domain Path: /languages
  * Author name: Disciple.Tools

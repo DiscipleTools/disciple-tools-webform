@@ -80,7 +80,6 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
         add_filter( 'dt_magic_url_base_allowed_js', [ $this, 'dt_magic_url_base_allowed_js' ], 10, 1 );
         add_action( 'wp_enqueue_scripts', [ $this, 'wp_enqueue_scripts' ], 100 );
         add_action( 'dt_blank_body', [ $this, 'body' ] );
-
     }
 
     public function dt_magic_url_base_allowed_css( $allowed_css ){
@@ -152,7 +151,6 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
      * @see DT_Magic_Url_Base()->footer_javascript() for default state
      */
     public function footer_javascript(){
-
     }
 }
 

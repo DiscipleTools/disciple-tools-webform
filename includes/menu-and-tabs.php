@@ -54,7 +54,6 @@ class DT_Webform_Menu
             add_action( 'admin_enqueue_scripts', [ $this, 'scripts' ] );
             add_action( 'admin_head', [ $this, 'custom_admin_head' ] );
         }
-
     } // End __construct()
 
     /**
@@ -683,6 +682,4 @@ class DT_Webform_Menu
                 break;
         }
     }
-
-
 }

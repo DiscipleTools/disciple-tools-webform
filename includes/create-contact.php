@@ -47,7 +47,6 @@ class DT_Webform_Endpoints
      */
     public function __construct(){
         add_action( 'rest_api_init', [ $this, 'add_api_routes' ] );
-
     } // End __construct()
 
     public function add_api_routes(){
@@ -465,7 +464,6 @@ class DT_Webform_Endpoints
 
         return $result;
     }
-
 }
 /**
  * Initialize instance

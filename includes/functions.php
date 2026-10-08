@@ -114,9 +114,9 @@ if ( ! is_this_dt() ) {
          */
         function dt_is_rest( $namespace = null ) {
             $prefix = rest_get_url_prefix();
-            if ( defined( 'REST_REQUEST' ) && REST_REQUEST
-                || isset( $_GET['rest_route'] )
-                && strpos( trim( sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ), '\\/' ), $prefix, 0 ) === 0 ) {
+            if ( ( defined( 'REST_REQUEST' ) && REST_REQUEST )
+                || ( isset( $_GET['rest_route'] )
+                && strpos( trim( sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ), '\\/' ), $prefix, 0 ) === 0 ) ) {
                 return true;
             }
             $rest_url    = wp_parse_url( site_url( $prefix ) );

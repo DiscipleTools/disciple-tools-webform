@@ -251,7 +251,6 @@ class DT_Webform {
         if ( !empty( $role ) ) {
             $role->add_cap( 'manage_dt' ); // gives access to dt plugin options
         }
-
     }
 
     /**
@@ -401,7 +400,7 @@ register_deactivation_hook( __FILE__, [ 'DT_Webform', 'deactivation' ] );
  * @see https://github.com/DiscipleTools/disciple-tools-version-control/wiki/How-to-Update-the-Starter-Plugin
  */
 add_action( 'plugins_loaded', function (){
-    if ( is_admin() && !( is_multisite() && class_exists( 'DT_Multisite' ) ) || wp_doing_cron() ){
+    if ( ( is_admin() && !( is_multisite() && class_exists( 'DT_Multisite' ) ) ) || wp_doing_cron() ){
         // Check for plugin updates
         if ( !class_exists( '\YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
             $dir_path           = trailingslashit( plugin_dir_path( __FILE__ ) );

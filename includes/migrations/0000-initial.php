@@ -65,7 +65,6 @@ class DT_Webform_Migration_0000 extends DT_Webform_Migration {
                 }
             }
         }
-
     }
 
     /**
@@ -86,5 +85,4 @@ class DT_Webform_Migration_0000 extends DT_Webform_Migration {
      */
     public function test() {
     }
-
 }

@@ -55,7 +55,6 @@ class DT_Webform_Forms_List extends WP_List_Table {
             'plural'    => 'forms',    //plural name of the listed records
             'ajax'      => false        //does this table support ajax?
         ) );
-
     }
 
     public function column_default( $item, $column_name ){
@@ -108,7 +107,7 @@ class DT_Webform_Forms_List extends WP_List_Table {
 
     public function get_sortable_columns() {
         $sortable_columns = array(
-        'name'     => array( 'name',false ),     //true means it's already sorted
+        'name'     => array( 'name', false ),     //true means it's already sorted
         );
         return $sortable_columns;
     }
@@ -126,7 +125,6 @@ class DT_Webform_Forms_List extends WP_List_Table {
         if ( 'delete' === $this->current_action() && isset( $_GET['tab'] ) && $_GET['tab'] == 'remote_forms' ) {
             wp_die( 'Items deleted (or they would be if we had items to delete)!' );
         }
-
     }
 
     public function prepare_items() {

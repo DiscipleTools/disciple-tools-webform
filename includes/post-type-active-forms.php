@@ -138,7 +138,6 @@ class DT_Webform_Active_Form_Post_Type
         'show_in_rest'          => false,
         );
         register_post_type( $this->post_type, $args );
-
     }
 
     /**
@@ -192,7 +191,6 @@ class DT_Webform_Active_Form_Post_Type
         ?>
         <input type="hidden" name="token" value="<?php echo esc_attr( $token ) ?>" />
         <?php
-
     }
 
     public function load_core_fields_metabox( $post ) {
@@ -893,7 +891,6 @@ class DT_Webform_Active_Form_Post_Type
 
         $css = DT_Webform_Utilities::get_theme( 'get-default-css', get_post_meta( $post->ID, 'token', true ) );
         echo nl2br( esc_html( $css ) );
-
     }
 
 
@@ -1387,7 +1384,6 @@ class DT_Webform_Active_Form_Post_Type
                         break;
             }
         }
-
     }
 
     /**
@@ -1684,7 +1680,7 @@ class DT_Webform_Active_Form_Post_Type
                                     <option value="default_user">Default User</option>
                                     <?php foreach ( $potential_user_list as $potential_user ): ?>
                                         <option
-                                            value="<?php echo esc_attr( $potential_user->ID ); ?>" <?php if ( $potential_user->ID == $selected_value || ! $selected_value && $potential_user->ID == $base_user->ID ): ?> selected <?php endif; ?> ><?php echo esc_attr( $potential_user->display_name ); ?></option>
+                                            value="<?php echo esc_attr( $potential_user->ID ); ?>" <?php if ( $potential_user->ID == $selected_value || ( ! $selected_value && $potential_user->ID == $base_user->ID ) ): ?> selected <?php endif; ?> ><?php echo esc_attr( $potential_user->display_name ); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <p class="description"><?php echo esc_html( $v['description'] ) ?></p>
@@ -2386,5 +2382,4 @@ class DT_Webform_Active_Form_Post_Type
 
         return $site . 'form.php?token=' . $token;
     }
-
 }

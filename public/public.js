@@ -222,6 +222,7 @@ jQuery(document).ready(function () {
 
     // This is a form delay to discourage robots
     let counter = 5;
+    let countdown_complete = false;
     let myInterval = setInterval(function () {
         let button = jQuery('#submit-button')
 
@@ -230,26 +231,31 @@ jQuery(document).ready(function () {
 
         if ( counter === 0 ) {
             clearInterval(myInterval);
-            button.html( window.TRANSLATION.submit ).prop('disabled', false)
-        }
+            countdown_complete = true;
+            button.html( window.TRANSLATION.submit )
 
-      // Enforce check to submit requirements
-      enforce_requires_check_to_submit();
+            // Enforce check to submit requirements
+            enforce_requires_check_to_submit();
+        }
 
     }, 1000);
 
+  // Only enable submit once every "check to submit" checkbox is checked
   function enforce_requires_check_to_submit() {
+    if ( !countdown_complete ) {
+      return;
+    }
+    let all_checked = true;
     jQuery('.input-checkbox').each(function () {
-      if (jQuery(this).data('selected') === 'check_to_submit') {
-        jQuery('#submit-button').prop('disabled', true);
+      if (jQuery(this).data('selected') === 'check_to_submit' && !jQuery(this).prop('checked')) {
+        all_checked = false;
       }
     });
+    jQuery('#submit-button').prop('disabled', !all_checked);
   }
 
-  jQuery('.input-checkbox').on('click', function () {
-    if (jQuery(this).data('selected') === 'check_to_submit') {
-      jQuery('#submit-button').prop('disabled', !jQuery(this).prop('checked'));
-    }
+  jQuery('.input-checkbox').on('change', function () {
+    enforce_requires_check_to_submit();
   });
 
 })

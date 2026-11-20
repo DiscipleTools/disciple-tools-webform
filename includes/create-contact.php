@@ -176,7 +176,7 @@ class DT_Webform_Endpoints
             $form_name = $new_lead_meta['form_title'];
             //form submitted on page
             if ( !empty( $params['referer'] ) ){
-                $form_name = "[$form_name]({$params['referer']})";
+                $form_name = "$form_name ({$params['referer']})";
             }
             $notes['form_title'] = __( 'Source Form: ', 'dt_webform' )  . $form_name;
         }
@@ -396,7 +396,8 @@ class DT_Webform_Endpoints
 
 
         //submit extra notes as one comment
-        $fields['notes'] = [ implode( "\r\n", $notes ) ];
+        // Submitted values are anonymous, so markdown link, image and mention syntax is broken up before it reaches the comment.
+        $fields['notes'] = [ str_replace( '](', '] (', implode( "\r\n", $notes ) ) ];
 
         // assign user
         if ( isset( $form_meta['assigned_to'] ) && ! empty( $form_meta['assigned_to'] ) && $form_meta['assigned_to'] !== 'default_user' ) {

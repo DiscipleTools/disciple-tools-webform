@@ -1018,18 +1018,19 @@ class DT_Webform_Utilities {
             }
         </script>
         <script>
+            // Strings are HTML-escaped, then JSON-encoded so JavaScript escapes in them stay literal text.
             window.TRANSLATION = {
-                'required': "<?php echo esc_html( $dt_webform_meta['js_string_required'] ?? __( 'Required', 'dt_webform' ) ) ?>",
-                'characters_required': "<?php echo esc_html( $dt_webform_meta['js_string_char_required'] ?? __( 'At least {0} characters required!', 'dt_webform' ) ) ?>",
-                'submit_in': "<?php echo esc_html( $dt_webform_meta['js_string_submit_in'] ?? __( 'Submit in', 'dt_webform' ) ) ?>",
-                'submit': "<?php echo esc_html( $dt_webform_meta['js_string_submit'] ?? __( 'Submit', 'dt_webform' ) ) ?>",
-                'success': "<?php echo esc_html( $dt_webform_meta['js_string_success'] ?? __( 'Success! We have received your submission.', 'dt_webform' ) ) ?>",
-                'failure': "<?php echo esc_html( $dt_webform_meta['js_string_failure'] ?? __( 'Sorry, Something went wrong', 'dt_webform' ) ) ?>",
+                'required': <?php echo wp_json_encode( esc_html( $dt_webform_meta['js_string_required'] ?? __( 'Required', 'dt_webform' ) ) ) ?>,
+                'characters_required': <?php echo wp_json_encode( esc_html( $dt_webform_meta['js_string_char_required'] ?? __( 'At least {0} characters required!', 'dt_webform' ) ) ) ?>,
+                'submit_in': <?php echo wp_json_encode( esc_html( $dt_webform_meta['js_string_submit_in'] ?? __( 'Submit in', 'dt_webform' ) ) ) ?>,
+                'submit': <?php echo wp_json_encode( esc_html( $dt_webform_meta['js_string_submit'] ?? __( 'Submit', 'dt_webform' ) ) ) ?>,
+                'success': <?php echo wp_json_encode( esc_html( $dt_webform_meta['js_string_success'] ?? __( 'Success! We have received your submission.', 'dt_webform' ) ) ) ?>,
+                'failure': <?php echo wp_json_encode( esc_html( $dt_webform_meta['js_string_failure'] ?? __( 'Sorry, Something went wrong', 'dt_webform' ) ) ) ?>,
             }
             window.SETTINGS = {
                 'spinner': ' <span class="spinner"><img src="<?php echo esc_html( $public_url ) ?>spinner.svg" width="20px" /></span>',
                 'rest_url': "<?php echo esc_url_raw( rest_url() ) ?>",
-                'url_redirect_success': "<?php echo esc_html( $dt_webform_meta['url_redirect_success'] ?? '' ) ?>"
+                'url_redirect_success': <?php echo wp_json_encode( esc_url_raw( $dt_webform_meta['url_redirect_success'] ?? '', [ 'http', 'https' ] ) ) ?>
             }
             window.dtMapbox = {
                 'google_map_key': "<?php echo esc_html( $google_map_key );?>"

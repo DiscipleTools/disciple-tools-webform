@@ -366,7 +366,11 @@ class DT_Webform_Menu
                                             }
                                         })
                                         .fail(function (err) {
-                                            //try non https on failure
+                                            //try non https on failure, on debug sites only, since it sends the transfer token in cleartext
+                                            if ( ! " . ( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'true' : 'false' ) . " ) {
+                                                jQuery('#' + id + '-status').html( not_found ).attr('class', 'fail-red');
+                                                return;
+                                            }
                                             jQuery.ajax({
                                                 type: 'POST',
                                                 data: JSON.stringify({ \"transfer_token\": transfer_token } ),

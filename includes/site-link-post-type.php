@@ -1335,7 +1335,10 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                     $https_failed = strpos( $error_message, 'SSL' ) > -1 || strpos( $error_message, 'HTTPS' ) > -1 || strpos( $error_message, 'certificate verification failed' ) > -1;
 
                     // If first request fails, attempt without HTTPS in case of local SSL issues
-                    $result = wp_remote_post( 'http://' . $url . '/wp-json/dt-public/v1/sites/site_link_check', $args );
+                    // The retry sends the transfer token in cleartext, so it only runs on debug sites.
+                    if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                        $result = wp_remote_post( 'http://' . $url . '/wp-json/dt-public/v1/sites/site_link_check', $args );
+                    }
 
                     if ( is_wp_error( $result ) ) {
                         // Second request failed too. Return appropriate error

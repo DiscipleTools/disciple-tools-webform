@@ -2060,6 +2060,9 @@ class DT_Webform_Active_Form_Post_Type
         if ( is_wp_error( $form_object ) || $form_object->found_posts < 1 ) {
             return false;
         }
+        if ( get_post_meta( $form_object->post->ID, 'disable', true ) === 'disabled' ) {
+            return false;
+        }
         return $form_object->post->ID;
     }
 

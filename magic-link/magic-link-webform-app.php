@@ -65,7 +65,7 @@ class Disciple_Tools_Webform_Magic_Link_App extends DT_Magic_Url_Base{
             $this->dt_webform_public_url = str_replace( 'magic-link', 'public', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 
             // Ensure valid core fields are specified, otherwise redirect to expired landing page.
-            if ( empty( $this->dt_webform_core_fields ) ){
+            if ( empty( $this->dt_webform_core_fields ) || ( $this->dt_webform_meta['disable'] ?? '' ) === 'disabled' ){
                 $this->magic->redirect_to_expired_landing_page();
             }
         } else {

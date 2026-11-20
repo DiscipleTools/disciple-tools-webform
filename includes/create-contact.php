@@ -454,7 +454,8 @@ class DT_Webform_Endpoints
             $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts' . $check_for_duplicates, $args );
 
             if ( is_wp_error( $result ) ) {
-                return new WP_Error( 'failed_remote_post', $result->get_error_message() );
+                dt_write_log( 'Fail Contact Create: ' . $result->get_error_message() );
+                return new WP_Error( 'failed_remote_post', __( 'The form could not be submitted.', 'dt_webform' ), [ 'status' => 500 ] );
             }
 
             $body = json_decode( $result['body'], true );
@@ -465,9 +466,8 @@ class DT_Webform_Endpoints
                 $email = get_option( 'dt_webform_admin_fail_email' );
                 dt_write_log( 'Fail Contact Create' );
                 dt_write_log( $body );
-                dt_write_log( $fields );
                 wp_mail( $email, 'Failed Form Post', maybe_serialize( $fields ) . '\n' . $body['message'] ?? '' );
-                return new WP_Error( 'failed_remote_post', $body['message'] ?? maybe_serialize( $body ), isset( $body['data'] ) ? $body['data'] : [ 'status' => 400 ] );
+                return new WP_Error( 'failed_remote_post', __( 'The form could not be submitted.', 'dt_webform' ), [ 'status' => 500 ] );
             }
         }
 

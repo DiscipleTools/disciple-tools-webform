@@ -413,6 +413,15 @@ class DT_Webform_Endpoints
         // Post to contact
         if ( is_this_dt() ) { // Create contact if hosted in DT
 
+            // A submission matching an existing contact only adds new values to it and never changes its assignment or status.
+            if ( ! empty( $create_args['check_for_duplicates'] ) ) {
+                $create_args['do_not_overwrite_existing_fields'] = true;
+                $duplicate_post_ids = apply_filters( 'dt_create_check_for_duplicate_posts', [], 'contacts', $fields, $create_args['check_for_duplicates'], false );
+                if ( ! empty( $duplicate_post_ids ) ) {
+                    unset( $fields['assigned_to'], $fields['overall_status'] );
+                }
+            }
+
             // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'create_contacts' );
@@ -441,7 +450,7 @@ class DT_Webform_Endpoints
 
             $check_for_duplicates = '';
             if ( ! empty( $create_args['check_for_duplicates'] ) ) {
-                $check_for_duplicates = '?check_for_duplicates=' . implode( ',', $create_args['check_for_duplicates'] );
+                $check_for_duplicates = '?check_for_duplicates=' . implode( ',', $create_args['check_for_duplicates'] ) . '&do_not_overwrite_existing_fields=1';
             }
 
             $result = wp_remote_post( 'https://' . trailingslashit( $site['url'] ) . 'wp-json/dt-posts/v2/contacts' . $check_for_duplicates, $args );

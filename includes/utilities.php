@@ -961,6 +961,15 @@ class DT_Webform_Utilities {
     }
 
     public static function echo_form_html_scripts_and_styles( $dt_webform_token, $dt_webform_meta, $dt_webform_fields, $public_url ){
+        // Only location fields use the Google key, so forms without one don't publish it.
+        $google_map_key = '';
+        foreach ( (array) $dt_webform_fields as $dt_webform_field ) {
+            if ( ( $dt_webform_field['type'] ?? '' ) === 'location' ) {
+                $google_map_key = get_option( 'dt_google_map_key', '' );
+                break;
+            }
+        }
+
         $cloudflare_site_key = get_option( 'dt_webform_cf_site_key', '' );
         $cloudflare_secret_key = get_option( 'dt_webform_cf_secret_key', '' );
 
@@ -987,9 +996,9 @@ class DT_Webform_Utilities {
         ?>
 
         <script type="text/javascript" src="<?php echo esc_url( $public_url ) ?>public.js?ver=<?php echo esc_html( filemtime( plugin_dir_path( __DIR__ ) . 'public/public.js' ) ) ?>"></script>
-        <?php if( get_option( 'dt_google_map_key' ) ) { ?>
+        <?php if( $google_map_key ) { ?>
             <script type="text/javascript"
-            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=<?php echo esc_html( get_option( 'dt_google_map_key' ) ); ?>"
+            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=<?php echo esc_html( $google_map_key ); ?>"
         <?php }
 
         // @codingStandardsIgnoreEnd
@@ -1023,7 +1032,7 @@ class DT_Webform_Utilities {
                 'url_redirect_success': "<?php echo esc_html( $dt_webform_meta['url_redirect_success'] ?? '' ) ?>"
             }
             window.dtMapbox = {
-                'google_map_key': "<?php echo esc_html( get_option( 'dt_google_map_key' ) );?>"
+                'google_map_key': "<?php echo esc_html( $google_map_key );?>"
             }
             <?php if ( isset( $dt_webform_meta['theme'] ) && $dt_webform_meta['theme'] === 'inherit' ) : ?>
             jQuery(document).ready(function () {

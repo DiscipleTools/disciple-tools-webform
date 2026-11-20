@@ -13,6 +13,11 @@ function webform_shortcodes_handler( $atts ): string {
         'source' => '' // Additional source metadata
     ), $atts );
 
+    // Only published webform posts may supply a token; other post types keep secrets in the same meta key.
+    if ( get_post_type( $params['id'] ) !== 'dt_webform_forms' || get_post_status( $params['id'] ) !== 'publish' ) {
+        return '';
+    }
+
     // Fetch corresponding form token
     $token = get_metadata( 'post', $params['id'], 'token', true );
 

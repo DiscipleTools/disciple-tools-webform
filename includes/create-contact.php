@@ -422,9 +422,7 @@ class DT_Webform_Endpoints
                 }
             }
 
-            // add required capability for retrieving defaults
             $current_user = wp_get_current_user();
-            $current_user->add_cap( 'create_contacts' );
             $current_user->display_name = 'D.T Webform' . ( $new_lead_meta['form_title'] ? ': ' . $new_lead_meta['form_title'] : '' );
             $result = DT_Posts::create_post( 'contacts', $fields, false, false, $create_args );
 

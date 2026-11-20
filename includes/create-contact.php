@@ -123,7 +123,13 @@ class DT_Webform_Endpoints
 
         // Insert new lead
         $this->filter_params( $params );
-        return $this->create_contact_record( $params );
+        $result = $this->create_contact_record( $params );
+        if ( is_wp_error( $result ) ) {
+            return $result;
+        }
+
+        // The submitter is anonymous, so the created or matched record is never returned.
+        return [ 'success' => true ];
     }
 
     public function filter_params( &$params ) {

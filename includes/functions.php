@@ -264,7 +264,12 @@ if ( ! function_exists( 'dt_get_simple_post_meta' ) ) {
         $map = [];
         if ( ! empty( $post_id ) ) {
             $map         = array_map( function( $a ) {
-                return maybe_unserialize( $a[0] );
+                // Decode every serialized layer without objects, so callers that unserialize again can't instantiate classes.
+                $value = $a[0];
+                while ( is_string( $value ) && is_serialized( $value ) ) {
+                    $value = unserialize( trim( $value ), [ 'allowed_classes' => false ] ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+                }
+                return $value;
             }, get_post_meta( $post_id ) ); // map the post meta
             $map['ID'] = $post_id; // add the id to the array
         }

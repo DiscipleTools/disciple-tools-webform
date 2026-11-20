@@ -1103,8 +1103,6 @@ class DT_Webform_Utilities {
         <input type="hidden" id="token" name="token" value="<?php echo esc_attr( $dt_webform_token ) ?>"/>
         <input type="hidden" id="meta_campaigns" name="meta_campaigns" value="<?php echo esc_attr( $dt_webform_campaigns ) ?>"/>
         <input type="hidden" id="meta_source" name="meta_source" value="<?php echo esc_attr( $dt_webform_source ) ?>"/>
-        <input type="hidden" id="ip_address" name="ip_address"
-               value="<?php echo esc_attr( DT_Webform::get_real_ip_address() ?? '' ) ?>"/>
 
         <?php
         /**

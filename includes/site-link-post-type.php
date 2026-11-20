@@ -1024,6 +1024,9 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
                         url: '" . esc_js( $url ) . "/wp-json/dt-public/v1/sites/server_ip',
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('X-WP-Nonce', '" . esc_js( wp_create_nonce( 'wp_rest' ) ) . "');
+                        },
                     })
                     .done(function (data) {
                         jQuery('#server-ip').html(data);
@@ -1271,7 +1274,9 @@ if ( ! class_exists( 'Site_Link_System' ) ) {
                     [
                         'methods' => WP_REST_Server::READABLE,
                         'callback' => [ $this, 'server_ip' ],
-                        'permission_callback' => '__return_true',
+                        'permission_callback' => function () {
+                            return current_user_can( 'manage_dt' );
+                        },
                     ],
                 ]
             );
